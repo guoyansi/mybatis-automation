@@ -9,7 +9,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import bean.ABean;
-import table.bean.FiledBean;
+import table.bean.FieldBean;
 import table.dao.ITableDao;
 
 public class MyBatisMain {
@@ -24,9 +24,18 @@ public class MyBatisMain {
 		}
 	}
 	
-	private static String source="src/main/java";
+	//bean 源文件
+	private static String sourceBean="src/main/java";
+	//bean 包
 	private static String beanPackage="bean";//com.gys.bean
+	//dao原文件
+	private static String sourceDao="src/main/java";
+	//dao 包
 	private static String daoPackage="dao";//com.gys.dao
+	//mapper源
+	private static String sourceMapper="src/main/java";
+	//mapper 包
+	private static String mapperPackage="mapper";//mapper.gys
 	
 	public static void main(String[] args) {
 			SqlSession session=sqlSessionFactory.openSession();
@@ -35,10 +44,11 @@ public class MyBatisMain {
 				List<String> list=tableDao.getTableList();
 				for(String s:list){
 					System.out.println("tableName:"+s);
-					List<FiledBean> fileds=tableDao.getFiledList(s);
-					CreateFile.createJavaBean(source, beanPackage, s, fileds);
-					CreateFile.createJavaDao(source, daoPackage, beanPackage, s, fileds);
-					for(FiledBean f:fileds){
+					List<FieldBean> fileds=tableDao.getFiledList(s);
+					CreateFile.createJavaBean(sourceBean, beanPackage, s, fileds);
+					CreateFile.createJavaDao(sourceDao, daoPackage, beanPackage, s, fileds);
+					CreateFile.createMapper(sourceMapper, mapperPackage,daoPackage,beanPackage, s, fileds);
+					for(FieldBean f:fileds){
 						System.out.println(f.getField()+"=="+f.getType());
 					}
 					System.out.println("执行结束");

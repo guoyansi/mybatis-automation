@@ -1,6 +1,6 @@
 package table.bean;
 
-public class FiledBean {
+public class FieldBean {
 	private String field;
 	private String type;
 	private String key;
@@ -19,6 +19,9 @@ public class FiledBean {
 		this.type = type;
 	}
 	public String getKey() {
+		if(key!=null){
+			return key.toLowerCase();
+		}
 		return key;
 	}
 	public void setKey(String key) {

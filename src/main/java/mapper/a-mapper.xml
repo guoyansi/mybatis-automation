@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.IADao">
+    <select id="selectList" parameterType="bean.ABean" resultType="bean.ABean">
+		select f_tinyint,f_smallint,f_mediumint,f_int,integer,f_bigint,f_double,f_float,f_decimal,f_numeric,f_char,f_varchar,f_year,f_tinytext,f_text,f_longtext,isDet from a
+        <where>${sqlWhere}</where>
+        <if test="sqlOrderBy!=null">order by ${sqlOrderBy}</if>
+        <if test="sqlLimit==true">LIMIT #{sqlStartIndex},#{sqlPageSize}</if>
+    </select>
+    <select id="selectOne" parameterType="bean.ABean" resultType="bean.ABean">
+		select f_tinyint,f_smallint,f_mediumint,f_int,integer,f_bigint,f_double,f_float,f_decimal,f_numeric,f_char,f_varchar,f_year,f_tinytext,f_text,f_longtext,isDet from a
+        <where>${sqlWhere}</where>
+    </select>
+    <select id="count" parameterType="bean.ABean" resultType="int">
+		select count(*) from a
+        <where>${sqlWhere}</where>
+    </select>
+    <update id="updateById" parameterType="bean.ABean">
+		update a
+        <if test="SqlSet==null">
+            <set>
+			f_smallint=#{f_smallint},
+			f_mediumint=#{f_mediumint},
+			f_int=#{f_int},
+			integer=#{integer},
+			f_bigint=#{f_bigint},
+			f_double=#{f_double},
+			f_float=#{f_float},
+			f_decimal=#{f_decimal},
+			f_numeric=#{f_numeric},
+			f_char=#{f_char},
+			f_varchar=#{f_varchar},
+			f_year=#{f_year},
+			f_tinytext=#{f_tinytext},
+			f_text=#{f_text},
+			f_longtext=#{f_longtext},
+			isDet=#{isDet},</set>
+        </if>
+        <if test="sqlSet!=null">
+            <set>${sqlSet}</set>
+        </if>
+        <where>f_tinyint=#{f_tinyint}</where>
+    </update>
+    <update id="update" parameterType="bean.ABean">
+		update a
+        <if test="SqlSet==null">
+            <set>
+			f_smallint=#{f_smallint},
+			f_mediumint=#{f_mediumint},
+			f_int=#{f_int},
+			integer=#{integer},
+			f_bigint=#{f_bigint},
+			f_double=#{f_double},
+			f_float=#{f_float},
+			f_decimal=#{f_decimal},
+			f_numeric=#{f_numeric},
+			f_char=#{f_char},
+			f_varchar=#{f_varchar},
+			f_year=#{f_year},
+			f_tinytext=#{f_tinytext},
+			f_text=#{f_text},
+			f_longtext=#{f_longtext},
+			isDet=#{isDet},</set>
+        </if>
+        <if test="sqlSet!=null">
+            <set>${sqlSet}</set>
+        </if>
+        <where>${sqlWhere}</where>
+    </update>
+    <insert id="insert" parameterType="bean.ABean">
+		insert intoa
+		(f_smallint,f_mediumint,f_int,integer,f_bigint,f_double,f_float,f_decimal,f_numeric,f_char,f_varchar,f_year,f_tinytext,f_text,f_longtext,isDet)
+		 values
+		(#{f_smallint},#{f_mediumint},#{f_int},#{integer},#{f_bigint},#{f_double},#{f_float},#{f_decimal},#{f_numeric},#{f_char},#{f_varchar},#{f_year},#{f_tinytext},#{f_text},#{f_longtext},#{isDet})	</insert>
+    <insert id="insertGetId" keyProperty="f_tinyint" useGeneratedKeys="true" parameterType="bean.ABean">
+		insert intoa
+		(f_smallint,f_mediumint,f_int,integer,f_bigint,f_double,f_float,f_decimal,f_numeric,f_char,f_varchar,f_year,f_tinytext,f_text,f_longtext,isDet)
+		 values
+		(#{f_smallint},#{f_mediumint},#{f_int},#{integer},#{f_bigint},#{f_double},#{f_float},#{f_decimal},#{f_numeric},#{f_char},#{f_varchar},#{f_year},#{f_tinytext},#{f_text},#{f_longtext},#{isDet})	</insert>
+    <delete id="delete" parameterType="bean.ABean">
+		DELETE FROM a
+        <where>${sqlWhere}</where>
+    </delete>
+    <delete id="deleteById" parameterType="bean.ABean">
+		DELETE FROM a
+        <where>f_tinyint=#{f_tinyint}</where>
+    </delete>
+</mapper>

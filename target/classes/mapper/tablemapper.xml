@@ -7,7 +7,7 @@
 		SHOW TABLES
 	</select>
 	<!-- 获取表结构 -->
-	<select id="getFiledList" parameterType="string" resultType="table.bean.FiledBean">
+	<select id="getFiledList" parameterType="string" resultType="table.bean.FieldBean">
 		DESC ${_parameter}
 	</select>
 	

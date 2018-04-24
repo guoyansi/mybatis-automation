@@ -18,9 +18,9 @@ public class Main {
 			List<Class> beanList=FindBean.get(beanUrl);
 			for(Class c:beanList){
 				//创建成dao层接口
-				CreateFile.createJavaDao(sourcefolder, interDaoUrl, c);
+				//CreateFile.createJavaDao(sourcefolder, interDaoUrl, c);
 				//创建mapper
-				CreateFile.createMapper(sourcefolder,interDaoUrl, mapperUrl, c);
+				//CreateFile.createMapper(sourcefolder,interDaoUrl, mapperUrl, c);
 				System.out.println("单表执行已结束");
 			}
 		} catch (Exception e) {

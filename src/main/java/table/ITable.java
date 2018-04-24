@@ -26,6 +26,13 @@ public interface ITable<T> {
 	 */
 	int update(T t) throws Exception;
 	/**
+	 * 更新数据
+	 * @param t
+	 * @return
+	 * @throws Exception
+	 */
+	int updateById(Object id) throws Exception;
+	/**
 	 * 获取list
 	 * @param t
 	 * @return
