@@ -1,6 +1,8 @@
 package bean;
 
-public class ABean {
+import table.BaseSqlBean;
+
+public class ABean extends BaseSqlBean{
 
 	private Integer f_tinyint;
 
@@ -10,7 +12,7 @@ public class ABean {
 
 	private Integer f_int;
 
-	private Integer integer;
+	private Integer f_integer;
 
 	private Integer f_bigint;
 
@@ -48,8 +50,8 @@ public class ABean {
 	public Integer getF_int(){return f_int;}
 	public void setF_int(Integer f_int){this.f_int=f_int;}
 
-	public Integer getInteger(){return integer;}
-	public void setInteger(Integer integer){this.integer=integer;}
+	public Integer getF_integer(){return f_integer;}
+	public void setF_integer(Integer f_integer){this.f_integer=f_integer;}
 
 	public Integer getF_bigint(){return f_bigint;}
 	public void setF_bigint(Integer f_bigint){this.f_bigint=f_bigint;}

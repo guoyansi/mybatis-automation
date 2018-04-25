@@ -21,15 +21,7 @@ import org.dom4j.io.XMLWriter;
 import table.bean.FieldBean;
 
 public class CreateFile{
-	public static void main(String[] args) {
-		try {
-			//System.out.println(CreateFile.class.getPackage());
-			//createFile();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	public static void createJavaDao(String sourceDao,String daoPackage,String beanPackage,String tableName,List<FieldBean> fileds) throws IOException{
+	public void createJavaDao(String sourceDao,String daoPackage,String beanPackage,String tableName,List<FieldBean> fileds,boolean isSpringDao) throws IOException{
 		//File file=new File("src/t/createjava/IGysDao.java");
 		String url=daoPackage.replace(".", "/");
 		
@@ -38,12 +30,12 @@ public class CreateFile{
 			file.delete();
 		}
 		BufferedWriter w=new BufferedWriter(new FileWriter(file, true));
-		writeJavaDaoContent(w,daoPackage,beanPackage,tableName,fileds);
+		writeJavaDaoContent(w,daoPackage,beanPackage,tableName,fileds,isSpringDao);
 		w.flush();
 		w.close();
 	}
 	
-	public static void createJavaBean(String sourceBean,String beanPackage,String tableName,List<FieldBean> fileds) throws Exception{
+	public void createJavaBean(String sourceBean,String beanPackage,String tableName,List<FieldBean> fileds) throws Exception{
 		//File file=new File("src/t/createjava/IGysDao.java");
 		String url=beanPackage.replace(".", "/");
 		
@@ -57,7 +49,7 @@ public class CreateFile{
 		w.close();
 	}
 	
-	private static void writeJavaBeanContent(BufferedWriter w,String beanPackage,String tableName,List<FieldBean> fileds) throws Exception{
+	private void writeJavaBeanContent(BufferedWriter w,String beanPackage,String tableName,List<FieldBean> fileds) throws Exception{
 		w.write("package "+beanPackage+";\n");
 		w.write("\n");
 		w.write("public class "+getBeanName(tableName)+" {\n");
@@ -104,7 +96,7 @@ public class CreateFile{
 		w.write("}");
 	}
 	
-	private static String getBeanName(String tableName){
+	private String getBeanName(String tableName){
 		return firstUpperCase(tableName)+"Bean";
 	}
 	
@@ -113,7 +105,7 @@ public class CreateFile{
 	 * @param str
 	 * @return
 	 */
-	private static String firstUpperCase(String str){
+	private String firstUpperCase(String str){
 		String fst=str.substring(0, 1).toUpperCase();
 		String se=str.substring(1);
 		return fst+se;
@@ -136,14 +128,18 @@ public class CreateFile{
 	 * @param w
 	 * @throws IOException
 	 */
-	private static void writeJavaDaoContent(BufferedWriter w,String daoPackage,String beanPackage,String tableName,List<FieldBean> fileds) throws IOException{
+	private void writeJavaDaoContent(BufferedWriter w,String daoPackage,String beanPackage,String tableName,List<FieldBean> fileds,boolean isSpringDao) throws IOException{
 		w.write("package "+daoPackage+";\n");
 		w.write("\n");
-		w.write("import org.springframework.stereotype.Repository;\n");
+		if(isSpringDao){
+			w.write("import org.springframework.stereotype.Repository;\n");
+		}
 		w.write("import "+ beanPackage+"."+getBeanName(tableName)+";\n");
 		w.write("import "+CreateFile.class.getPackage().getName()+".ITable;\n");
 		w.write("\n");
-		w.write("@Repository \n");
+		if(isSpringDao){
+			w.write("@Repository \n");
+		}
 		w.write("public interface I"+ firstUpperCase(tableName)+"Dao extends ITable<"+getBeanName(tableName)+">{\n");
 		w.write("\n");
 		w.write("}");
@@ -157,30 +153,39 @@ public class CreateFile{
 	 * @param c
 	 * @throws IOException
 	 */
-	public static void createMapper(String sourceMapper,String mapperPackage,String daoPackage,String beanPackage, String tableName,List<FieldBean> fileds) throws IOException{
+	public void createMapper(String sourceMapper,String mapperPackage,String daoPackage,String beanPackage, String tableName,List<FieldBean> fileds) throws IOException{
 		OutputFormat format = new OutputFormat("    ", true);
 		//XMLWriter xmlWriter=new XMLWriter(new FileOutputStream("src/t/mapper.xml"),format);
 		String url=mapperPackage.replace(".", "/");
-		XMLWriter xmlWriter=new XMLWriter(new FileOutputStream(sourceMapper+"/"+url+"/"+tableName+"-mapper.xml"),format);
+		XMLWriter xmlWriter=new XMLWriter(new FileOutputStream(sourceMapper+"/"+url+"/"+tableName+"Mapper.xml"),format);
 		Document document=mapperDocument(daoPackage,beanPackage,tableName,fileds);
 		xmlWriter.write(document);
 		xmlWriter.close();
 	}
-	private static Document mapperDocument(String daoPackage,String beanPackage,String tableName,List<FieldBean> fields){
+	private Document mapperDocument(String daoPackage,String beanPackage,String tableName,List<FieldBean> fields){
 		Document document=DocumentHelper.createDocument();
 		document.addDocType("mapper", "-//mybatis.org//DTD Mapper 3.0//EN", "http://mybatis.org/dtd/mybatis-3-mapper.dtd");
 		Element root=document.addElement("mapper");
 		root.addAttribute("namespace",daoPackage+".I"+firstUpperCase(tableName)+"Dao");//com.gys.sm.fun.table.dao.IGysDao
+		//selectList
 		selectListDocument(root,beanPackage,tableName,fields);
-		selectOne(root,beanPackage,tableName,fields);
-		selectCountDocument(root,beanPackage,tableName);
-		updateDocument(root,beanPackage,tableName,fields,true);
+		//selectOne
+		selectOneDocument(root,beanPackage,tableName,fields,false);
+		//selectOneById
+		selectOneDocument(root,beanPackage,tableName,fields,true);
+		//getCount
+		getCountDocument(root,beanPackage,tableName);
+		//update
 		updateDocument(root,beanPackage,tableName,fields,false);
-		//不获取主键
+		//updateById
+		updateDocument(root,beanPackage,tableName,fields,true);
+		//insert
 		insertDocument(root,beanPackage,tableName,fields,false);
-		//获取主键
+		//insertGetId
 		insertDocument(root,beanPackage,tableName,fields,true);
+		//delete
 		deleteDocument(root,beanPackage,tableName,fields,false);
+		//deleteById
 		deleteDocument(root,beanPackage,tableName,fields,true);
 		return document;
 	}
@@ -189,7 +194,7 @@ public class CreateFile{
 	 * @param root
 	 * @param c
 	 */
-	private static void selectListDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields){
+	private void selectListDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields){
 		Element select=root.addElement("select");
 		select.addAttribute("id", "selectList");
 		select.addAttribute("parameterType",beanPackage+"."+getBeanName(tableName));
@@ -222,11 +227,16 @@ public class CreateFile{
 	 * @param root
 	 * @param c
 	 */
-	private static void selectOne(Element root,String beanPackage,String tableName,List<FieldBean> fields){
+	private void selectOneDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,boolean byId){
 		String paramType=beanPackage+"."+getBeanName(tableName);
 		Element select=root.addElement("select");
-		select.addAttribute("id", "selectOne");
-		select.addAttribute("parameterType",paramType);
+		if(byId){
+			select.addAttribute("id", "selectOneById");
+			select.addAttribute("parameterType","object");
+		}else{
+			select.addAttribute("id", "selectOne");
+			select.addAttribute("parameterType",paramType);
+		}		
 		select.addAttribute("resultType", paramType);
 		select.addText("\n\t\t");
 		StringBuffer sb=new StringBuffer();
@@ -241,17 +251,29 @@ public class CreateFile{
 		
 		select.addText("select "+sb.toString()+" from "+tableName);
 		Element where=select.addElement("where");
-		where.addText("${sqlWhere}");
+		if(byId){
+			String key="";
+			for(FieldBean f:fields){
+				if("pri".equals(f.getKey())){
+					key=f.getField();
+					break;
+				}
+			}
+			where.addText(key+"=#{_parameter}");
+		}else{
+			where.addText("${sqlWhere}");
+		}
+		
 	}
 	/**
 	 * 获取count
 	 * @param root
 	 * @param c
 	 */
-	private static void selectCountDocument(Element root,String beanPackage,String tableName){
+	private void getCountDocument(Element root,String beanPackage,String tableName){
 		String paramType=beanPackage+"."+getBeanName(tableName);
 		Element select=root.addElement("select");
-		select.addAttribute("id", "count");
+		select.addAttribute("id", "getCount");
 		select.addAttribute("parameterType",paramType);
 		select.addAttribute("resultType", "int");
 		select.addText("\n\t\t");
@@ -260,15 +282,16 @@ public class CreateFile{
 		Element where=select.addElement("where");
 		where.addText("${sqlWhere}");
 	}
-	private static void updateDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,boolean byId){
+	private void updateDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,boolean byId){
 		String paramType=beanPackage+"."+getBeanName(tableName);
 		Element update=root.addElement("update");
 		if(byId){
 			update.addAttribute("id", "updateById");
+			update.addAttribute("parameterType","object");
 		}else{
 			update.addAttribute("id", "update");
+			update.addAttribute("parameterType",paramType);
 		}
-		update.addAttribute("parameterType",paramType);
 		update.addText("\n\t\t");
 		update.addText("update "+tableName);
 		Element setIf=update.addElement("if");
@@ -297,12 +320,12 @@ public class CreateFile{
 		setTag1.addText("${sqlSet}");
 		Element whereTag=update.addElement("where");
 		if(byId){
-			whereTag.addText(key+"=#{"+key+"}");
+			whereTag.addText(key+"=#{_parameter}");
 		}else{
 			whereTag.addText("${sqlWhere}");
 		}
 	}
-	private static void insertDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,boolean getId){
+	private void insertDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,boolean getId){
 		//Field[] fsArr=c.getDeclaredFields();
 		String paramType=beanPackage+"."+getBeanName(tableName);
 		Element insert=root.addElement("insert");
@@ -326,7 +349,7 @@ public class CreateFile{
 		StringBuffer sbv=new StringBuffer();
 		int i=0;
 		for(FieldBean f:fields){
-			if("auto_increment".equals(f.getExtra())){
+			if("pri".equals(f.getKey())&&"auto_increment".equals(f.getExtra())){
 				continue;
 			}
 			if(i!=0){
@@ -341,7 +364,7 @@ public class CreateFile{
 		}
 		
 		insert.addText("\n\t\t");
-		insert.addText("insert into"+tableName);
+		insert.addText("insert into "+tableName);
 		insert.addText("\n\t\t(");
 		insert.addText(sbk.toString());
 		insert.addText(")");
@@ -352,12 +375,12 @@ public class CreateFile{
 		insert.addText("\r\t");
 	}
 	
-	private static void deleteDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,boolean byId){
+	private void deleteDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,boolean byId){
 		String paramType=beanPackage+"."+getBeanName(tableName);
 		Element insert=root.addElement("delete");
 		if(byId){
 			insert.addAttribute("id", "deleteById");
-			insert.addAttribute("parameterType",paramType);
+			insert.addAttribute("parameterType","object");
 		}else{
 			insert.addAttribute("id", "delete");
 			insert.addAttribute("parameterType",paramType);
@@ -373,10 +396,9 @@ public class CreateFile{
 					break;
 				}
 			}
-			where.addText(key+"=#{"+key+"}");
+			where.addText(key+"=#{_parameter}");
 		}else{
 			where.addText("${sqlWhere}");
 		}
-		
 	}
 }

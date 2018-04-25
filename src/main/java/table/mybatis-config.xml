@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?> <!DOCTYPE configuration  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+	<properties resource="jdbc.properties"></properties>
 <!-- 注意：一定要加在<properties>之后且<typeAliases>之前 -->
      <settings>
         <setting name="logImpl" value="LOG4J" />
@@ -9,14 +10,14 @@
         <environment id="development">
             <transactionManager type="JDBC" />
             <dataSource type="POOLED">
-                <property name="driver" value="com.mysql.jdbc.Driver" />
-                <property name="url" value="jdbc:mysql://127.0.0.1:3306/test" />
-                <property name="username" value="root" />
-                <property name="password" value="gys" />
+            	<property name="driver" value="${jdbc.driver}" />
+                <property name="url" value="${jdbc.url}" />
+                <property name="username" value="${jdbc.username}" />
+                <property name="password" value="${jdbc.password}" />
             </dataSource>
         </environment>
     </environments>
    <mappers>
-        <mapper resource="mapper/tablemapper.xml" />
+        <mapper resource="table/mapper/tablemapper.xml" />
     </mappers> 
 </configuration>

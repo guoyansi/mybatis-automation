@@ -6,11 +6,11 @@ public class BaseSqlBean {
 	//order排序
 	private String sqlOrderBy;
 	//limit限制
-	private Boolean sqlLimit=true;
+	private Boolean sqlLimit=false;
 	//开始数据
 	private Integer sqlStartIndex;
 	//获取数据量
-	private Integer sqlPageSize;
+	private Integer sqlPageSize=10;
 	//当前页
 	private Integer sqlCurrentPage;
 	
@@ -40,7 +40,7 @@ public class BaseSqlBean {
 	}
 
 	public Integer getSqlStartIndex() {
-		if(this.sqlCurrentPage<=0){
+		if(this.sqlCurrentPage==null || this.sqlCurrentPage<=0){
 			this.sqlCurrentPage=1;
 		}
 		return (this.sqlCurrentPage-1)*this.sqlPageSize;
