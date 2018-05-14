@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +22,11 @@ import org.dom4j.io.XMLWriter;
 import table.bean.FieldBean;
 
 public class CreateFile{
+	private String mysql="mysql";
+	private String oracle="oracle";
+	
+	
 	public void createJavaDao(String sourceDao,String daoPackage,String beanPackage,String tableName,List<FieldBean> fileds,boolean isSpringDao) throws IOException{
-		//File file=new File("src/t/createjava/IGysDao.java");
 		String url=daoPackage.replace(".", "/");
 		
 		File file=new File(sourceDao+"/"+url+"/I"+firstUpperCase(tableName)+"Dao.java");
@@ -35,24 +39,63 @@ public class CreateFile{
 		w.close();
 	}
 	
-	public void createJavaBean(String sourceBean,String beanPackage,String tableName,List<FieldBean> fileds) throws Exception{
+	public void createJavaBean(String sourceBean,String beanPackage,String tableName,List<FieldBean> fileds,String type) throws Exception{
 		//File file=new File("src/t/createjava/IGysDao.java");
 		String url=beanPackage.replace(".", "/");
-		
-		File file=new File(sourceBean+"/"+url+"/"+firstUpperCase(tableName)+"Bean.java");
+		File other=null;
+		File file=null;
+		if("in".equals(type)){//入参
+			other=new File(sourceBean+"/"+url+"/in");
+			if(other.exists()){
+				other.delete();
+			}
+			other.mkdirs();
+			file=new File(sourceBean+"/"+url+"/in/"+getInBeanName(tableName)+".java");
+		}else if("out".equals(type)){//出参
+			other=new File(sourceBean+"/"+url+"/out");
+			if(other.exists()){
+				other.delete();
+			}
+			other.mkdirs();
+			file=new File(sourceBean+"/"+url+"/out/"+getOutBeanName(tableName)+".java");
+		}else{//bean
+			file=new File(sourceBean+"/"+url+"/"+getBeanName(tableName)+".java");
+			
+		}
 		if(file.exists()){
 			file.delete();
 		}
 		BufferedWriter w=new BufferedWriter(new FileWriter(file, true));
-		writeJavaBeanContent(w,beanPackage,tableName,fileds);
+		writeJavaBeanContent(w,beanPackage,tableName,fileds,type);
 		w.flush();
 		w.close();
 	}
 	
-	private void writeJavaBeanContent(BufferedWriter w,String beanPackage,String tableName,List<FieldBean> fileds) throws Exception{
-		w.write("package "+beanPackage+";\n");
-		w.write("\n");
-		w.write("public class "+getBeanName(tableName)+" {\n");
+	private void writeJavaBeanContent(BufferedWriter w,String beanPackage,String tableName,List<FieldBean> fileds,String type) throws Exception{
+		//System.out.println("当前包名："+);
+		Package pk=CreateFile.class.getPackage();
+		if("in".equals(type)){//入参
+			w.write("package "+beanPackage+".in;\n");
+			w.write("\n");
+			w.write("import "+pk.getName()+".bean.BaseInBean;\n");
+			w.write("\n");
+			w.write("public class "+getInBeanName(tableName)+" extends BaseInBean{\n");
+		}else if("out".equals(type)){//出参
+			w.write("package "+beanPackage+".out;\n");
+			w.write("\n");
+			w.write("import "+pk.getName()+".bean.BaseOutBean;\n");
+			w.write("\n");
+			w.write("public class "+getOutBeanName(tableName)+" extends BaseOutBean{\n");
+		}else{
+			w.write("package "+beanPackage+";\n");
+			w.write("\n");
+			w.write("import java.io.Serializable;\n");
+			w.write("\n");
+			w.write("public class "+getBeanName(tableName)+" implements Serializable{\n");
+			w.write("\n");
+			w.write("	private static final long serialVersionUID = -1L;");
+			w.write("\n");
+		}
 		w.write("\n");
 		List<FieldBean> filedList=new ArrayList<FieldBean>();
 		for(FieldBean f:fileds){
@@ -99,6 +142,12 @@ public class CreateFile{
 	private String getBeanName(String tableName){
 		return firstUpperCase(tableName)+"Bean";
 	}
+	private String getInBeanName(String tableName){
+		return firstUpperCase(tableName)+"InBean";
+	}
+	private String getOutBeanName(String tableName){
+		return firstUpperCase(tableName)+"OutBean";
+	}
 	
 	/**
 	 * 首字母大写
@@ -134,13 +183,14 @@ public class CreateFile{
 		if(isSpringDao){
 			w.write("import org.springframework.stereotype.Repository;\n");
 		}
-		w.write("import "+ beanPackage+"."+getBeanName(tableName)+";\n");
+		w.write("import "+ beanPackage+".in."+getInBeanName(tableName)+";\n");
+		w.write("import "+ beanPackage+".out."+getOutBeanName(tableName)+";\n");
 		w.write("import "+CreateFile.class.getPackage().getName()+".ITable;\n");
 		w.write("\n");
 		if(isSpringDao){
 			w.write("@Repository \n");
 		}
-		w.write("public interface I"+ firstUpperCase(tableName)+"Dao extends ITable<"+getBeanName(tableName)+">{\n");
+		w.write("public interface I"+ firstUpperCase(tableName)+"Dao extends ITable<"+getInBeanName(tableName)+","+getOutBeanName(tableName)+">{\n");
 		w.write("\n");
 		w.write("}");
 	}
@@ -153,22 +203,22 @@ public class CreateFile{
 	 * @param c
 	 * @throws IOException
 	 */
-	public void createMapper(String sourceMapper,String mapperPackage,String daoPackage,String beanPackage, String tableName,List<FieldBean> fileds) throws IOException{
+	public void createMapper(String sourceMapper,String mapperPackage,String daoPackage,String beanPackage, String tableName,List<FieldBean> fileds,String dbName) throws IOException{
 		OutputFormat format = new OutputFormat("    ", true);
 		//XMLWriter xmlWriter=new XMLWriter(new FileOutputStream("src/t/mapper.xml"),format);
 		String url=mapperPackage.replace(".", "/");
 		XMLWriter xmlWriter=new XMLWriter(new FileOutputStream(sourceMapper+"/"+url+"/"+tableName+"Mapper.xml"),format);
-		Document document=mapperDocument(daoPackage,beanPackage,tableName,fileds);
+		Document document=mapperDocument(daoPackage,beanPackage,tableName,fileds,dbName);
 		xmlWriter.write(document);
 		xmlWriter.close();
 	}
-	private Document mapperDocument(String daoPackage,String beanPackage,String tableName,List<FieldBean> fields){
+	private Document mapperDocument(String daoPackage,String beanPackage,String tableName,List<FieldBean> fields,String dbName){
 		Document document=DocumentHelper.createDocument();
 		document.addDocType("mapper", "-//mybatis.org//DTD Mapper 3.0//EN", "http://mybatis.org/dtd/mybatis-3-mapper.dtd");
 		Element root=document.addElement("mapper");
 		root.addAttribute("namespace",daoPackage+".I"+firstUpperCase(tableName)+"Dao");//com.gys.sm.fun.table.dao.IGysDao
 		//selectList
-		selectListDocument(root,beanPackage,tableName,fields);
+		selectListDocument(root,beanPackage,tableName,fields,dbName);
 		//selectOne
 		selectOneDocument(root,beanPackage,tableName,fields,false);
 		//selectOneById
@@ -194,14 +244,12 @@ public class CreateFile{
 	 * @param root
 	 * @param c
 	 */
-	private void selectListDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields){
+	private void selectListDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,String dbName){
 		Element select=root.addElement("select");
 		select.addAttribute("id", "selectList");
-		select.addAttribute("parameterType",beanPackage+"."+getBeanName(tableName));
-		select.addAttribute("resultType", beanPackage+"."+getBeanName(tableName));
+		select.addAttribute("parameterType",beanPackage+".in."+getInBeanName(tableName));
+		select.addAttribute("resultType", beanPackage+".out."+getOutBeanName(tableName));
 		select.addText("\n\t\t");
-		//String tableName=getTableName(c);
-		//Field[] fsArr=c.getDeclaredFields();
 		StringBuffer sb=new StringBuffer();
 		int i=0;
 		for(FieldBean f:fields){
@@ -211,15 +259,34 @@ public class CreateFile{
 			sb.append(f.getField());
 			i++;
 		}
-		select.addText("select "+sb.toString()+" from "+tableName);
-		Element where=select.addElement("where");
-		where.addText("${sqlWhere}");
-		Element orderByIf=select.addElement("if");
-		orderByIf.addAttribute("test","sqlOrderBy!=null");
-		orderByIf.addText("order by ${sqlOrderBy}");
-		Element limitIf=select.addElement("if");
-		limitIf.addAttribute("test","sqlLimit==true");
-		limitIf.addText("LIMIT #{sqlStartIndex},#{sqlPageSize}");
+		if(mysql.equals(dbName)){
+			select.addText("select (@i:=@i+1) rowNum,"+sb.toString()+" from "+tableName+", (SELECT @i:=0) as i");
+			Element whereIf=select.addElement("if");
+			whereIf.addAttribute("test", "sqlWhere!=null");
+			Element whereTag=whereIf.addElement("where");
+			whereTag.addText("${sqlWhere}");
+			Element orderByIf=select.addElement("if");
+			orderByIf.addAttribute("test","sqlOrderBy!=null");
+			orderByIf.addText("order by ${sqlOrderBy}");
+			Element limitIf=select.addElement("if");
+			limitIf.addAttribute("test","sqlLimit==true");
+			limitIf.addText("LIMIT #{sqlStartIndex},#{sqlPageSize}");
+		}else if(oracle.equals(dbName)){
+			select.addText("select * from (");
+			select.addText(" select A.*,  rowNum from (");
+			
+			select.addText("\n		 	select "+sb.toString()+" from "+tableName);
+			Element whereIf=select.addElement("if");
+			whereIf.addAttribute("test", "sqlWhere!=null");
+			Element whereTag=whereIf.addElement("where");
+			whereTag.addText("${sqlWhere}");
+			Element orderByIf=select.addElement("if");
+			orderByIf.addAttribute("test","sqlOrderBy!=null");
+			orderByIf.addText("order by ${sqlOrderBy}");
+			
+			select.addText("\n			) A  where rowNum <= #{sqlEndIndex} ");
+			select.addText("\n		) where rowNum >=#{sqlStartIndex}");
+		}
 	}
 	
 	/**
@@ -228,16 +295,15 @@ public class CreateFile{
 	 * @param c
 	 */
 	private void selectOneDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,boolean byId){
-		String paramType=beanPackage+"."+getBeanName(tableName);
 		Element select=root.addElement("select");
 		if(byId){
 			select.addAttribute("id", "selectOneById");
 			select.addAttribute("parameterType","object");
 		}else{
 			select.addAttribute("id", "selectOne");
-			select.addAttribute("parameterType",paramType);
+			select.addAttribute("parameterType",beanPackage+".in."+getInBeanName(tableName));
 		}		
-		select.addAttribute("resultType", paramType);
+		select.addAttribute("resultType", beanPackage+".out."+getOutBeanName(tableName));
 		select.addText("\n\t\t");
 		StringBuffer sb=new StringBuffer();
 		int i=0;
@@ -250,7 +316,13 @@ public class CreateFile{
 		}
 		
 		select.addText("select "+sb.toString()+" from "+tableName);
-		Element where=select.addElement("where");
+		
+		Element whereIf=select.addElement("if");
+		whereIf.addAttribute("test", "sqlWhere!=null");
+		Element whereTag=whereIf.addElement("where");
+		//whereTag.addText("${sqlWhere}");
+		
+		//Element where=select.addElement("where");
 		if(byId){
 			String key="";
 			for(FieldBean f:fields){
@@ -259,9 +331,9 @@ public class CreateFile{
 					break;
 				}
 			}
-			where.addText(key+"=#{_parameter}");
+			whereTag.addText(key+"=#{_parameter}");
 		}else{
-			where.addText("${sqlWhere}");
+			whereTag.addText("${sqlWhere}");
 		}
 		
 	}
@@ -271,26 +343,26 @@ public class CreateFile{
 	 * @param c
 	 */
 	private void getCountDocument(Element root,String beanPackage,String tableName){
-		String paramType=beanPackage+"."+getBeanName(tableName);
 		Element select=root.addElement("select");
 		select.addAttribute("id", "getCount");
-		select.addAttribute("parameterType",paramType);
+		select.addAttribute("parameterType",beanPackage+".in."+getInBeanName(tableName));
 		select.addAttribute("resultType", "int");
 		select.addText("\n\t\t");
 		
 		select.addText("select count(*) from "+tableName);
-		Element where=select.addElement("where");
-		where.addText("${sqlWhere}");
+		Element whereIf=select.addElement("if");
+		whereIf.addAttribute("test", "sqlWhere!=null");
+		Element whereTag=whereIf.addElement("where");
+		whereTag.addText("${sqlWhere}");
 	}
 	private void updateDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,boolean byId){
-		String paramType=beanPackage+"."+getBeanName(tableName);
 		Element update=root.addElement("update");
 		if(byId){
 			update.addAttribute("id", "updateById");
 			update.addAttribute("parameterType","object");
 		}else{
 			update.addAttribute("id", "update");
-			update.addAttribute("parameterType",paramType);
+			update.addAttribute("parameterType",beanPackage+".in."+getInBeanName(tableName));
 		}
 		update.addText("\n\t\t");
 		update.addText("update "+tableName);
@@ -309,7 +381,13 @@ public class CreateFile{
 			sb.append(f.getField());
 			sb.append("=");
 			sb.append("#{");
-			sb.append(f.getField());
+			if(f.getType().indexOf("text")!=-1
+					||f.getType().indexOf("varchar")!=-1
+					||f.getType().indexOf("char")!=-1){
+				sb.append(f.getField()+",jdbcType=VARCHAR");
+			}else{
+				sb.append(f.getField());
+			}
 			sb.append("}");
 			sb.append(",");
 		}
@@ -318,7 +396,11 @@ public class CreateFile{
 		setIf1.addAttribute("test", "sqlSet!=null");
 		Element setTag1=setIf1.addElement("set");
 		setTag1.addText("${sqlSet}");
-		Element whereTag=update.addElement("where");
+		Element whereIf=update.addElement("if");
+		whereIf.addAttribute("test", "sqlWhere!=null");
+		Element whereTag=whereIf.addElement("where");
+		whereTag.addText("${sqlWhere}");
+		
 		if(byId){
 			whereTag.addText(key+"=#{_parameter}");
 		}else{
@@ -327,7 +409,6 @@ public class CreateFile{
 	}
 	private void insertDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,boolean getId){
 		//Field[] fsArr=c.getDeclaredFields();
-		String paramType=beanPackage+"."+getBeanName(tableName);
 		Element insert=root.addElement("insert");
 		
 		if(getId){
@@ -344,7 +425,7 @@ public class CreateFile{
 		}else{
 			insert.addAttribute("id", "insert");
 		}
-		insert.addAttribute("parameterType", paramType);
+		insert.addAttribute("parameterType", beanPackage+".in."+getInBeanName(tableName));
 		StringBuffer sbk=new StringBuffer();
 		StringBuffer sbv=new StringBuffer();
 		int i=0;
@@ -358,7 +439,13 @@ public class CreateFile{
 			}
 			sbk.append(f.getField());
 			sbv.append("#{");
-			sbv.append(f.getField());
+			if(f.getType().indexOf("text")!=-1
+					||f.getType().indexOf("varchar")!=-1
+					||f.getType().indexOf("char")!=-1){
+				sbv.append(f.getField()+",jdbcType=VARCHAR");
+			}else{
+				sbv.append(f.getField());
+			}
 			sbv.append("}");
 			i++;
 		}
@@ -376,18 +463,19 @@ public class CreateFile{
 	}
 	
 	private void deleteDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,boolean byId){
-		String paramType=beanPackage+"."+getBeanName(tableName);
 		Element insert=root.addElement("delete");
 		if(byId){
 			insert.addAttribute("id", "deleteById");
 			insert.addAttribute("parameterType","object");
 		}else{
 			insert.addAttribute("id", "delete");
-			insert.addAttribute("parameterType",paramType);
+			insert.addAttribute("parameterType",beanPackage+".in."+getInBeanName(tableName));
 		}
 		insert.addText("\n\t\t");
 		insert.addText("DELETE FROM "+tableName);
-		Element where=insert.addElement("where");
+		Element whereIf=insert.addElement("if");
+		whereIf.addAttribute("test", "sqlWhere !=null");
+		Element where=whereIf.addElement("where");
 		if(byId){
 			String key="";
 			for(FieldBean f:fields){

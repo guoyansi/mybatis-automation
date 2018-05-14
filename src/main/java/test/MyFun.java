@@ -1,11 +1,6 @@
 package test;
 
-import java.util.List;
-
-import bean.ABean;
-import dao.IADao;
 import table.DataSource;
-import table.ITable;
 
 public class MyFun {
 
@@ -13,14 +8,13 @@ public class MyFun {
 		try {
 			DataSource ds=new DataSource("test/run-mybatis-config.xml");
 			ds.openSession();
-			ITable<ABean> dao=ds.getDao(IADao.class);
-			ABean aBean=new ABean();
-			aBean.setSqlWhere("1=1");
+			/*ITable<AInBean,AOutBean> dao=ds.getDao(IADao.class);
+			AInBean aInBean=new AInBean();
 			//aBean.setSqlLimit(false);
-			List<ABean> list=dao.selectList(aBean);
-			for(ABean a:list){
+			List<AOutBean> list=dao.selectList(aInBean);
+			for(AOutBean a:list){
 				System.out.println(a.getF_tinytext());
-			}
+			}*/
 			ds.closeSession();
 		} catch (Exception e) {
 			e.printStackTrace();

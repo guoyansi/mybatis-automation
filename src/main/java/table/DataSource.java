@@ -12,6 +12,11 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import table.bean.FieldBean;
 import table.dao.ITableDao;
 
+/**
+ * 获取表数据
+ * @author guoyansi
+ *
+ */
 public class DataSource {
 	private SqlSessionFactory sqlSessionFactory;
 	private Reader reader;
@@ -31,34 +36,65 @@ public class DataSource {
 		return session.getMapper(cs);
 	}
 	
-	public void start(String sourceBean,String beanPackage,String sourceDao,String daoPackage,String sourceMapper,String mapperPackage,boolean isSpringDao) throws Exception{
+	public void start(String sourceBean,String beanPackage,String sourceDao,String daoPackage,String sourceMapper,String mapperPackage,boolean isSpringDao,String[] tables,String[] exceptTables,String dbName,boolean isExtendBaseSqlBean) throws Exception{
+		if((!"mysql".equals(dbName))&&(!"oracle".equals(dbName))){
+			throw new Exception("无效的dbName");
+		}
 		openSession();
 		try {
 			ITableDao tableDao=this.getDao(ITableDao.class);
-			//ITableDao tableDao=session.getMapper(ITableDao.class);
 			//表名list
 			List<String> list=tableDao.getTableList();
 			for(String tableName:list){
-				System.out.println("tableName:"+tableName);
+				String myTableName=null;
+				boolean isExcepted=false;
+				if(tables!=null&&tables.length!=0){
+					for(String t:tables){
+						if(tableName.equals(t)){
+							myTableName=t;
+							break;
+						}
+					}
+				}
+				if(exceptTables!=null&&exceptTables.length!=0){//排除table
+					for(String t:exceptTables){
+						if(myTableName.equals(t)){
+							isExcepted=true;
+							break;
+						}
+					}
+					if(isExcepted){
+						continue;
+					}
+				}else{
+					myTableName=tableName;
+				}
+				if(myTableName==null){
+					continue;
+				}
+				System.out.println("tableName:"+myTableName);
 				//字段list
-				List<FieldBean> fileds=tableDao.getFiledList(tableName);
-				create(sourceBean,beanPackage,sourceDao,daoPackage,sourceMapper,mapperPackage,tableName,fileds,isSpringDao);
-				/*for(FieldBean f:fileds){
-					System.out.println(f.getField()+"=="+f.getType());
-				}*/
-				System.out.println("执行结束");
+				List<FieldBean> fileds=tableDao.getFiledList(myTableName);
+				create(sourceBean,beanPackage,sourceDao,daoPackage,sourceMapper,mapperPackage,tableName,fileds,isSpringDao,dbName,isExtendBaseSqlBean);
+				System.out.println("执行结束:"+myTableName);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}finally{
 			closeSession();
+			System.out.println("执行结束");
 		}
 	}
 	
-	private void create(String sourceBean,String beanPackage,String sourceDao,String daoPackage,String sourceMapper,String mapperPackage,String tableName,List<FieldBean> fileds,boolean isSpringDao) throws Exception{
+	private void create(String sourceBean,String beanPackage,String sourceDao,String daoPackage,String sourceMapper,String mapperPackage,String tableName,List<FieldBean> fileds,boolean isSpringDao,String dbName,boolean isExtendBaseSqlBean) throws Exception{
 		CreateFile cf=new CreateFile();
-		cf.createJavaBean(sourceBean, beanPackage, tableName, fileds);
+		//inbean
+		cf.createJavaBean(sourceBean, beanPackage, tableName, fileds,"in");
+		//outben
+		cf.createJavaBean(sourceBean, beanPackage, tableName, fileds,"out");
+		//bean
+		cf.createJavaBean(sourceBean, beanPackage, tableName, fileds,null);
 		cf.createJavaDao(sourceDao, daoPackage, beanPackage, tableName, fileds,isSpringDao);
-		cf.createMapper(sourceMapper, mapperPackage,daoPackage,beanPackage, tableName, fileds);
+		cf.createMapper(sourceMapper, mapperPackage,daoPackage,beanPackage, tableName, fileds,dbName);
 	}
 }

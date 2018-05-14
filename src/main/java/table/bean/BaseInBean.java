@@ -1,6 +1,14 @@
-package table;
+package table.bean;
 
-public class BaseSqlBean {
+import java.io.Serializable;
+
+/**
+ * 基础的数据库输入类
+ * @author guoyansi
+ *
+ */
+public class BaseInBean implements Serializable{
+	private static final long serialVersionUID = -1L;
 	//where语句
 	private String sqlWhere;
 	//order排序
@@ -9,12 +17,15 @@ public class BaseSqlBean {
 	private Boolean sqlLimit=false;
 	//开始数据
 	private Integer sqlStartIndex;
+	//开始数据
+	private Integer sqlEndIndex;
 	//获取数据量
 	private Integer sqlPageSize=10;
 	//当前页
 	private Integer sqlCurrentPage;
-	
+	//update时set语句
 	private String SqlSet;
+	
 	public String getSqlWhere() {
 		return sqlWhere;
 	}
@@ -72,6 +83,14 @@ public class BaseSqlBean {
 
 	public void setSqlSet(String sqlSet) {
 		SqlSet = sqlSet;
+	}
+
+	public Integer getSqlEndIndex() {
+		return this.getSqlStartIndex()+(this.sqlPageSize-1);
+	}
+
+	public void setSqlEndIndex(Integer sqlEndIndex) {
+		this.sqlEndIndex = sqlEndIndex;
 	}
 	
 	
