@@ -24,16 +24,16 @@ public class Main {
 		String mapperPackage="mapper";//mapper.gys
 		//是否生成springdao
 		boolean isSpringDao=false;
-		//生成的bean实体类是否需要继承baseSqlBean
-		boolean isExtendBaseSqlBean=true;
+		//是否驼峰命名字段
+		boolean isCamelField=true;
 		//mysql，oracle
 		String dbName="oracle";
 		//需要自动生成代码的表名
-		String[] tables={};
+		String[] tables={"gys","td_sys_user"};
 		//不需要自动生成代码的表名
 		String[] exceptTables={};
 		DataSource ds=new DataSource("table/mybatis-config.xml");
-		ds.start(sourceBean, beanPackage, sourceDao, daoPackage, sourceMapper, mapperPackage,isSpringDao,tables,exceptTables,dbName,isExtendBaseSqlBean);
+		ds.start(sourceBean, beanPackage, sourceDao, daoPackage, sourceMapper, mapperPackage,isSpringDao,tables,exceptTables,dbName,isCamelField);
 	}
 
 }

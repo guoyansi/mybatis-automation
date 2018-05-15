@@ -29,7 +29,7 @@ public class CreateFile{
 	public void createJavaDao(String sourceDao,String daoPackage,String beanPackage,String tableName,List<FieldBean> fileds,boolean isSpringDao) throws IOException{
 		String url=daoPackage.replace(".", "/");
 		
-		File file=new File(sourceDao+"/"+url+"/I"+firstUpperCase(tableName)+"Dao.java");
+		File file=new File(sourceDao+"/"+url+"/I"+firstUpperCase(makeName(true, tableName))+"Dao.java");
 		if(file.exists()){
 			file.delete();
 		}
@@ -39,7 +39,7 @@ public class CreateFile{
 		w.close();
 	}
 	
-	public void createJavaBean(String sourceBean,String beanPackage,String tableName,List<FieldBean> fileds,String type) throws Exception{
+	public void createJavaBean(String sourceBean,String beanPackage,String tableName,List<FieldBean> fileds,String type,boolean isCamelField,String dbName) throws Exception{
 		//File file=new File("src/t/createjava/IGysDao.java");
 		String url=beanPackage.replace(".", "/");
 		File other=null;
@@ -66,12 +66,12 @@ public class CreateFile{
 			file.delete();
 		}
 		BufferedWriter w=new BufferedWriter(new FileWriter(file, true));
-		writeJavaBeanContent(w,beanPackage,tableName,fileds,type);
+		writeJavaBeanContent(w,beanPackage,tableName,fileds,type,isCamelField,dbName);
 		w.flush();
 		w.close();
 	}
 	
-	private void writeJavaBeanContent(BufferedWriter w,String beanPackage,String tableName,List<FieldBean> fileds,String type) throws Exception{
+	private void writeJavaBeanContent(BufferedWriter w,String beanPackage,String tableName,List<FieldBean> fileds,String type,boolean isCamelField,String dbName) throws Exception{
 		//System.out.println("当前包名："+);
 		Package pk=CreateFile.class.getPackage();
 		if("in".equals(type)){//入参
@@ -118,14 +118,21 @@ public class CreateFile{
 				javaType="Double";
 			}else if(sqlType.indexOf("float")!=-1){
 				javaType="Float";
-			}else{
+			}else if(oracle.equals(dbName)&&sqlType.indexOf("number")!=-1){
+				if(f.getData_scale()==null||f.getData_scale()==0){
+					javaType="Long";
+				}else{
+					javaType="Double";
+				}
+			} else{
 				throw new Exception("暂无配置"+sqlType+"类型的数据");
 			}
-			w.write("	private "+javaType+" "+f.getField()+";\n");
+			String fieldName=makeName(isCamelField, f.getField());
+			w.write("	private "+javaType+" "+fieldName+";\n");
 			w.write("\n");
 			FieldBean bean=new FieldBean();
 			bean.setType(javaType);
-			bean.setField(f.getField());
+			bean.setField(fieldName);
 			filedList.add(bean);
 		}
 		for(FieldBean f:filedList){
@@ -139,14 +146,29 @@ public class CreateFile{
 		w.write("}");
 	}
 	
+	//获取驼峰命名的字段名
+	private String makeName(Boolean isCamelField,String name){
+		if(!isCamelField){
+			return name;
+		}
+		String[] arr=name.split("_");
+		StringBuffer sb=new StringBuffer();
+		for(int i=0;i<arr.length;i++){
+			if(i!=0){
+				arr[i]=firstUpperCase(arr[i]);
+			}
+			sb.append(arr[i]);
+		}
+		return sb.toString();	
+	}
 	private String getBeanName(String tableName){
-		return firstUpperCase(tableName)+"Bean";
+		return firstUpperCase(makeName(true,tableName))+"Bean";
 	}
 	private String getInBeanName(String tableName){
-		return firstUpperCase(tableName)+"InBean";
+		return firstUpperCase(makeName(true,tableName))+"InBean";
 	}
 	private String getOutBeanName(String tableName){
-		return firstUpperCase(tableName)+"OutBean";
+		return firstUpperCase(makeName(true,tableName))+"OutBean";
 	}
 	
 	/**
@@ -190,7 +212,7 @@ public class CreateFile{
 		if(isSpringDao){
 			w.write("@Repository \n");
 		}
-		w.write("public interface I"+ firstUpperCase(tableName)+"Dao extends ITable<"+getInBeanName(tableName)+","+getOutBeanName(tableName)+">{\n");
+		w.write("public interface I"+ firstUpperCase(makeName(true, tableName))+"Dao extends ITable<"+getInBeanName(tableName)+","+getOutBeanName(tableName)+">{\n");
 		w.write("\n");
 		w.write("}");
 	}
@@ -203,36 +225,36 @@ public class CreateFile{
 	 * @param c
 	 * @throws IOException
 	 */
-	public void createMapper(String sourceMapper,String mapperPackage,String daoPackage,String beanPackage, String tableName,List<FieldBean> fileds,String dbName) throws IOException{
+	public void createMapper(String sourceMapper,String mapperPackage,String daoPackage,String beanPackage, String tableName,List<FieldBean> fileds,String dbName,boolean isCamelField) throws IOException{
 		OutputFormat format = new OutputFormat("    ", true);
 		//XMLWriter xmlWriter=new XMLWriter(new FileOutputStream("src/t/mapper.xml"),format);
 		String url=mapperPackage.replace(".", "/");
-		XMLWriter xmlWriter=new XMLWriter(new FileOutputStream(sourceMapper+"/"+url+"/"+tableName+"Mapper.xml"),format);
-		Document document=mapperDocument(daoPackage,beanPackage,tableName,fileds,dbName);
+		XMLWriter xmlWriter=new XMLWriter(new FileOutputStream(sourceMapper+"/"+url+"/"+makeName(true, tableName)+"Mapper.xml"),format);
+		Document document=mapperDocument(daoPackage,beanPackage,tableName,fileds,dbName,isCamelField);
 		xmlWriter.write(document);
 		xmlWriter.close();
 	}
-	private Document mapperDocument(String daoPackage,String beanPackage,String tableName,List<FieldBean> fields,String dbName){
+	private Document mapperDocument(String daoPackage,String beanPackage,String tableName,List<FieldBean> fields,String dbName,boolean isCamelField){
 		Document document=DocumentHelper.createDocument();
 		document.addDocType("mapper", "-//mybatis.org//DTD Mapper 3.0//EN", "http://mybatis.org/dtd/mybatis-3-mapper.dtd");
 		Element root=document.addElement("mapper");
-		root.addAttribute("namespace",daoPackage+".I"+firstUpperCase(tableName)+"Dao");//com.gys.sm.fun.table.dao.IGysDao
+		root.addAttribute("namespace",daoPackage+".I"+firstUpperCase(makeName(true, tableName))+"Dao");//com.gys.sm.fun.table.dao.IGysDao
 		//selectList
-		selectListDocument(root,beanPackage,tableName,fields,dbName);
+		selectListDocument(root,beanPackage,tableName,fields,dbName,isCamelField);
 		//selectOne
-		selectOneDocument(root,beanPackage,tableName,fields,false);
+		selectOneDocument(root,beanPackage,tableName,fields,false,isCamelField);
 		//selectOneById
-		selectOneDocument(root,beanPackage,tableName,fields,true);
+		selectOneDocument(root,beanPackage,tableName,fields,true,isCamelField);
 		//getCount
 		getCountDocument(root,beanPackage,tableName);
 		//update
-		updateDocument(root,beanPackage,tableName,fields,false);
+		updateDocument(root,beanPackage,tableName,fields,false,isCamelField);
 		//updateById
-		updateDocument(root,beanPackage,tableName,fields,true);
+		updateDocument(root,beanPackage,tableName,fields,true,isCamelField);
 		//insert
-		insertDocument(root,beanPackage,tableName,fields,false);
+		insertDocument(root,beanPackage,tableName,fields,false,isCamelField,dbName);
 		//insertGetId
-		insertDocument(root,beanPackage,tableName,fields,true);
+		insertDocument(root,beanPackage,tableName,fields,true,isCamelField,dbName);
 		//delete
 		deleteDocument(root,beanPackage,tableName,fields,false);
 		//deleteById
@@ -244,7 +266,7 @@ public class CreateFile{
 	 * @param root
 	 * @param c
 	 */
-	private void selectListDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,String dbName){
+	private void selectListDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,String dbName,boolean isCamelField){
 		Element select=root.addElement("select");
 		select.addAttribute("id", "selectList");
 		select.addAttribute("parameterType",beanPackage+".in."+getInBeanName(tableName));
@@ -257,14 +279,26 @@ public class CreateFile{
 				sb.append(",");
 			}
 			sb.append(f.getField());
+			if(isCamelField){
+				sb.append(" as ");
+				sb.append(makeName(isCamelField, f.getField()));
+			}
 			i++;
 		}
 		if(mysql.equals(dbName)){
 			select.addText("select (@i:=@i+1) rowNum,"+sb.toString()+" from "+tableName+", (SELECT @i:=0) as i");
-			Element whereIf=select.addElement("if");
+			
+			Element whereTag=select.addElement("where");
+			for(FieldBean f:fields){
+				Element ifTag=whereTag.addElement("if");
+				ifTag.addAttribute("test", makeName(isCamelField, f.getField())+"!=null");
+				ifTag.addText("and "+f.getField()+"=#{"+makeName(isCamelField, f.getField())+"}");
+			}
+			Element whereIf=whereTag.addElement("if");
 			whereIf.addAttribute("test", "sqlWhere!=null");
-			Element whereTag=whereIf.addElement("where");
-			whereTag.addText("${sqlWhere}");
+			whereIf.addText("and ${sqlWhere}");
+			
+			
 			Element orderByIf=select.addElement("if");
 			orderByIf.addAttribute("test","sqlOrderBy!=null");
 			orderByIf.addText("order by ${sqlOrderBy}");
@@ -272,20 +306,31 @@ public class CreateFile{
 			limitIf.addAttribute("test","sqlLimit==true");
 			limitIf.addText("LIMIT #{sqlStartIndex},#{sqlPageSize}");
 		}else if(oracle.equals(dbName)){
-			select.addText("select * from (");
+			Element limitIf=select.addElement("if");
+			limitIf.addAttribute("test","sqlLimit==true");
+			limitIf.addText("\n			select * from (\n		");
+			select.addText("\n\t\t");
 			select.addText(" select A.*,  rowNum from (");
-			
 			select.addText("\n		 	select "+sb.toString()+" from "+tableName);
-			Element whereIf=select.addElement("if");
+			Element whereTag=select.addElement("where");
+			for(FieldBean f:fields){
+				Element ifTag=whereTag.addElement("if");
+				ifTag.addAttribute("test", makeName(isCamelField, f.getField())+"!=null");
+				ifTag.addText("and "+f.getField()+"=#{"+makeName(isCamelField, f.getField())+"}");
+			}
+			Element whereIf=whereTag.addElement("if");
 			whereIf.addAttribute("test", "sqlWhere!=null");
-			Element whereTag=whereIf.addElement("where");
-			whereTag.addText("${sqlWhere}");
+			whereIf.addText("and ${sqlWhere}");
 			Element orderByIf=select.addElement("if");
 			orderByIf.addAttribute("test","sqlOrderBy!=null");
 			orderByIf.addText("order by ${sqlOrderBy}");
+			select.addText("\n			) A");
 			
-			select.addText("\n			) A  where rowNum <= #{sqlEndIndex} ");
-			select.addText("\n		) where rowNum >=#{sqlStartIndex}");
+			Element limitIf1=select.addElement("if");
+			limitIf1.addAttribute("test","sqlLimit==true");
+			limitIf1.addText("\n\t\t");
+			limitIf1.addText("where rowNum <= #{sqlEndIndex}+1 ");
+			limitIf1.addText("\n		) where rowNum >=#{sqlStartIndex}+1 \n\t\t");
 		}
 	}
 	
@@ -294,7 +339,7 @@ public class CreateFile{
 	 * @param root
 	 * @param c
 	 */
-	private void selectOneDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,boolean byId){
+	private void selectOneDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,boolean byId,boolean isCamelField){
 		Element select=root.addElement("select");
 		if(byId){
 			select.addAttribute("id", "selectOneById");
@@ -312,6 +357,10 @@ public class CreateFile{
 				sb.append(",");
 			}
 			sb.append(f.getField());
+			if(isCamelField){
+				sb.append(" as ");
+				sb.append(makeName(isCamelField, f.getField()));
+			}
 			i++;
 		}
 		
@@ -355,111 +404,115 @@ public class CreateFile{
 		Element whereTag=whereIf.addElement("where");
 		whereTag.addText("${sqlWhere}");
 	}
-	private void updateDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,boolean byId){
+	private void updateDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,boolean byId,boolean isCamelField){
 		Element update=root.addElement("update");
 		if(byId){
 			update.addAttribute("id", "updateById");
-			update.addAttribute("parameterType","object");
+			update.addAttribute("parameterType",beanPackage+".in."+getInBeanName(tableName));
 		}else{
 			update.addAttribute("id", "update");
 			update.addAttribute("parameterType",beanPackage+".in."+getInBeanName(tableName));
 		}
 		update.addText("\n\t\t");
 		update.addText("update "+tableName);
-		Element setIf=update.addElement("if");
-		setIf.addAttribute("test", "SqlSet==null");
-		Element setTag=setIf.addElement("set");
-		StringBuffer sb=new StringBuffer();
-		String key="";
-		int i=0;
+		Element setTag=update.addElement("set");
+		String key=null;
 		for(FieldBean f:fields){
 			if("pri".equals(f.getKey())){
 				key=f.getField();
 				continue;
 			}
-			sb.append("\n\t\t\t");
-			sb.append(f.getField());
-			sb.append("=");
-			sb.append("#{");
-			if(f.getType().indexOf("text")!=-1
-					||f.getType().indexOf("varchar")!=-1
-					||f.getType().indexOf("char")!=-1){
-				sb.append(f.getField()+",jdbcType=VARCHAR");
-			}else{
-				sb.append(f.getField());
-			}
-			sb.append("}");
-			sb.append(",");
+			Element ifTag=setTag.addElement("if");
+			ifTag.addAttribute("test", makeName(isCamelField, f.getField())+"==null");
+			ifTag.addText(f.getField()+"=null,");
+			Element ifTag1=setTag.addElement("if");
+			ifTag1.addAttribute("test", makeName(isCamelField, f.getField())+"!=null");
+			ifTag1.addText(f.getField()+"=#{"+makeName(isCamelField, f.getField())+"},");
 		}
-		setTag.addText(sb.toString());
-		Element setIf1=update.addElement("if");
-		setIf1.addAttribute("test", "sqlSet!=null");
-		Element setTag1=setIf1.addElement("set");
-		setTag1.addText("${sqlSet}");
-		Element whereIf=update.addElement("if");
-		whereIf.addAttribute("test", "sqlWhere!=null");
-		Element whereTag=whereIf.addElement("where");
-		whereTag.addText("${sqlWhere}");
-		
 		if(byId){
-			whereTag.addText(key+"=#{_parameter}");
+			update.addText("\n			where "+key+"=#{"+makeName(isCamelField, key)+"}");
 		}else{
+			Element whereIf=update.addElement("if");
+			whereIf.addAttribute("test", "sqlWhere!=null");
+			Element whereTag=whereIf.addElement("where");
 			whereTag.addText("${sqlWhere}");
 		}
 	}
-	private void insertDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,boolean getId){
-		//Field[] fsArr=c.getDeclaredFields();
+	private void insertDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,boolean getId,boolean isCamelField,String dbName){
 		Element insert=root.addElement("insert");
-		
-		if(getId){
-			String key="";
-			for(FieldBean f:fields){
-				if("pri".equals(f.getKey())){
-					key=f.getField();
-					break;
-				}
+		String key=null;
+		//String keyType=null;
+		for(FieldBean f:fields){
+			if("pri".equals(f.getKey())){
+				key=makeName(isCamelField, f.getField());
+				//keyType=f.getType().toLowerCase();
+				break;
 			}
-			insert.addAttribute("id", "insertGetId");
-			insert.addAttribute("keyProperty",key);
-			insert.addAttribute("useGeneratedKeys", "true");
-		}else{
-			insert.addAttribute("id", "insert");
 		}
+		if(mysql.equals(dbName)){
+			if(getId&&key!=null){
+				insert.addAttribute("id", "insertGetId");
+				insert.addAttribute("keyProperty",key);
+				insert.addAttribute("useGeneratedKeys", "true");
+			}else{
+				insert.addAttribute("id", "insert");
+			}
+		}else if(oracle.equals(dbName)){
+			if(getId){
+				insert.addAttribute("id", "insertGetId");
+			}else{
+				insert.addAttribute("id", "insert");
+			}
+		}
+		
 		insert.addAttribute("parameterType", beanPackage+".in."+getInBeanName(tableName));
-		StringBuffer sbk=new StringBuffer();
-		StringBuffer sbv=new StringBuffer();
-		int i=0;
+		
+		insert.addText("\n\t\t");
+		insert.addText("insert into "+tableName);
+		
+		Element trim1=insert.addElement("trim");
+		trim1.addAttribute("prefix", "(");
+		trim1.addAttribute("suffix", ")");
+		trim1.addAttribute("suffixOverrides", ",");
+		
+		insert.addText("\n 			values");
+		
+		Element trim2=insert.addElement("trim");
+		trim2.addAttribute("prefix", "(");
+		trim2.addAttribute("suffix", ")");
+		trim2.addAttribute("suffixOverrides", ",");
 		for(FieldBean f:fields){
 			if("pri".equals(f.getKey())&&"auto_increment".equals(f.getExtra())){
 				continue;
 			}
-			if(i!=0){
-				sbk.append(",");
-				sbv.append(",");
-			}
-			sbk.append(f.getField());
-			sbv.append("#{");
-			if(f.getType().indexOf("text")!=-1
-					||f.getType().indexOf("varchar")!=-1
-					||f.getType().indexOf("char")!=-1){
-				sbv.append(f.getField()+",jdbcType=VARCHAR");
+			if("pri".equals(f.getKey())&&oracle.equals(dbName)){//oracle主键
+				trim1.addText("\n			"+f.getField()+",");
 			}else{
-				sbv.append(f.getField());
+				Element ifTag1=trim1.addElement("if");
+				ifTag1.addAttribute("test", makeName(isCamelField, f.getField())+"!=null");
+				ifTag1.addText(f.getField()+",");
+			}			
+			
+			if("pri".equals(f.getKey())&&oracle.equals(dbName)){//oracle主键
+				Element ifseq=trim2.addElement("if");
+				ifseq.addAttribute("test","sqlSeq==null");
+				ifseq.addText("#{"+makeName(isCamelField, f.getField())+"},");
+				Element ifseq1=trim2.addElement("if");
+				ifseq1.addAttribute("test","sqlSeq!=null");
+				ifseq1.addText("\n				${sqlSeq}.Nextval,\n			");
+			}else{
+				Element ifTag2=trim2.addElement("if");
+				ifTag2.addAttribute("test", makeName(isCamelField, f.getField())+"!=null");
+				ifTag2.addText("#{"+makeName(isCamelField, f.getField())+"},");
 			}
-			sbv.append("}");
-			i++;
 		}
-		
-		insert.addText("\n\t\t");
-		insert.addText("insert into "+tableName);
-		insert.addText("\n\t\t(");
-		insert.addText(sbk.toString());
-		insert.addText(")");
-		insert.addText("\n\t\t values");
-		insert.addText("\n\t\t(");
-		insert.addText(sbv.toString());
-		insert.addText(")");
-		insert.addText("\r\t");
+		if(oracle.equals(dbName)&&getId&&key!=null){
+			Element sk=insert.addElement("selectKey");
+			sk.addAttribute("keyProperty", makeName(isCamelField, key));
+			sk.addAttribute("order", "AFTER");
+			sk.addAttribute("resultType", "long");
+			sk.addText("select ${sqlSeq}.Currval from dual");
+		}
 	}
 	
 	private void deleteDocument(Element root,String beanPackage,String tableName,List<FieldBean> fields,boolean byId){

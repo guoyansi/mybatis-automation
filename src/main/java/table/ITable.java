@@ -48,7 +48,7 @@ public interface ITable<I extends BaseInBean,O extends BaseOutBean> {
 	 * @return
 	 * @throws Exception
 	 */
-	int updateById(Object id) throws Exception;
+	int updateById(I i) throws Exception;
 	/**
 	 * 插入时不获取主键id
 	 * @param t

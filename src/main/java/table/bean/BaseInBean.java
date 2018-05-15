@@ -24,7 +24,9 @@ public class BaseInBean implements Serializable{
 	//当前页
 	private Integer sqlCurrentPage;
 	//update时set语句
-	private String SqlSet;
+	private String sqlSet;
+	//oracle的sqlence
+	private String sqlSeq;
 	
 	public String getSqlWhere() {
 		return sqlWhere;
@@ -77,12 +79,22 @@ public class BaseInBean implements Serializable{
 		this.sqlCurrentPage = sqlCurrentPage;
 	}
 
+	
+
 	public String getSqlSet() {
-		return SqlSet;
+		return sqlSet;
 	}
 
 	public void setSqlSet(String sqlSet) {
-		SqlSet = sqlSet;
+		this.sqlSet = sqlSet;
+	}
+
+	public String getSqlSeq() {
+		return sqlSeq;
+	}
+
+	public void setSqlSeq(String sqlSeq) {
+		this.sqlSeq = sqlSeq;
 	}
 
 	public Integer getSqlEndIndex() {

@@ -6,6 +6,8 @@ public class FieldBean {
 	private String key;
 	private String defaults;
 	private String extra;
+	//oracle小数位数
+	private Integer data_scale;
 	public String getField() {
 		return field;
 	}
@@ -38,6 +40,12 @@ public class FieldBean {
 	}
 	public void setExtra(String extra) {
 		this.extra = extra;
+	}
+	public Integer getData_scale() {
+		return data_scale;
+	}
+	public void setData_scale(Integer data_scale) {
+		this.data_scale = data_scale;
 	}
 	
 	
