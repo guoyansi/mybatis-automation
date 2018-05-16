@@ -296,7 +296,7 @@ public class CreateFile{
 			}
 			Element whereIf=whereTag.addElement("if");
 			whereIf.addAttribute("test", "sqlWhere!=null");
-			whereIf.addText("and ${sqlWhere}");
+			whereIf.addText("${sqlWhere}");
 			
 			
 			Element orderByIf=select.addElement("if");
@@ -320,7 +320,7 @@ public class CreateFile{
 			}
 			Element whereIf=whereTag.addElement("if");
 			whereIf.addAttribute("test", "sqlWhere!=null");
-			whereIf.addText("and ${sqlWhere}");
+			whereIf.addText("${sqlWhere}");
 			Element orderByIf=select.addElement("if");
 			orderByIf.addAttribute("test","sqlOrderBy!=null");
 			orderByIf.addText("order by ${sqlOrderBy}");
