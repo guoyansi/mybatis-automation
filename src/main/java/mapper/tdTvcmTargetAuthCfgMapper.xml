@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.ITdTvcmTargetAuthCfgDao">
+    <select id="selectList" parameterType="bean.in.TdTvcmTargetAuthCfgInBean" resultType="bean.out.TdTvcmTargetAuthCfgOutBean">
+		
+        <if test="sqlLimit==true">
+			select * from (
+		</if>
+		 select A.*,  rowNum from (
+		 	select create_user as createUser,create_date as createDate,user_id as userId,idx_dim_id as idxDimId from td_tvcm_target_auth_cfg
+        <where>
+            <if test="createUser!=null">and create_user=#{createUser}</if>
+            <if test="createDate!=null">and create_date=#{createDate}</if>
+            <if test="userId!=null">and user_id=#{userId}</if>
+            <if test="idxDimId!=null">and idx_dim_id=#{idxDimId}</if>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+        <if test="sqlOrderBy!=null">order by ${sqlOrderBy}</if>
+			) A
+        <if test="sqlLimit==true">
+		where rowNum &lt;= #{sqlEndIndex}+1 
+		) where rowNum &gt;=#{sqlStartIndex}+1 
+		</if>
+    </select>
+    <select id="selectOne" parameterType="bean.in.TdTvcmTargetAuthCfgInBean" resultType="bean.out.TdTvcmTargetAuthCfgOutBean">
+		select create_user as createUsercreate_date as createDateuser_id as userIdidx_dim_id as idxDimId from td_tvcm_target_auth_cfg
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <select id="getCount" parameterType="bean.in.TdTvcmTargetAuthCfgInBean" resultType="int">
+		select count(*) from td_tvcm_target_auth_cfg
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <update id="update" parameterType="bean.TdTvcmTargetAuthCfgBean">
+		update td_tvcm_target_auth_cfg
+        <set>
+            <if test="createUser==null">create_user=null,</if>
+            <if test="createUser!=null">create_user=#{createUser},</if>
+            <if test="createDate==null">create_date=null,</if>
+            <if test="createDate!=null">create_date=#{createDate},</if>
+            <if test="userId==null">user_id=null,</if>
+            <if test="userId!=null">user_id=#{userId},</if>
+            <if test="idxDimId==null">idx_dim_id=null,</if>
+            <if test="idxDimId!=null">idx_dim_id=#{idxDimId},</if>
+        </set>
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </update>
+    <insert id="insert" parameterType="bean.TdTvcmTargetAuthCfgBean">
+		insert into td_tvcm_target_auth_cfg
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="createUser!=null">create_user,</if>
+            <if test="createDate!=null">create_date,</if>
+            <if test="userId!=null">user_id,</if>
+            <if test="idxDimId!=null">idx_dim_id,</if>
+        </trim>
+ 			values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="createUser!=null">#{createUser},</if>
+            <if test="createDate!=null">#{createDate},</if>
+            <if test="userId!=null">#{userId},</if>
+            <if test="idxDimId!=null">#{idxDimId},</if>
+        </trim>
+    </insert>
+    <delete id="delete" parameterType="bean.TdTvcmTargetAuthCfgBean">
+		DELETE FROM td_tvcm_target_auth_cfg
+        <if test="sqlWhere !=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </delete>
+</mapper>

@@ -1,9 +1,8 @@
 package bean.out;
 
-import table.bean.BaseOutBean;
+import mybatisauto.bean.BaseOutBean;
 
 public class TdSysUserOutBean extends BaseOutBean{
-
 	private String sid;
 
 	private String createDate;

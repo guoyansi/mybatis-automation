@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.ITdTvcmDimentionInfoDao">
+    <select id="selectList" parameterType="bean.in.TdTvcmDimentionInfoInBean" resultType="bean.out.TdTvcmDimentionInfoOutBean">
+		
+        <if test="sqlLimit==true">
+			select * from (
+		</if>
+		 select A.*,  rowNum from (
+		 	select create_time as createTime,table_name as tableName,col_name as colName,table_desc as tableDesc,dim_id as dimId,dim_name as dimName,create_user as createUser,col_code as colCode from td_tvcm_dimention_info
+        <where>
+            <if test="createTime!=null">and create_time=#{createTime}</if>
+            <if test="tableName!=null">and table_name=#{tableName}</if>
+            <if test="colName!=null">and col_name=#{colName}</if>
+            <if test="tableDesc!=null">and table_desc=#{tableDesc}</if>
+            <if test="dimId!=null">and dim_id=#{dimId}</if>
+            <if test="dimName!=null">and dim_name=#{dimName}</if>
+            <if test="createUser!=null">and create_user=#{createUser}</if>
+            <if test="colCode!=null">and col_code=#{colCode}</if>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+        <if test="sqlOrderBy!=null">order by ${sqlOrderBy}</if>
+			) A
+        <if test="sqlLimit==true">
+		where rowNum &lt;= #{sqlEndIndex}+1 
+		) where rowNum &gt;=#{sqlStartIndex}+1 
+		</if>
+    </select>
+    <select id="selectOne" parameterType="bean.in.TdTvcmDimentionInfoInBean" resultType="bean.out.TdTvcmDimentionInfoOutBean">
+		select create_time as createTimetable_name as tableNamecol_name as colNametable_desc as tableDescdim_id as dimIddim_name as dimNamecreate_user as createUsercol_code as colCode from td_tvcm_dimention_info
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <select id="getCount" parameterType="bean.in.TdTvcmDimentionInfoInBean" resultType="int">
+		select count(*) from td_tvcm_dimention_info
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <update id="update" parameterType="bean.TdTvcmDimentionInfoBean">
+		update td_tvcm_dimention_info
+        <set>
+            <if test="createTime==null">create_time=null,</if>
+            <if test="createTime!=null">create_time=#{createTime},</if>
+            <if test="tableName==null">table_name=null,</if>
+            <if test="tableName!=null">table_name=#{tableName},</if>
+            <if test="colName==null">col_name=null,</if>
+            <if test="colName!=null">col_name=#{colName},</if>
+            <if test="tableDesc==null">table_desc=null,</if>
+            <if test="tableDesc!=null">table_desc=#{tableDesc},</if>
+            <if test="dimId==null">dim_id=null,</if>
+            <if test="dimId!=null">dim_id=#{dimId},</if>
+            <if test="dimName==null">dim_name=null,</if>
+            <if test="dimName!=null">dim_name=#{dimName},</if>
+            <if test="createUser==null">create_user=null,</if>
+            <if test="createUser!=null">create_user=#{createUser},</if>
+            <if test="colCode==null">col_code=null,</if>
+            <if test="colCode!=null">col_code=#{colCode},</if>
+        </set>
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </update>
+    <insert id="insert" parameterType="bean.TdTvcmDimentionInfoBean">
+		insert into td_tvcm_dimention_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="createTime!=null">create_time,</if>
+            <if test="tableName!=null">table_name,</if>
+            <if test="colName!=null">col_name,</if>
+            <if test="tableDesc!=null">table_desc,</if>
+            <if test="dimId!=null">dim_id,</if>
+            <if test="dimName!=null">dim_name,</if>
+            <if test="createUser!=null">create_user,</if>
+            <if test="colCode!=null">col_code,</if>
+        </trim>
+ 			values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="createTime!=null">#{createTime},</if>
+            <if test="tableName!=null">#{tableName},</if>
+            <if test="colName!=null">#{colName},</if>
+            <if test="tableDesc!=null">#{tableDesc},</if>
+            <if test="dimId!=null">#{dimId},</if>
+            <if test="dimName!=null">#{dimName},</if>
+            <if test="createUser!=null">#{createUser},</if>
+            <if test="colCode!=null">#{colCode},</if>
+        </trim>
+    </insert>
+    <delete id="delete" parameterType="bean.TdTvcmDimentionInfoBean">
+		DELETE FROM td_tvcm_dimention_info
+        <if test="sqlWhere !=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </delete>
+</mapper>

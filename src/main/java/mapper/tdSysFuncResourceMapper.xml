@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.ITdSysFuncResourceDao">
+    <select id="selectList" parameterType="bean.in.TdSysFuncResourceInBean" resultType="bean.out.TdSysFuncResourceOutBean">
+		
+        <if test="sqlLimit==true">
+			select * from (
+		</if>
+		 select A.*,  rowNum from (
+		 	select resource_url as resourceUrl,sid as sid,func_id as funcId from td_sys_func_resource
+        <where>
+            <if test="resourceUrl!=null">and resource_url=#{resourceUrl}</if>
+            <if test="sid!=null">and sid=#{sid}</if>
+            <if test="funcId!=null">and func_id=#{funcId}</if>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+        <if test="sqlOrderBy!=null">order by ${sqlOrderBy}</if>
+			) A
+        <if test="sqlLimit==true">
+		where rowNum &lt;= #{sqlEndIndex}+1 
+		) where rowNum &gt;=#{sqlStartIndex}+1 
+		</if>
+    </select>
+    <select id="selectOne" parameterType="bean.in.TdSysFuncResourceInBean" resultType="bean.out.TdSysFuncResourceOutBean">
+		select resource_url as resourceUrlsid as sidfunc_id as funcId from td_sys_func_resource
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <select id="getCount" parameterType="bean.in.TdSysFuncResourceInBean" resultType="int">
+		select count(*) from td_sys_func_resource
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <update id="update" parameterType="bean.TdSysFuncResourceBean">
+		update td_sys_func_resource
+        <set>
+            <if test="resourceUrl==null">resource_url=null,</if>
+            <if test="resourceUrl!=null">resource_url=#{resourceUrl},</if>
+            <if test="sid==null">sid=null,</if>
+            <if test="sid!=null">sid=#{sid},</if>
+            <if test="funcId==null">func_id=null,</if>
+            <if test="funcId!=null">func_id=#{funcId},</if>
+        </set>
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </update>
+    <insert id="insert" parameterType="bean.TdSysFuncResourceBean">
+		insert into td_sys_func_resource
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="resourceUrl!=null">resource_url,</if>
+            <if test="sid!=null">sid,</if>
+            <if test="funcId!=null">func_id,</if>
+        </trim>
+ 			values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="resourceUrl!=null">#{resourceUrl},</if>
+            <if test="sid!=null">#{sid},</if>
+            <if test="funcId!=null">#{funcId},</if>
+        </trim>
+    </insert>
+    <delete id="delete" parameterType="bean.TdSysFuncResourceBean">
+		DELETE FROM td_sys_func_resource
+        <if test="sqlWhere !=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </delete>
+</mapper>

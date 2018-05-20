@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.ITdSysLogOperateDao">
+    <select id="selectList" parameterType="bean.in.TdSysLogOperateInBean" resultType="bean.out.TdSysLogOperateOutBean">
+		
+        <if test="sqlLimit==true">
+			select * from (
+		</if>
+		 select A.*,  rowNum from (
+		 	select user_systemos as userSystemos,sid as sid,session_id as sessionId,operate_type as operateType,http_params as httpParams,ip_address as ipAddress,http_type as httpType,func_url as funcUrl,remark as remark,operate_result as operateResult,operate_date as operateDate,mac_address as macAddress,user_brower as userBrower,user_id as userId,func_id as funcId from td_sys_log_operate
+        <where>
+            <if test="userSystemos!=null">and user_systemos=#{userSystemos}</if>
+            <if test="sid!=null">and sid=#{sid}</if>
+            <if test="sessionId!=null">and session_id=#{sessionId}</if>
+            <if test="operateType!=null">and operate_type=#{operateType}</if>
+            <if test="httpParams!=null">and http_params=#{httpParams}</if>
+            <if test="ipAddress!=null">and ip_address=#{ipAddress}</if>
+            <if test="httpType!=null">and http_type=#{httpType}</if>
+            <if test="funcUrl!=null">and func_url=#{funcUrl}</if>
+            <if test="remark!=null">and remark=#{remark}</if>
+            <if test="operateResult!=null">and operate_result=#{operateResult}</if>
+            <if test="operateDate!=null">and operate_date=#{operateDate}</if>
+            <if test="macAddress!=null">and mac_address=#{macAddress}</if>
+            <if test="userBrower!=null">and user_brower=#{userBrower}</if>
+            <if test="userId!=null">and user_id=#{userId}</if>
+            <if test="funcId!=null">and func_id=#{funcId}</if>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+        <if test="sqlOrderBy!=null">order by ${sqlOrderBy}</if>
+			) A
+        <if test="sqlLimit==true">
+		where rowNum &lt;= #{sqlEndIndex}+1 
+		) where rowNum &gt;=#{sqlStartIndex}+1 
+		</if>
+    </select>
+    <select id="selectOne" parameterType="bean.in.TdSysLogOperateInBean" resultType="bean.out.TdSysLogOperateOutBean">
+		select user_systemos as userSystemossid as sidsession_id as sessionIdoperate_type as operateTypehttp_params as httpParamsip_address as ipAddresshttp_type as httpTypefunc_url as funcUrlremark as remarkoperate_result as operateResultoperate_date as operateDatemac_address as macAddressuser_brower as userBroweruser_id as userIdfunc_id as funcId from td_sys_log_operate
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <select id="getCount" parameterType="bean.in.TdSysLogOperateInBean" resultType="int">
+		select count(*) from td_sys_log_operate
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <update id="update" parameterType="bean.TdSysLogOperateBean">
+		update td_sys_log_operate
+        <set>
+            <if test="userSystemos==null">user_systemos=null,</if>
+            <if test="userSystemos!=null">user_systemos=#{userSystemos},</if>
+            <if test="sid==null">sid=null,</if>
+            <if test="sid!=null">sid=#{sid},</if>
+            <if test="sessionId==null">session_id=null,</if>
+            <if test="sessionId!=null">session_id=#{sessionId},</if>
+            <if test="operateType==null">operate_type=null,</if>
+            <if test="operateType!=null">operate_type=#{operateType},</if>
+            <if test="httpParams==null">http_params=null,</if>
+            <if test="httpParams!=null">http_params=#{httpParams},</if>
+            <if test="ipAddress==null">ip_address=null,</if>
+            <if test="ipAddress!=null">ip_address=#{ipAddress},</if>
+            <if test="httpType==null">http_type=null,</if>
+            <if test="httpType!=null">http_type=#{httpType},</if>
+            <if test="funcUrl==null">func_url=null,</if>
+            <if test="funcUrl!=null">func_url=#{funcUrl},</if>
+            <if test="remark==null">remark=null,</if>
+            <if test="remark!=null">remark=#{remark},</if>
+            <if test="operateResult==null">operate_result=null,</if>
+            <if test="operateResult!=null">operate_result=#{operateResult},</if>
+            <if test="operateDate==null">operate_date=null,</if>
+            <if test="operateDate!=null">operate_date=#{operateDate},</if>
+            <if test="macAddress==null">mac_address=null,</if>
+            <if test="macAddress!=null">mac_address=#{macAddress},</if>
+            <if test="userBrower==null">user_brower=null,</if>
+            <if test="userBrower!=null">user_brower=#{userBrower},</if>
+            <if test="userId==null">user_id=null,</if>
+            <if test="userId!=null">user_id=#{userId},</if>
+            <if test="funcId==null">func_id=null,</if>
+            <if test="funcId!=null">func_id=#{funcId},</if>
+        </set>
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </update>
+    <insert id="insert" parameterType="bean.TdSysLogOperateBean">
+		insert into td_sys_log_operate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userSystemos!=null">user_systemos,</if>
+            <if test="sid!=null">sid,</if>
+            <if test="sessionId!=null">session_id,</if>
+            <if test="operateType!=null">operate_type,</if>
+            <if test="httpParams!=null">http_params,</if>
+            <if test="ipAddress!=null">ip_address,</if>
+            <if test="httpType!=null">http_type,</if>
+            <if test="funcUrl!=null">func_url,</if>
+            <if test="remark!=null">remark,</if>
+            <if test="operateResult!=null">operate_result,</if>
+            <if test="operateDate!=null">operate_date,</if>
+            <if test="macAddress!=null">mac_address,</if>
+            <if test="userBrower!=null">user_brower,</if>
+            <if test="userId!=null">user_id,</if>
+            <if test="funcId!=null">func_id,</if>
+        </trim>
+ 			values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userSystemos!=null">#{userSystemos},</if>
+            <if test="sid!=null">#{sid},</if>
+            <if test="sessionId!=null">#{sessionId},</if>
+            <if test="operateType!=null">#{operateType},</if>
+            <if test="httpParams!=null">#{httpParams},</if>
+            <if test="ipAddress!=null">#{ipAddress},</if>
+            <if test="httpType!=null">#{httpType},</if>
+            <if test="funcUrl!=null">#{funcUrl},</if>
+            <if test="remark!=null">#{remark},</if>
+            <if test="operateResult!=null">#{operateResult},</if>
+            <if test="operateDate!=null">#{operateDate},</if>
+            <if test="macAddress!=null">#{macAddress},</if>
+            <if test="userBrower!=null">#{userBrower},</if>
+            <if test="userId!=null">#{userId},</if>
+            <if test="funcId!=null">#{funcId},</if>
+        </trim>
+    </insert>
+    <delete id="delete" parameterType="bean.TdSysLogOperateBean">
+		DELETE FROM td_sys_log_operate
+        <if test="sqlWhere !=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </delete>
+</mapper>

@@ -6,24 +6,24 @@ public class GysBean implements Serializable{
 
 	private static final long serialVersionUID = -1L;
 
-	private Long id;
+	private Integer id;
 
-	private Long age;
+	private String roleName;
 
-	private String name;
+	private String note;
 
-	private Double weight;
+	private Double price3;
 
-	public Long getId(){return id;}
-	public void setId(Long id){this.id=id;}
+	public Integer getId(){return id;}
+	public void setId(Integer id){this.id=id;}
 
-	public Long getAge(){return age;}
-	public void setAge(Long age){this.age=age;}
+	public String getRoleName(){return roleName;}
+	public void setRoleName(String roleName){this.roleName=roleName;}
 
-	public String getName(){return name;}
-	public void setName(String name){this.name=name;}
+	public String getNote(){return note;}
+	public void setNote(String note){this.note=note;}
 
-	public Double getWeight(){return weight;}
-	public void setWeight(Double weight){this.weight=weight;}
+	public Double getPrice3(){return price3;}
+	public void setPrice3(Double price3){this.price3=price3;}
 
 }

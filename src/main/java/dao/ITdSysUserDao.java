@@ -1,9 +1,11 @@
 package dao;
 
+import bean.TdSysUserBean;
 import bean.in.TdSysUserInBean;
 import bean.out.TdSysUserOutBean;
-import table.ITable;
+import mybatisauto.create.IBaseMyBatisDao;
+import mybatisauto.create.IBaseMyBatisByIdDao;
 
-public interface ITdSysUserDao extends ITable<TdSysUserInBean,TdSysUserOutBean>{
+public interface ITdSysUserDao extends IBaseMyBatisDao<TdSysUserBean,TdSysUserInBean,TdSysUserOutBean>,IBaseMyBatisByIdDao<TdSysUserBean>{
 
 }

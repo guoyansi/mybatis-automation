@@ -3,36 +3,31 @@
 
 <mapper namespace="dao.IGysDao">
     <select id="selectList" parameterType="bean.in.GysInBean" resultType="bean.out.GysOutBean">
-		
-        <if test="sqlLimit==true">
-			select * from (
-		</if>
-		 select A.*,  rowNum from (
-		 	select id as id,age as age,name as name,weight as weight from gys
+		select (@i:=@i+1) rowNum,
+			id as id,
+			roleName as roleName,
+			note as note,
+			price3 as price3
+		 from gys, (SELECT @i:=0) as i
         <where>
             <if test="id!=null">and id=#{id}</if>
-            <if test="age!=null">and age=#{age}</if>
-            <if test="name!=null">and name=#{name}</if>
-            <if test="weight!=null">and weight=#{weight}</if>
-            <if test="sqlWhere!=null">and ${sqlWhere}</if>
+            <if test="roleName!=null">and roleName=#{roleName}</if>
+            <if test="note!=null">and note=#{note}</if>
+            <if test="price3!=null">and price3=#{price3}</if>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
         </where>
         <if test="sqlOrderBy!=null">order by ${sqlOrderBy}</if>
-			) A
-        <if test="sqlLimit==true">
-		where rowNum &lt;= #{sqlEndIndex}+1 
-		) where rowNum &gt;=#{sqlStartIndex}+1 
-		</if>
+        <if test="sqlLimit==true">LIMIT #{sqlStartIndex},#{sqlPageSize}</if>
     </select>
     <select id="selectOne" parameterType="bean.in.GysInBean" resultType="bean.out.GysOutBean">
-		select id as id,age as age,name as name,weight as weight from gys
+		 select 
+			id as id,
+			roleName as roleName,
+			note as note,
+			price3 as price3
+		 from gys
         <if test="sqlWhere!=null">
             <where>${sqlWhere}</where>
-        </if>
-    </select>
-    <select id="selectOneById" parameterType="object" resultType="bean.out.GysOutBean">
-		select id as id,age as age,name as name,weight as weight from gys
-        <if test="sqlWhere!=null">
-            <where>id=#{_parameter}</where>
         </if>
     </select>
     <select id="getCount" parameterType="bean.in.GysInBean" resultType="int">
@@ -41,77 +36,75 @@
             <where>${sqlWhere}</where>
         </if>
     </select>
-    <update id="update" parameterType="bean.in.GysInBean">
+    <update id="update" parameterType="bean.GysBean">
 		update gys
         <set>
-            <if test="age==null">age=null,</if>
-            <if test="age!=null">age=#{age},</if>
-            <if test="name==null">name=null,</if>
-            <if test="name!=null">name=#{name},</if>
-            <if test="weight==null">weight=null,</if>
-            <if test="weight!=null">weight=#{weight},</if>
+            <if test="roleName==null">roleName=null,</if>
+            <if test="roleName!=null">roleName=#{roleName},</if>
+            <if test="note==null">note=null,</if>
+            <if test="note!=null">note=#{note},</if>
+            <if test="price3==null">price3=null,</if>
+            <if test="price3!=null">price3=#{price3},</if>
         </set>
         <if test="sqlWhere!=null">
             <where>${sqlWhere}</where>
         </if>
     </update>
-    <update id="updateById" parameterType="bean.in.GysInBean">
-		update gys
-        <set>
-            <if test="age==null">age=null,</if>
-            <if test="age!=null">age=#{age},</if>
-            <if test="name==null">name=null,</if>
-            <if test="name!=null">name=#{name},</if>
-            <if test="weight==null">weight=null,</if>
-            <if test="weight!=null">weight=#{weight},</if>
-        </set>
-			where id=#{id}
-    </update>
-    <insert id="insert" parameterType="bean.in.GysInBean">
+    <insert id="insert" parameterType="bean.GysBean">
 		insert into gys
         <trim prefix="(" suffix=")" suffixOverrides=",">
-			id,
-            <if test="age!=null">age,</if>
-            <if test="name!=null">name,</if>
-            <if test="weight!=null">weight,</if>
+            <if test="roleName!=null">roleName,</if>
+            <if test="note!=null">note,</if>
+            <if test="price3!=null">price3,</if>
         </trim>
  			values
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="sqlSeq==null">#{id},</if>
-            <if test="sqlSeq!=null">
-				${sqlSeq}.Nextval,
-			</if>
-            <if test="age!=null">#{age},</if>
-            <if test="name!=null">#{name},</if>
-            <if test="weight!=null">#{weight},</if>
+            <if test="roleName!=null">#{roleName},</if>
+            <if test="note!=null">#{note},</if>
+            <if test="price3!=null">#{price3},</if>
         </trim>
     </insert>
-    <insert id="insertGetId" parameterType="bean.in.GysInBean">
-		insert into gys
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-			id,
-            <if test="age!=null">age,</if>
-            <if test="name!=null">name,</if>
-            <if test="weight!=null">weight,</if>
-        </trim>
- 			values
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="sqlSeq==null">#{id},</if>
-            <if test="sqlSeq!=null">
-				${sqlSeq}.Nextval,
-			</if>
-            <if test="age!=null">#{age},</if>
-            <if test="name!=null">#{name},</if>
-            <if test="weight!=null">#{weight},</if>
-        </trim>
-        <selectKey keyProperty="id" order="AFTER" resultType="long">select ${sqlSeq}.Currval from dual</selectKey>
-    </insert>
-    <delete id="delete" parameterType="bean.in.GysInBean">
+    <delete id="delete" parameterType="bean.GysBean">
 		DELETE FROM gys
         <if test="sqlWhere !=null">
             <where>${sqlWhere}</where>
         </if>
     </delete>
+    <select id="selectOneById" parameterType="object" resultType="bean.GysBean">
+		select 
+			id as id,
+			roleName as roleName,
+			note as note,
+			price3 as price3
+			from gys
+        <where>id=#{_parameter}</where>
+    </select>
+    <update id="updateById" parameterType="bean.GysBean">
+		update gys
+        <set>
+            <if test="roleName==null">roleName=null,</if>
+            <if test="roleName!=null">roleName=#{roleName},</if>
+            <if test="note==null">note=null,</if>
+            <if test="note!=null">note=#{note},</if>
+            <if test="price3==null">price3=null,</if>
+            <if test="price3!=null">price3=#{price3},</if>
+        </set>
+			where id=#{_parameter}
+    </update>
+    <insert id="insertGetId" keyProperty="id" useGeneratedKeys="true" parameterType="bean.GysBean">
+		insert into gys
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleName!=null">roleName,</if>
+            <if test="note!=null">note,</if>
+            <if test="price3!=null">price3,</if>
+        </trim>
+ 			values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleName!=null">#{roleName},</if>
+            <if test="note!=null">#{note},</if>
+            <if test="price3!=null">#{price3},</if>
+        </trim>
+    </insert>
     <delete id="deleteById" parameterType="object">
 		DELETE FROM gys
         <if test="sqlWhere !=null">

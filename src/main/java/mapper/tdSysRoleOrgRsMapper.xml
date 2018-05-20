@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.ITdSysRoleOrgRsDao">
+    <select id="selectList" parameterType="bean.in.TdSysRoleOrgRsInBean" resultType="bean.out.TdSysRoleOrgRsOutBean">
+		
+        <if test="sqlLimit==true">
+			select * from (
+		</if>
+		 select A.*,  rowNum from (
+		 	select org_id as orgId,create_date as createDate,role_id as roleId,sid as sid,create_id as createId from td_sys_role_org_rs
+        <where>
+            <if test="orgId!=null">and org_id=#{orgId}</if>
+            <if test="createDate!=null">and create_date=#{createDate}</if>
+            <if test="roleId!=null">and role_id=#{roleId}</if>
+            <if test="sid!=null">and sid=#{sid}</if>
+            <if test="createId!=null">and create_id=#{createId}</if>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+        <if test="sqlOrderBy!=null">order by ${sqlOrderBy}</if>
+			) A
+        <if test="sqlLimit==true">
+		where rowNum &lt;= #{sqlEndIndex}+1 
+		) where rowNum &gt;=#{sqlStartIndex}+1 
+		</if>
+    </select>
+    <select id="selectOne" parameterType="bean.in.TdSysRoleOrgRsInBean" resultType="bean.out.TdSysRoleOrgRsOutBean">
+		select org_id as orgIdcreate_date as createDaterole_id as roleIdsid as sidcreate_id as createId from td_sys_role_org_rs
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <select id="getCount" parameterType="bean.in.TdSysRoleOrgRsInBean" resultType="int">
+		select count(*) from td_sys_role_org_rs
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <update id="update" parameterType="bean.TdSysRoleOrgRsBean">
+		update td_sys_role_org_rs
+        <set>
+            <if test="orgId==null">org_id=null,</if>
+            <if test="orgId!=null">org_id=#{orgId},</if>
+            <if test="createDate==null">create_date=null,</if>
+            <if test="createDate!=null">create_date=#{createDate},</if>
+            <if test="roleId==null">role_id=null,</if>
+            <if test="roleId!=null">role_id=#{roleId},</if>
+            <if test="sid==null">sid=null,</if>
+            <if test="sid!=null">sid=#{sid},</if>
+            <if test="createId==null">create_id=null,</if>
+            <if test="createId!=null">create_id=#{createId},</if>
+        </set>
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </update>
+    <insert id="insert" parameterType="bean.TdSysRoleOrgRsBean">
+		insert into td_sys_role_org_rs
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orgId!=null">org_id,</if>
+            <if test="createDate!=null">create_date,</if>
+            <if test="roleId!=null">role_id,</if>
+            <if test="sid!=null">sid,</if>
+            <if test="createId!=null">create_id,</if>
+        </trim>
+ 			values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orgId!=null">#{orgId},</if>
+            <if test="createDate!=null">#{createDate},</if>
+            <if test="roleId!=null">#{roleId},</if>
+            <if test="sid!=null">#{sid},</if>
+            <if test="createId!=null">#{createId},</if>
+        </trim>
+    </insert>
+    <delete id="delete" parameterType="bean.TdSysRoleOrgRsBean">
+		DELETE FROM td_sys_role_org_rs
+        <if test="sqlWhere !=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </delete>
+</mapper>

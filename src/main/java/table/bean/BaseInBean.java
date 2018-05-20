@@ -22,7 +22,7 @@ public class BaseInBean implements Serializable{
 	//获取数据量
 	private Integer sqlPageSize=10;
 	//当前页
-	private Integer sqlCurrentPage;
+	private Integer sqlCurrentPage=1;
 	//update时set语句
 	private String sqlSet;
 	//oracle的sqlence

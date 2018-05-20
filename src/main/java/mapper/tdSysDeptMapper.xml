@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.ITdSysDeptDao">
+    <select id="selectList" parameterType="bean.in.TdSysDeptInBean" resultType="bean.out.TdSysDeptOutBean">
+		
+        <if test="sqlLimit==true">
+			select * from (
+		</if>
+		 select A.*,  rowNum from (
+		 	select sid as sid,create_time as createTime,parent_id as parentId,type_name as typeName,sort as sort,create_id as createId from td_sys_dept
+        <where>
+            <if test="sid!=null">and sid=#{sid}</if>
+            <if test="createTime!=null">and create_time=#{createTime}</if>
+            <if test="parentId!=null">and parent_id=#{parentId}</if>
+            <if test="typeName!=null">and type_name=#{typeName}</if>
+            <if test="sort!=null">and sort=#{sort}</if>
+            <if test="createId!=null">and create_id=#{createId}</if>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+        <if test="sqlOrderBy!=null">order by ${sqlOrderBy}</if>
+			) A
+        <if test="sqlLimit==true">
+		where rowNum &lt;= #{sqlEndIndex}+1 
+		) where rowNum &gt;=#{sqlStartIndex}+1 
+		</if>
+    </select>
+    <select id="selectOne" parameterType="bean.in.TdSysDeptInBean" resultType="bean.out.TdSysDeptOutBean">
+		select sid as sidcreate_time as createTimeparent_id as parentIdtype_name as typeNamesort as sortcreate_id as createId from td_sys_dept
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <select id="getCount" parameterType="bean.in.TdSysDeptInBean" resultType="int">
+		select count(*) from td_sys_dept
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <update id="update" parameterType="bean.TdSysDeptBean">
+		update td_sys_dept
+        <set>
+            <if test="createTime==null">create_time=null,</if>
+            <if test="createTime!=null">create_time=#{createTime},</if>
+            <if test="parentId==null">parent_id=null,</if>
+            <if test="parentId!=null">parent_id=#{parentId},</if>
+            <if test="typeName==null">type_name=null,</if>
+            <if test="typeName!=null">type_name=#{typeName},</if>
+            <if test="sort==null">sort=null,</if>
+            <if test="sort!=null">sort=#{sort},</if>
+            <if test="createId==null">create_id=null,</if>
+            <if test="createId!=null">create_id=#{createId},</if>
+        </set>
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </update>
+    <insert id="insert" parameterType="bean.TdSysDeptBean">
+		insert into td_sys_dept
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+			sid,
+            <if test="createTime!=null">create_time,</if>
+            <if test="parentId!=null">parent_id,</if>
+            <if test="typeName!=null">type_name,</if>
+            <if test="sort!=null">sort,</if>
+            <if test="createId!=null">create_id,</if>
+        </trim>
+ 			values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sqlSeq==null">#{sid},</if>
+            <if test="sqlSeq!=null">
+				${sqlSeq}.Nextval,
+			</if>
+            <if test="createTime!=null">#{createTime},</if>
+            <if test="parentId!=null">#{parentId},</if>
+            <if test="typeName!=null">#{typeName},</if>
+            <if test="sort!=null">#{sort},</if>
+            <if test="createId!=null">#{createId},</if>
+        </trim>
+    </insert>
+    <delete id="delete" parameterType="bean.TdSysDeptBean">
+		DELETE FROM td_sys_dept
+        <if test="sqlWhere !=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </delete>
+    <select id="selectOneById" parameterType="object" resultType="bean.TdSysDeptBean">
+		select sid as sidcreate_time as createTimeparent_id as parentIdtype_name as typeNamesort as sortcreate_id as createId from td_sys_dept
+        <where>sid=#{_parameter}</where>
+    </select>
+    <update id="updateById" parameterType="bean.in.TdSysDeptBean">
+		update td_sys_dept
+        <set>
+            <if test="create_time==null">create_time=null,</if>
+            <if test="create_time!=null">create_time=#{createTime},</if>
+            <if test="parent_id==null">parent_id=null,</if>
+            <if test="parent_id!=null">parent_id=#{parentId},</if>
+            <if test="type_name==null">type_name=null,</if>
+            <if test="type_name!=null">type_name=#{typeName},</if>
+            <if test="sort==null">sort=null,</if>
+            <if test="sort!=null">sort=#{sort},</if>
+            <if test="create_id==null">create_id=null,</if>
+            <if test="create_id!=null">create_id=#{createId},</if>
+        </set>
+			where sid=#{_parameter}
+    </update>
+    <insert id="insertGetId" parameterType="bean.TdSysDeptBean">
+		insert into td_sys_dept
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+			sid,
+            <if test="createTime!=null">createTime,</if>
+            <if test="parentId!=null">parentId,</if>
+            <if test="typeName!=null">typeName,</if>
+            <if test="sort!=null">sort,</if>
+            <if test="createId!=null">createId,</if>
+        </trim>
+ 			values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sqlSeq==null">#{sid},</if>
+            <if test="sqlSeq!=null">
+				${sqlSeq}.Nextval,
+			</if>
+            <if test="createTime!=null">#{createTime},</if>
+            <if test="parentId!=null">#{parentId},</if>
+            <if test="typeName!=null">#{typeName},</if>
+            <if test="sort!=null">#{sort},</if>
+            <if test="createId!=null">#{createId},</if>
+        </trim>
+        <selectKey keyProperty="sid" order="AFTER" resultType="long">select ${sqlSeq}.Currval from dual</selectKey>
+    </insert>
+    <delete id="deleteById" parameterType="object">
+		DELETE FROM td_sys_dept
+        <if test="sqlWhere !=null">
+            <where>sid=#{_parameter}</where>
+        </if>
+    </delete>
+</mapper>

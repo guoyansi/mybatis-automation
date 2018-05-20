@@ -1,15 +1,6 @@
 package test;
 
-import java.util.List;
-
 import table.DataSource;
-import table.ITable;
-import bean.in.GysInBean;
-import bean.in.TdSysUserInBean;
-import bean.out.GysOutBean;
-import bean.out.TdSysUserOutBean;
-import dao.IGysDao;
-import dao.ITdSysUserDao;
 
 public class MyFun {
 
@@ -17,7 +8,7 @@ public class MyFun {
 		try {
 			DataSource ds=new DataSource("test/run-mybatis-config.xml");
 			ds.openSession();
-			ITable<GysInBean, GysOutBean> dao=ds.getDao(IGysDao.class);
+			/*ITable<GysInBean, GysOutBean> dao=ds.getDao(IGysDao.class);
 			GysInBean t=new GysInBean();
 			t.setSqlWhere("age=20");
 			int count=dao.getCount(t);
@@ -38,7 +29,7 @@ public class MyFun {
 			List<TdSysUserOutBean> userList=userDao.selectList(userbean);
 			for(TdSysUserOutBean a:userList){
 				System.out.println("序号："+a.getRowNum()+";name:"+a.getUserName());
-			}
+			}*/
 			ds.closeSession();
 		} catch (Exception e) {
 			e.printStackTrace();

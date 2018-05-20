@@ -5,7 +5,6 @@ public class Main {
 	
 
 	/**
-	 * TODO 测试oracle获取  郭延思
 	 * @param args
 	 * @throws Exception
 	 */

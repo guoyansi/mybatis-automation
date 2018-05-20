@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.ITdSysDirectoryTypeDao">
+    <select id="selectList" parameterType="bean.in.TdSysDirectoryTypeInBean" resultType="bean.out.TdSysDirectoryTypeOutBean">
+		
+        <if test="sqlLimit==true">
+			select * from (
+		</if>
+		 select A.*,  rowNum from (
+		 	select sid as sid,dict_type_code as dictTypeCode,create_date as createDate,dict_desc as dictDesc,edit_id as editId,dict_type_name as dictTypeName,create_id as createId,edit_date as editDate from td_sys_directory_type
+        <where>
+            <if test="sid!=null">and sid=#{sid}</if>
+            <if test="dictTypeCode!=null">and dict_type_code=#{dictTypeCode}</if>
+            <if test="createDate!=null">and create_date=#{createDate}</if>
+            <if test="dictDesc!=null">and dict_desc=#{dictDesc}</if>
+            <if test="editId!=null">and edit_id=#{editId}</if>
+            <if test="dictTypeName!=null">and dict_type_name=#{dictTypeName}</if>
+            <if test="createId!=null">and create_id=#{createId}</if>
+            <if test="editDate!=null">and edit_date=#{editDate}</if>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+        <if test="sqlOrderBy!=null">order by ${sqlOrderBy}</if>
+			) A
+        <if test="sqlLimit==true">
+		where rowNum &lt;= #{sqlEndIndex}+1 
+		) where rowNum &gt;=#{sqlStartIndex}+1 
+		</if>
+    </select>
+    <select id="selectOne" parameterType="bean.in.TdSysDirectoryTypeInBean" resultType="bean.out.TdSysDirectoryTypeOutBean">
+		select sid as siddict_type_code as dictTypeCodecreate_date as createDatedict_desc as dictDescedit_id as editIddict_type_name as dictTypeNamecreate_id as createIdedit_date as editDate from td_sys_directory_type
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <select id="getCount" parameterType="bean.in.TdSysDirectoryTypeInBean" resultType="int">
+		select count(*) from td_sys_directory_type
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <update id="update" parameterType="bean.TdSysDirectoryTypeBean">
+		update td_sys_directory_type
+        <set>
+            <if test="dictTypeCode==null">dict_type_code=null,</if>
+            <if test="dictTypeCode!=null">dict_type_code=#{dictTypeCode},</if>
+            <if test="createDate==null">create_date=null,</if>
+            <if test="createDate!=null">create_date=#{createDate},</if>
+            <if test="dictDesc==null">dict_desc=null,</if>
+            <if test="dictDesc!=null">dict_desc=#{dictDesc},</if>
+            <if test="editId==null">edit_id=null,</if>
+            <if test="editId!=null">edit_id=#{editId},</if>
+            <if test="dictTypeName==null">dict_type_name=null,</if>
+            <if test="dictTypeName!=null">dict_type_name=#{dictTypeName},</if>
+            <if test="createId==null">create_id=null,</if>
+            <if test="createId!=null">create_id=#{createId},</if>
+            <if test="editDate==null">edit_date=null,</if>
+            <if test="editDate!=null">edit_date=#{editDate},</if>
+        </set>
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </update>
+    <insert id="insert" parameterType="bean.TdSysDirectoryTypeBean">
+		insert into td_sys_directory_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+			sid,
+            <if test="dictTypeCode!=null">dict_type_code,</if>
+            <if test="createDate!=null">create_date,</if>
+            <if test="dictDesc!=null">dict_desc,</if>
+            <if test="editId!=null">edit_id,</if>
+            <if test="dictTypeName!=null">dict_type_name,</if>
+            <if test="createId!=null">create_id,</if>
+            <if test="editDate!=null">edit_date,</if>
+        </trim>
+ 			values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sqlSeq==null">#{sid},</if>
+            <if test="sqlSeq!=null">
+				${sqlSeq}.Nextval,
+			</if>
+            <if test="dictTypeCode!=null">#{dictTypeCode},</if>
+            <if test="createDate!=null">#{createDate},</if>
+            <if test="dictDesc!=null">#{dictDesc},</if>
+            <if test="editId!=null">#{editId},</if>
+            <if test="dictTypeName!=null">#{dictTypeName},</if>
+            <if test="createId!=null">#{createId},</if>
+            <if test="editDate!=null">#{editDate},</if>
+        </trim>
+    </insert>
+    <delete id="delete" parameterType="bean.TdSysDirectoryTypeBean">
+		DELETE FROM td_sys_directory_type
+        <if test="sqlWhere !=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </delete>
+    <select id="selectOneById" parameterType="object" resultType="bean.TdSysDirectoryTypeBean">
+		select sid as siddict_type_code as dictTypeCodecreate_date as createDatedict_desc as dictDescedit_id as editIddict_type_name as dictTypeNamecreate_id as createIdedit_date as editDate from td_sys_directory_type
+        <where>sid=#{_parameter}</where>
+    </select>
+    <update id="updateById" parameterType="bean.in.TdSysDirectoryTypeBean">
+		update td_sys_directory_type
+        <set>
+            <if test="dict_type_code==null">dict_type_code=null,</if>
+            <if test="dict_type_code!=null">dict_type_code=#{dictTypeCode},</if>
+            <if test="create_date==null">create_date=null,</if>
+            <if test="create_date!=null">create_date=#{createDate},</if>
+            <if test="dict_desc==null">dict_desc=null,</if>
+            <if test="dict_desc!=null">dict_desc=#{dictDesc},</if>
+            <if test="edit_id==null">edit_id=null,</if>
+            <if test="edit_id!=null">edit_id=#{editId},</if>
+            <if test="dict_type_name==null">dict_type_name=null,</if>
+            <if test="dict_type_name!=null">dict_type_name=#{dictTypeName},</if>
+            <if test="create_id==null">create_id=null,</if>
+            <if test="create_id!=null">create_id=#{createId},</if>
+            <if test="edit_date==null">edit_date=null,</if>
+            <if test="edit_date!=null">edit_date=#{editDate},</if>
+        </set>
+			where sid=#{_parameter}
+    </update>
+    <insert id="insertGetId" parameterType="bean.TdSysDirectoryTypeBean">
+		insert into td_sys_directory_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+			sid,
+            <if test="dictTypeCode!=null">dictTypeCode,</if>
+            <if test="createDate!=null">createDate,</if>
+            <if test="dictDesc!=null">dictDesc,</if>
+            <if test="editId!=null">editId,</if>
+            <if test="dictTypeName!=null">dictTypeName,</if>
+            <if test="createId!=null">createId,</if>
+            <if test="editDate!=null">editDate,</if>
+        </trim>
+ 			values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sqlSeq==null">#{sid},</if>
+            <if test="sqlSeq!=null">
+				${sqlSeq}.Nextval,
+			</if>
+            <if test="dictTypeCode!=null">#{dictTypeCode},</if>
+            <if test="createDate!=null">#{createDate},</if>
+            <if test="dictDesc!=null">#{dictDesc},</if>
+            <if test="editId!=null">#{editId},</if>
+            <if test="dictTypeName!=null">#{dictTypeName},</if>
+            <if test="createId!=null">#{createId},</if>
+            <if test="editDate!=null">#{editDate},</if>
+        </trim>
+        <selectKey keyProperty="sid" order="AFTER" resultType="long">select ${sqlSeq}.Currval from dual</selectKey>
+    </insert>
+    <delete id="deleteById" parameterType="object">
+		DELETE FROM td_sys_directory_type
+        <if test="sqlWhere !=null">
+            <where>sid=#{_parameter}</where>
+        </if>
+    </delete>
+</mapper>

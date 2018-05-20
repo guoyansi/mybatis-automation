@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.ITbResOrgMDao">
+    <select id="selectList" parameterType="bean.in.TbResOrgMInBean" resultType="bean.out.TbResOrgMOutBean">
+		
+        <if test="sqlLimit==true">
+			select * from (
+		</if>
+		 select A.*,  rowNum from (
+		 	select en_name as enName,expressfunction as expressfunction,site_flag as siteFlag,org_code as orgCode,post_code as postCode,county_code as countyCode,range as range,custom_office_code as customOfficeCode,custom_station_flag as customStationFlag,city_code as cityCode,exch_bureau_code as exchBureauCode,exch_bureau_flag as exchBureauFlag,org_full_name as orgFullName,prov_code as provCode,site_level as siteLevel,org_abbr_spel as orgAbbrSpel,up_org_code as upOrgCode,expresslevel as expresslevel,cltlevel as cltlevel,org_level_code as orgLevelCode,org_abbr_name as orgAbbrName from tb_res_org_m
+        <where>
+            <if test="enName!=null">and en_name=#{enName}</if>
+            <if test="expressfunction!=null">and expressfunction=#{expressfunction}</if>
+            <if test="siteFlag!=null">and site_flag=#{siteFlag}</if>
+            <if test="orgCode!=null">and org_code=#{orgCode}</if>
+            <if test="postCode!=null">and post_code=#{postCode}</if>
+            <if test="countyCode!=null">and county_code=#{countyCode}</if>
+            <if test="range!=null">and range=#{range}</if>
+            <if test="customOfficeCode!=null">and custom_office_code=#{customOfficeCode}</if>
+            <if test="customStationFlag!=null">and custom_station_flag=#{customStationFlag}</if>
+            <if test="cityCode!=null">and city_code=#{cityCode}</if>
+            <if test="exchBureauCode!=null">and exch_bureau_code=#{exchBureauCode}</if>
+            <if test="exchBureauFlag!=null">and exch_bureau_flag=#{exchBureauFlag}</if>
+            <if test="orgFullName!=null">and org_full_name=#{orgFullName}</if>
+            <if test="provCode!=null">and prov_code=#{provCode}</if>
+            <if test="siteLevel!=null">and site_level=#{siteLevel}</if>
+            <if test="orgAbbrSpel!=null">and org_abbr_spel=#{orgAbbrSpel}</if>
+            <if test="upOrgCode!=null">and up_org_code=#{upOrgCode}</if>
+            <if test="expresslevel!=null">and expresslevel=#{expresslevel}</if>
+            <if test="cltlevel!=null">and cltlevel=#{cltlevel}</if>
+            <if test="orgLevelCode!=null">and org_level_code=#{orgLevelCode}</if>
+            <if test="orgAbbrName!=null">and org_abbr_name=#{orgAbbrName}</if>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+        <if test="sqlOrderBy!=null">order by ${sqlOrderBy}</if>
+			) A
+        <if test="sqlLimit==true">
+		where rowNum &lt;= #{sqlEndIndex}+1 
+		) where rowNum &gt;=#{sqlStartIndex}+1 
+		</if>
+    </select>
+    <select id="selectOne" parameterType="bean.in.TbResOrgMInBean" resultType="bean.out.TbResOrgMOutBean">
+		select en_name as enNameexpressfunction as expressfunctionsite_flag as siteFlagorg_code as orgCodepost_code as postCodecounty_code as countyCoderange as rangecustom_office_code as customOfficeCodecustom_station_flag as customStationFlagcity_code as cityCodeexch_bureau_code as exchBureauCodeexch_bureau_flag as exchBureauFlagorg_full_name as orgFullNameprov_code as provCodesite_level as siteLevelorg_abbr_spel as orgAbbrSpelup_org_code as upOrgCodeexpresslevel as expresslevelcltlevel as cltlevelorg_level_code as orgLevelCodeorg_abbr_name as orgAbbrName from tb_res_org_m
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <select id="getCount" parameterType="bean.in.TbResOrgMInBean" resultType="int">
+		select count(*) from tb_res_org_m
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <update id="update" parameterType="bean.TbResOrgMBean">
+		update tb_res_org_m
+        <set>
+            <if test="enName==null">en_name=null,</if>
+            <if test="enName!=null">en_name=#{enName},</if>
+            <if test="expressfunction==null">expressfunction=null,</if>
+            <if test="expressfunction!=null">expressfunction=#{expressfunction},</if>
+            <if test="siteFlag==null">site_flag=null,</if>
+            <if test="siteFlag!=null">site_flag=#{siteFlag},</if>
+            <if test="orgCode==null">org_code=null,</if>
+            <if test="orgCode!=null">org_code=#{orgCode},</if>
+            <if test="postCode==null">post_code=null,</if>
+            <if test="postCode!=null">post_code=#{postCode},</if>
+            <if test="countyCode==null">county_code=null,</if>
+            <if test="countyCode!=null">county_code=#{countyCode},</if>
+            <if test="range==null">range=null,</if>
+            <if test="range!=null">range=#{range},</if>
+            <if test="customOfficeCode==null">custom_office_code=null,</if>
+            <if test="customOfficeCode!=null">custom_office_code=#{customOfficeCode},</if>
+            <if test="customStationFlag==null">custom_station_flag=null,</if>
+            <if test="customStationFlag!=null">custom_station_flag=#{customStationFlag},</if>
+            <if test="cityCode==null">city_code=null,</if>
+            <if test="cityCode!=null">city_code=#{cityCode},</if>
+            <if test="exchBureauCode==null">exch_bureau_code=null,</if>
+            <if test="exchBureauCode!=null">exch_bureau_code=#{exchBureauCode},</if>
+            <if test="exchBureauFlag==null">exch_bureau_flag=null,</if>
+            <if test="exchBureauFlag!=null">exch_bureau_flag=#{exchBureauFlag},</if>
+            <if test="orgFullName==null">org_full_name=null,</if>
+            <if test="orgFullName!=null">org_full_name=#{orgFullName},</if>
+            <if test="provCode==null">prov_code=null,</if>
+            <if test="provCode!=null">prov_code=#{provCode},</if>
+            <if test="siteLevel==null">site_level=null,</if>
+            <if test="siteLevel!=null">site_level=#{siteLevel},</if>
+            <if test="orgAbbrSpel==null">org_abbr_spel=null,</if>
+            <if test="orgAbbrSpel!=null">org_abbr_spel=#{orgAbbrSpel},</if>
+            <if test="upOrgCode==null">up_org_code=null,</if>
+            <if test="upOrgCode!=null">up_org_code=#{upOrgCode},</if>
+            <if test="expresslevel==null">expresslevel=null,</if>
+            <if test="expresslevel!=null">expresslevel=#{expresslevel},</if>
+            <if test="cltlevel==null">cltlevel=null,</if>
+            <if test="cltlevel!=null">cltlevel=#{cltlevel},</if>
+            <if test="orgLevelCode==null">org_level_code=null,</if>
+            <if test="orgLevelCode!=null">org_level_code=#{orgLevelCode},</if>
+            <if test="orgAbbrName==null">org_abbr_name=null,</if>
+            <if test="orgAbbrName!=null">org_abbr_name=#{orgAbbrName},</if>
+        </set>
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </update>
+    <insert id="insert" parameterType="bean.TbResOrgMBean">
+		insert into tb_res_org_m
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="enName!=null">en_name,</if>
+            <if test="expressfunction!=null">expressfunction,</if>
+            <if test="siteFlag!=null">site_flag,</if>
+            <if test="orgCode!=null">org_code,</if>
+            <if test="postCode!=null">post_code,</if>
+            <if test="countyCode!=null">county_code,</if>
+            <if test="range!=null">range,</if>
+            <if test="customOfficeCode!=null">custom_office_code,</if>
+            <if test="customStationFlag!=null">custom_station_flag,</if>
+            <if test="cityCode!=null">city_code,</if>
+            <if test="exchBureauCode!=null">exch_bureau_code,</if>
+            <if test="exchBureauFlag!=null">exch_bureau_flag,</if>
+            <if test="orgFullName!=null">org_full_name,</if>
+            <if test="provCode!=null">prov_code,</if>
+            <if test="siteLevel!=null">site_level,</if>
+            <if test="orgAbbrSpel!=null">org_abbr_spel,</if>
+            <if test="upOrgCode!=null">up_org_code,</if>
+            <if test="expresslevel!=null">expresslevel,</if>
+            <if test="cltlevel!=null">cltlevel,</if>
+            <if test="orgLevelCode!=null">org_level_code,</if>
+            <if test="orgAbbrName!=null">org_abbr_name,</if>
+        </trim>
+ 			values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="enName!=null">#{enName},</if>
+            <if test="expressfunction!=null">#{expressfunction},</if>
+            <if test="siteFlag!=null">#{siteFlag},</if>
+            <if test="orgCode!=null">#{orgCode},</if>
+            <if test="postCode!=null">#{postCode},</if>
+            <if test="countyCode!=null">#{countyCode},</if>
+            <if test="range!=null">#{range},</if>
+            <if test="customOfficeCode!=null">#{customOfficeCode},</if>
+            <if test="customStationFlag!=null">#{customStationFlag},</if>
+            <if test="cityCode!=null">#{cityCode},</if>
+            <if test="exchBureauCode!=null">#{exchBureauCode},</if>
+            <if test="exchBureauFlag!=null">#{exchBureauFlag},</if>
+            <if test="orgFullName!=null">#{orgFullName},</if>
+            <if test="provCode!=null">#{provCode},</if>
+            <if test="siteLevel!=null">#{siteLevel},</if>
+            <if test="orgAbbrSpel!=null">#{orgAbbrSpel},</if>
+            <if test="upOrgCode!=null">#{upOrgCode},</if>
+            <if test="expresslevel!=null">#{expresslevel},</if>
+            <if test="cltlevel!=null">#{cltlevel},</if>
+            <if test="orgLevelCode!=null">#{orgLevelCode},</if>
+            <if test="orgAbbrName!=null">#{orgAbbrName},</if>
+        </trim>
+    </insert>
+    <delete id="delete" parameterType="bean.TbResOrgMBean">
+		DELETE FROM tb_res_org_m
+        <if test="sqlWhere !=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </delete>
+</mapper>

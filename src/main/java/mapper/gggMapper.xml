@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.IGggDao">
+    <select id="selectList" parameterType="bean.in.GggInBean" resultType="bean.out.GggOutBean">
+		select (@i:=@i+1) rowNum,
+			id as id,
+			name as name
+		 from ggg, (SELECT @i:=0) as i
+        <where>
+            <if test="id!=null">and id=#{id}</if>
+            <if test="name!=null">and name=#{name}</if>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+        <if test="sqlOrderBy!=null">order by ${sqlOrderBy}</if>
+        <if test="sqlLimit==true">LIMIT #{sqlStartIndex},#{sqlPageSize}</if>
+    </select>
+    <select id="selectOne" parameterType="bean.in.GggInBean" resultType="bean.out.GggOutBean">
+		 select 
+			id as id,
+			name as name
+		 from ggg
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <select id="getCount" parameterType="bean.in.GggInBean" resultType="int">
+		select count(*) from ggg
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <update id="update" parameterType="bean.GggBean">
+		update ggg
+        <set>
+            <if test="id==null">id=null,</if>
+            <if test="id!=null">id=#{id},</if>
+            <if test="name==null">name=null,</if>
+            <if test="name!=null">name=#{name},</if>
+        </set>
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </update>
+    <insert id="insert" parameterType="bean.GggBean">
+		insert into ggg
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id!=null">id,</if>
+            <if test="name!=null">name,</if>
+        </trim>
+ 			values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id!=null">#{id},</if>
+            <if test="name!=null">#{name},</if>
+        </trim>
+    </insert>
+    <delete id="delete" parameterType="bean.GggBean">
+		DELETE FROM ggg
+        <if test="sqlWhere !=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </delete>
+</mapper>

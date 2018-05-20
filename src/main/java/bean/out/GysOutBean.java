@@ -1,27 +1,26 @@
 package bean.out;
 
-import table.bean.BaseOutBean;
+import mybatisauto.bean.BaseOutBean;
 
 public class GysOutBean extends BaseOutBean{
+	private Integer id;
 
-	private Long id;
+	private String roleName;
 
-	private Long age;
+	private String note;
 
-	private String name;
+	private Double price3;
 
-	private Double weight;
+	public Integer getId(){return id;}
+	public void setId(Integer id){this.id=id;}
 
-	public Long getId(){return id;}
-	public void setId(Long id){this.id=id;}
+	public String getRoleName(){return roleName;}
+	public void setRoleName(String roleName){this.roleName=roleName;}
 
-	public Long getAge(){return age;}
-	public void setAge(Long age){this.age=age;}
+	public String getNote(){return note;}
+	public void setNote(String note){this.note=note;}
 
-	public String getName(){return name;}
-	public void setName(String name){this.name=name;}
-
-	public Double getWeight(){return weight;}
-	public void setWeight(Double weight){this.weight=weight;}
+	public Double getPrice3(){return price3;}
+	public void setPrice3(Double price3){this.price3=price3;}
 
 }

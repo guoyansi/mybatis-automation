@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.ITdSysOrgLevelDao">
+    <select id="selectList" parameterType="bean.in.TdSysOrgLevelInBean" resultType="bean.out.TdSysOrgLevelOutBean">
+		
+        <if test="sqlLimit==true">
+			select * from (
+		</if>
+		 select A.*,  rowNum from (
+		 	select remark as remark,create_date as createDate,up_org_level_id as upOrgLevelId,edit_id as editId,sid as sid,org_level_name as orgLevelName,create_id as createId,edit_date as editDate,org_level_code as orgLevelCode,admin_scope as adminScope from td_sys_org_level
+        <where>
+            <if test="remark!=null">and remark=#{remark}</if>
+            <if test="createDate!=null">and create_date=#{createDate}</if>
+            <if test="upOrgLevelId!=null">and up_org_level_id=#{upOrgLevelId}</if>
+            <if test="editId!=null">and edit_id=#{editId}</if>
+            <if test="sid!=null">and sid=#{sid}</if>
+            <if test="orgLevelName!=null">and org_level_name=#{orgLevelName}</if>
+            <if test="createId!=null">and create_id=#{createId}</if>
+            <if test="editDate!=null">and edit_date=#{editDate}</if>
+            <if test="orgLevelCode!=null">and org_level_code=#{orgLevelCode}</if>
+            <if test="adminScope!=null">and admin_scope=#{adminScope}</if>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+        <if test="sqlOrderBy!=null">order by ${sqlOrderBy}</if>
+			) A
+        <if test="sqlLimit==true">
+		where rowNum &lt;= #{sqlEndIndex}+1 
+		) where rowNum &gt;=#{sqlStartIndex}+1 
+		</if>
+    </select>
+    <select id="selectOne" parameterType="bean.in.TdSysOrgLevelInBean" resultType="bean.out.TdSysOrgLevelOutBean">
+		select remark as remarkcreate_date as createDateup_org_level_id as upOrgLevelIdedit_id as editIdsid as sidorg_level_name as orgLevelNamecreate_id as createIdedit_date as editDateorg_level_code as orgLevelCodeadmin_scope as adminScope from td_sys_org_level
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <select id="getCount" parameterType="bean.in.TdSysOrgLevelInBean" resultType="int">
+		select count(*) from td_sys_org_level
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <update id="update" parameterType="bean.TdSysOrgLevelBean">
+		update td_sys_org_level
+        <set>
+            <if test="remark==null">remark=null,</if>
+            <if test="remark!=null">remark=#{remark},</if>
+            <if test="createDate==null">create_date=null,</if>
+            <if test="createDate!=null">create_date=#{createDate},</if>
+            <if test="upOrgLevelId==null">up_org_level_id=null,</if>
+            <if test="upOrgLevelId!=null">up_org_level_id=#{upOrgLevelId},</if>
+            <if test="editId==null">edit_id=null,</if>
+            <if test="editId!=null">edit_id=#{editId},</if>
+            <if test="sid==null">sid=null,</if>
+            <if test="sid!=null">sid=#{sid},</if>
+            <if test="orgLevelName==null">org_level_name=null,</if>
+            <if test="orgLevelName!=null">org_level_name=#{orgLevelName},</if>
+            <if test="createId==null">create_id=null,</if>
+            <if test="createId!=null">create_id=#{createId},</if>
+            <if test="editDate==null">edit_date=null,</if>
+            <if test="editDate!=null">edit_date=#{editDate},</if>
+            <if test="orgLevelCode==null">org_level_code=null,</if>
+            <if test="orgLevelCode!=null">org_level_code=#{orgLevelCode},</if>
+            <if test="adminScope==null">admin_scope=null,</if>
+            <if test="adminScope!=null">admin_scope=#{adminScope},</if>
+        </set>
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </update>
+    <insert id="insert" parameterType="bean.TdSysOrgLevelBean">
+		insert into td_sys_org_level
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="remark!=null">remark,</if>
+            <if test="createDate!=null">create_date,</if>
+            <if test="upOrgLevelId!=null">up_org_level_id,</if>
+            <if test="editId!=null">edit_id,</if>
+            <if test="sid!=null">sid,</if>
+            <if test="orgLevelName!=null">org_level_name,</if>
+            <if test="createId!=null">create_id,</if>
+            <if test="editDate!=null">edit_date,</if>
+            <if test="orgLevelCode!=null">org_level_code,</if>
+            <if test="adminScope!=null">admin_scope,</if>
+        </trim>
+ 			values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="remark!=null">#{remark},</if>
+            <if test="createDate!=null">#{createDate},</if>
+            <if test="upOrgLevelId!=null">#{upOrgLevelId},</if>
+            <if test="editId!=null">#{editId},</if>
+            <if test="sid!=null">#{sid},</if>
+            <if test="orgLevelName!=null">#{orgLevelName},</if>
+            <if test="createId!=null">#{createId},</if>
+            <if test="editDate!=null">#{editDate},</if>
+            <if test="orgLevelCode!=null">#{orgLevelCode},</if>
+            <if test="adminScope!=null">#{adminScope},</if>
+        </trim>
+    </insert>
+    <delete id="delete" parameterType="bean.TdSysOrgLevelBean">
+		DELETE FROM td_sys_org_level
+        <if test="sqlWhere !=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </delete>
+</mapper>

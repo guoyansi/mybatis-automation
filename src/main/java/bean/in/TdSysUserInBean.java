@@ -1,9 +1,8 @@
 package bean.in;
 
-import table.bean.BaseInBean;
+import mybatisauto.bean.BaseInBean;
 
 public class TdSysUserInBean extends BaseInBean{
-
 	private String sid;
 
 	private String createDate;

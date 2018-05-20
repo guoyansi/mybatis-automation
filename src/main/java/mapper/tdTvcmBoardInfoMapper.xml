@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.ITdTvcmBoardInfoDao">
+    <select id="selectList" parameterType="bean.in.TdTvcmBoardInfoInBean" resultType="bean.out.TdTvcmBoardInfoOutBean">
+		
+        <if test="sqlLimit==true">
+			select * from (
+		</if>
+		 select A.*,  rowNum from (
+		 	select create_user as createUser,create_time as createTime,board_name as boardName,board_id as boardId from td_tvcm_board_info
+        <where>
+            <if test="createUser!=null">and create_user=#{createUser}</if>
+            <if test="createTime!=null">and create_time=#{createTime}</if>
+            <if test="boardName!=null">and board_name=#{boardName}</if>
+            <if test="boardId!=null">and board_id=#{boardId}</if>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+        <if test="sqlOrderBy!=null">order by ${sqlOrderBy}</if>
+			) A
+        <if test="sqlLimit==true">
+		where rowNum &lt;= #{sqlEndIndex}+1 
+		) where rowNum &gt;=#{sqlStartIndex}+1 
+		</if>
+    </select>
+    <select id="selectOne" parameterType="bean.in.TdTvcmBoardInfoInBean" resultType="bean.out.TdTvcmBoardInfoOutBean">
+		select create_user as createUsercreate_time as createTimeboard_name as boardNameboard_id as boardId from td_tvcm_board_info
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <select id="getCount" parameterType="bean.in.TdTvcmBoardInfoInBean" resultType="int">
+		select count(*) from td_tvcm_board_info
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </select>
+    <update id="update" parameterType="bean.TdTvcmBoardInfoBean">
+		update td_tvcm_board_info
+        <set>
+            <if test="createUser==null">create_user=null,</if>
+            <if test="createUser!=null">create_user=#{createUser},</if>
+            <if test="createTime==null">create_time=null,</if>
+            <if test="createTime!=null">create_time=#{createTime},</if>
+            <if test="boardName==null">board_name=null,</if>
+            <if test="boardName!=null">board_name=#{boardName},</if>
+            <if test="boardId==null">board_id=null,</if>
+            <if test="boardId!=null">board_id=#{boardId},</if>
+        </set>
+        <if test="sqlWhere!=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </update>
+    <insert id="insert" parameterType="bean.TdTvcmBoardInfoBean">
+		insert into td_tvcm_board_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="createUser!=null">create_user,</if>
+            <if test="createTime!=null">create_time,</if>
+            <if test="boardName!=null">board_name,</if>
+            <if test="boardId!=null">board_id,</if>
+        </trim>
+ 			values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="createUser!=null">#{createUser},</if>
+            <if test="createTime!=null">#{createTime},</if>
+            <if test="boardName!=null">#{boardName},</if>
+            <if test="boardId!=null">#{boardId},</if>
+        </trim>
+    </insert>
+    <delete id="delete" parameterType="bean.TdTvcmBoardInfoBean">
+		DELETE FROM td_tvcm_board_info
+        <if test="sqlWhere !=null">
+            <where>${sqlWhere}</where>
+        </if>
+    </delete>
+</mapper>
