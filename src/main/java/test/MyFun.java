@@ -1,5 +1,12 @@
 package test;
 
+import java.util.List;
+
+import dao.IGysDao;
+import bean.GysBean;
+import bean.in.GysInBean;
+import bean.out.GysOutBean;
+import mybatisauto.create.IBaseMyBatisDao;
 import table.DataSource;
 
 public class MyFun {
@@ -8,17 +15,18 @@ public class MyFun {
 		try {
 			DataSource ds=new DataSource("test/run-mybatis-config.xml");
 			ds.openSession();
-			/*ITable<GysInBean, GysOutBean> dao=ds.getDao(IGysDao.class);
+			IBaseMyBatisDao<GysBean, GysInBean, GysOutBean> dao=ds.getDao(IGysDao.class);
+			//ITable<GysInBean, GysOutBean> dao=ds.getDao(IGysDao.class);
 			GysInBean t=new GysInBean();
-			t.setSqlWhere("age=20");
+			//t.setSqlWhere("age=20");
 			int count=dao.getCount(t);
 			System.out.println("总数："+count);
 			ds.commit();
 			List<GysOutBean> list=dao.selectList(t);
 			for(GysOutBean g:list){
-				System.out.println("序号："+g.getRowNum()+";主键："+g.getId()+";name:"+g.getName()+";age:"+g.getAge()+";weight"+g.getWeight());
+				System.out.println("序号："+g.getRn()+";主键："+g.getId()+";name:"+g.getRoleName()+";note:"+g.getNote()+";");
 			}
-			System.out.println("==============");
+			/*System.out.println("==============");
 			ITable<TdSysUserInBean,TdSysUserOutBean> userDao=ds.getDao(ITdSysUserDao.class);
 			TdSysUserInBean userbean=new TdSysUserInBean();
 			userbean.setUserCode("admin");

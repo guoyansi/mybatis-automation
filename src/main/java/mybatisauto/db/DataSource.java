@@ -29,7 +29,7 @@ public class DataSource {
 		
 		List<TableBean> ts=db.getTableList(stmt,config.getTables(),config.getExceptTables());
 		for(TableBean t:ts){
-			System.out.println(t.getSqlName());
+			System.out.println("表====："+t.getSqlName());
 			List<FieldBean> fs=db.getFieldList(stmt,t,config.getIsCamelField());
 			CreateFile cf=new CreateFile(db);
 			cf.createBean(config,t,fs);
@@ -42,6 +42,7 @@ public class DataSource {
 		if(conn!=null){
 			conn.close();
 		}
+		System.out.println("执行结束======");
 	}
 		
 	private boolean isEmpty(String s){

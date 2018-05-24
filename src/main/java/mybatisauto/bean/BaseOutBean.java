@@ -11,14 +11,16 @@ public class BaseOutBean implements Serializable{
 	private static final long serialVersionUID = -1L;
 	
 	//行号
-	private Integer rowNum;
+	private Integer rn;
+
+	public Integer getRn() {
+		return rn;
+	}
+
+	public void setRn(Integer rn) {
+		this.rn = rn;
+	}
 	
-	public Integer getRowNum() {
-		return rowNum;
-	}
-	public void setRowNum(Integer rowNum) {
-		this.rowNum = rowNum;
-	}
 	
 	
 

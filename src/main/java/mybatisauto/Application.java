@@ -6,7 +6,6 @@ import java.util.List;
 import mybatisauto.bean.AutoConfig;
 import mybatisauto.bean.JdbcBean;
 import mybatisauto.db.DataSource;
-import mybatisauto.db.MySqlDataBase;
 
 public class Application {
 	public static void main(String[] args) throws Exception{

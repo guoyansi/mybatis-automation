@@ -41,15 +41,7 @@ public class MySqlDataBase extends DataBase{
 		String key="tables_in_"+dbName;//返回字段名
 		String sql=getTableSql(key,tables,exceptTable);
 		System.out.println(sql);
-		ResultSet rs=stmt.executeQuery(sql);
-		List<TableBean> ts=new ArrayList<TableBean>();
-		while(rs.next()){
-			String name=rs.getString(key);
-			ts.add(this.setTableBeanName(name));
-		}
-		if(rs!=null){
-			rs.close();
-		}
+		List<TableBean> ts=this.executeQueryTable(stmt,sql,key);
 		return ts;
 	}
 	
@@ -57,25 +49,8 @@ public class MySqlDataBase extends DataBase{
 	protected List<FieldBean> getFieldList(Statement stmt,TableBean table,Boolean isCamel) throws Exception {
 		ResultSet rs=stmt.executeQuery("desc "+table.getSqlName());
 		List<FieldBean> fs=new ArrayList<FieldBean>();
-		FieldBean f=null;
 		while(rs.next()){
-			f=new FieldBean();
-			String type=rs.getString("Type");
-			String name=rs.getString("Field");
-			f.setSqlName(name);
-			f.setBeanName(this.setFieldBeanName(isCamel, name));
-			f.setSqlType(type);
-			f.setJavaType(this.getJavaType(type));
-			boolean iskey=this.checkKey(rs.getString("Key"));
-			f.setIsKey(iskey);
-			//表示table 是否有主键
-			if(iskey){
-				table.setHaveKey(true);
-			}
-			f.setIsAutoAdd(this.checkAutoAdd(rs.getString("Extra")));
-			System.out.println("==>>"+rs.getString("default"));
-			f.setDefaults(rs.getString("default"));
-			fs.add(f);
+			fs.add(this.initFieldBean(rs,table,isCamel));
 		}
 		return fs;
 	}
@@ -170,7 +145,7 @@ public class MySqlDataBase extends DataBase{
 		
 	}
 	
-	private Document mapperDocument(AutoConfig config, TableBean table,List<FieldBean> fs){
+	private Document mapperDocument(AutoConfig config, TableBean table,List<FieldBean> fs) throws Exception{
 		Document document=DocumentHelper.createDocument();
 		document.addDocType("mapper", "-//mybatis.org//DTD Mapper 3.0//EN", "http://mybatis.org/dtd/mybatis-3-mapper.dtd");
 		Element root=document.addElement("mapper");
@@ -205,40 +180,13 @@ public class MySqlDataBase extends DataBase{
 	 * @param root
 	 * @param c
 	 */
-	private void selectListDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs){
-		Element select=root.addElement("select");
-		select.addAttribute("id", "selectList");
-		select.addAttribute("parameterType",config.getBeanPackage()+".in."+table.getBeanInName());
-		select.addAttribute("resultType", config.getBeanPackage()+".out."+table.getBeanOutName());
-		select.addText("\n\t\t");
-		StringBuffer sb=new StringBuffer();
-		int i=0;
-		for(FieldBean f:fs){
-			i++;
-			sb.append("\n\t\t\t"+f.getSqlName());
-			sb.append(" as ");
-			sb.append(f.getBeanName());
-			if(i<fs.size()){
-				sb.append(",");
-			}
-		}
-		
-		select.addText("select (@i:=@i+1) rowNum,"+sb.toString()+"\n\t\t from "+table.getSqlName()+", (SELECT @i:=0) as i");
-		
-		Element whereTag=select.addElement("where");
-		for(FieldBean f:fs){
-			Element ifTag=whereTag.addElement("if");
-			ifTag.addAttribute("test", f.getBeanName()+"!=null");
-			ifTag.addText("and "+f.getSqlName()+"=#{"+f.getBeanName()+"}");
-		}
-		Element whereIf=whereTag.addElement("if");
-		whereIf.addAttribute("test", "sqlWhere!=null");
-		whereIf.addText("${sqlWhere}");
-		
-		
-		Element orderByIf=select.addElement("if");
-		orderByIf.addAttribute("test","sqlOrderBy!=null");
-		orderByIf.addText("order by ${sqlOrderBy}");
+	@Override
+	public void selectListDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception{
+		Element select=this.getSelectListTag(root,config,table);
+		StringBuffer sb=this.getFieldsSB(fs);
+		select.addText("select (@i:=@i+1) rn,"+sb.toString()+"\n\t\t from "+table.getSqlName()+", (SELECT @i:=0) as i");
+		this.getSelectWhere(select,fs);
+		getSelectListOrderBy(select);
 		Element limitIf=select.addElement("if");
 		limitIf.addAttribute("test","sqlLimit==true");
 		limitIf.addText("LIMIT #{sqlStartIndex},#{sqlPageSize}");
@@ -248,29 +196,9 @@ public class MySqlDataBase extends DataBase{
 	 * @param root
 	 * @param c
 	 */
-	private void selectOneDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs){
-		Element select=root.addElement("select");
-		select.addAttribute("id", "selectOne");
-		select.addAttribute("parameterType",config.getBeanPackage()+".in."+table.getBeanInName());
-		select.addAttribute("resultType", config.getBeanPackage()+".out."+table.getBeanOutName());
-		StringBuffer sb=new StringBuffer();
-		int i=0;
-		for(FieldBean f:fs){
-			i++;
-			sb.append("\n\t\t\t"+f.getSqlName());
-			sb.append(" as ");
-			sb.append(f.getBeanName());
-			if(i<fs.size()){
-				sb.append(",");
-			}
-		}
-		
-		select.addText("\n\t\t select "+sb.toString()+"\n\t\t from "+table.getSqlName());
-		
-		Element whereIf=select.addElement("if");
-		whereIf.addAttribute("test", "sqlWhere!=null");
-		Element whereTag=whereIf.addElement("where");
-		whereTag.addText("${sqlWhere}");
+	@Override
+	public void selectOneDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception{
+		super.selectOneDocument(root, config, table, fs);
 	}
 	
 	/**
@@ -278,136 +206,37 @@ public class MySqlDataBase extends DataBase{
 	 * @param root
 	 * @param c
 	 */
-	private void selectOneByIdDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs){
-		Element select=root.addElement("select");
-		select.addAttribute("id", "selectOneById");
-		select.addAttribute("parameterType","object");
-		select.addAttribute("resultType", config.getBeanPackage() +"."+table.getBeanName());
-		select.addText("\n\t\t");
-		StringBuffer sb=new StringBuffer();
-		int i=0;
-		String key="";
-		for(FieldBean f:fs){
-			i++;
-			sb.append("\n\t\t\t"+f.getSqlName());
-			sb.append(" as ");
-			sb.append(f.getBeanName());
-			if(i<fs.size()){
-				sb.append(",");
-			}
-			if(f.getIsKey()){
-				key=f.getSqlName();
-			}
-			
-		}
-		
-		select.addText("select "+sb.toString()+"\n\t\t\tfrom "+table.getSqlName());
-		
-		Element whereTag=select.addElement("where");
-		whereTag.addText(key+"=#{_parameter}");
+	@Override
+	public void selectOneByIdDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception{
+		super.selectOneByIdDocument(root, config, table, fs);
 	}
 	/**
 	 * 获取count
 	 * @param root
 	 * @param c
 	 */
-	private void getCountDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs){
-		Element select=root.addElement("select");
-		select.addAttribute("id", "getCount");
-		select.addAttribute("parameterType",config.getBeanPackage()+".in."+table.getBeanInName());
-		select.addAttribute("resultType", "int");
-		select.addText("\n\t\t");
-		
-		select.addText("select count(*) from "+table.getSqlName());
-		Element whereIf=select.addElement("if");
-		whereIf.addAttribute("test", "sqlWhere!=null");
-		Element whereTag=whereIf.addElement("where");
-		whereTag.addText("${sqlWhere}");
+	@Override
+	public void getCountDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception{
+		super.getCountDocument(root, config, table, fs);
 	}
-	private void updateDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs){
-		Element update=root.addElement("update");
-		update.addAttribute("id", "update");
-		update.addAttribute("parameterType",config.getBeanPackage()+"."+table.getBeanName());
-		update.addText("\n\t\t");
-		update.addText("update "+table.getSqlName());
-		Element setTag=update.addElement("set");
-		for(FieldBean f:fs){
-			if(f.getIsKey()){
-				continue;
-			}
-			Element ifTag=setTag.addElement("if");
-			ifTag.addAttribute("test", f.getBeanName()+"==null");
-			ifTag.addText(f.getSqlName()+"=null,");
-			Element ifTag1=setTag.addElement("if");
-			ifTag1.addAttribute("test", f.getBeanName()+"!=null");
-			ifTag1.addText(f.getSqlName()+"=#{"+f.getBeanName()+"},");
-		}
-		Element whereIf=update.addElement("if");
-		whereIf.addAttribute("test", "sqlWhere!=null");
-		Element whereTag=whereIf.addElement("where");
-		whereTag.addText("${sqlWhere}");
+	@Override
+	public void updateDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception{
+		super.updateDocument(root, config, table, fs);
 	}
 	
 	
-	private void updateByIdDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs){
-		Element update=root.addElement("update");
-		update.addAttribute("id", "updateById");
-		update.addAttribute("parameterType",config.getBeanPackage()+"."+table.getBeanName());
-		update.addText("\n\t\t");
-		update.addText("update "+table.getSqlName());
-		Element setTag=update.addElement("set");
-		String key=null;
-		for(FieldBean f:fs){
-			if(f.getIsKey()){
-				key=f.getSqlName();
-				continue;
-			}
-			Element ifTag=setTag.addElement("if");
-			ifTag.addAttribute("test", f.getSqlName()+"==null");
-			ifTag.addText(f.getSqlName()+"=null,");
-			Element ifTag1=setTag.addElement("if");
-			ifTag1.addAttribute("test", f.getSqlName()+"!=null");
-			ifTag1.addText(f.getSqlName()+"=#{"+f.getBeanName()+"},");
-		}
-		update.addText("\n			where "+key+"=#{_parameter}");
+	@Override
+	public void updateByIdDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception{
+		super.updateByIdDocument(root, config, table, fs);
 	}
 	
-	private void insertDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs){
-		Element insert=root.addElement("insert");
-
-		insert.addAttribute("id", "insert");
-		insert.addAttribute("parameterType", config.getBeanPackage()+"."+table.getBeanName());
-		
-		insert.addText("\n\t\t");
-		insert.addText("insert into "+table.getSqlName());
-		
-		Element trim1=insert.addElement("trim");
-		trim1.addAttribute("prefix", "(");
-		trim1.addAttribute("suffix", ")");
-		trim1.addAttribute("suffixOverrides", ",");
-		
-		insert.addText("\n 			values");
-		
-		Element trim2=insert.addElement("trim");
-		trim2.addAttribute("prefix", "(");
-		trim2.addAttribute("suffix", ")");
-		trim2.addAttribute("suffixOverrides", ",");
-		for(FieldBean f:fs){
-			if(f.getIsKey()&&f.getIsAutoAdd()){
-				continue;
-			}
-			
-			Element ifTag1=trim1.addElement("if");
-			ifTag1.addAttribute("test", f.getBeanName()+"!=null");
-			ifTag1.addText(f.getSqlName()+",");
-		
-			Element ifTag2=trim2.addElement("if");
-			ifTag2.addAttribute("test", f.getBeanName()+"!=null");
-			ifTag2.addText("#{"+f.getBeanName()+"},");
-		}
+	@Override
+	public void insertDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception{
+		super.insertDocument(root, config, table, fs);
 	}
 
-	private void insertGetIdDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs){
+	@Override
+	public void insertGetIdDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception{
 		Element insert=root.addElement("insert");
 		String key=null;
 		//String keyType=null;
@@ -423,61 +252,14 @@ public class MySqlDataBase extends DataBase{
 		
 		insert.addAttribute("parameterType", config.getBeanPackage()+"."+table.getBeanName());
 		
-		insert.addText("\n\t\t");
-		insert.addText("insert into "+table.getSqlName());
-		
-		Element trim1=insert.addElement("trim");
-		trim1.addAttribute("prefix", "(");
-		trim1.addAttribute("suffix", ")");
-		trim1.addAttribute("suffixOverrides", ",");
-		
-		insert.addText("\n 			values");
-		
-		Element trim2=insert.addElement("trim");
-		trim2.addAttribute("prefix", "(");
-		trim2.addAttribute("suffix", ")");
-		trim2.addAttribute("suffixOverrides", ",");
-		for(FieldBean f:fs){
-			if(f.getIsKey()&&f.getIsAutoAdd()){
-				continue;
-			}
-			Element ifTag1=trim1.addElement("if");
-			ifTag1.addAttribute("test", f.getBeanName()+"!=null");
-			ifTag1.addText(f.getSqlName()+",");
-			
-			Element ifTag2=trim2.addElement("if");
-			ifTag2.addAttribute("test", f.getBeanName()+"!=null");
-			ifTag2.addText("#{"+f.getBeanName()+"},");
-		}
+		this.insertSql(insert, table, fs);
 	}
-	private void deleteDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs){
-		Element insert=root.addElement("delete");
-		insert.addAttribute("id", "delete");
-		insert.addAttribute("parameterType",config.getBeanPackage()+"."+table.getBeanName());
-		insert.addText("\n\t\t");
-		insert.addText("DELETE FROM "+table.getSqlName());
-		Element whereIf=insert.addElement("if");
-		whereIf.addAttribute("test", "sqlWhere !=null");
-		Element where=whereIf.addElement("where");
-		where.addText("${sqlWhere}");
+	@Override
+	public void deleteDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception{
+		super.deleteDocument(root, config, table, fs);
 	}
-	
-	private void deleteByIdDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs){
-		Element insert=root.addElement("delete");
-		insert.addAttribute("id", "deleteById");
-		insert.addAttribute("parameterType","object");
-		insert.addText("\n\t\t");
-		insert.addText("DELETE FROM "+table.getSqlName());
-		Element whereIf=insert.addElement("if");
-		whereIf.addAttribute("test", "sqlWhere !=null");
-		Element where=whereIf.addElement("where");
-			String key="";
-			for(FieldBean f:fs){
-				if(f.getIsKey()){
-					key=f.getSqlName();
-					break;
-				}
-			}
-			where.addText(key+"=#{_parameter}");
+	@Override
+	public void deleteByIdDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception{
+		super.deleteByIdDocument(root, config, table, fs);
 	}
 }
