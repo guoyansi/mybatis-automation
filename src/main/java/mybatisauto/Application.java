@@ -29,7 +29,7 @@ public class Application {
 		//是否驼峰命名字段
 		config.setIsCamelField(true);
 		List<String> talbes=new ArrayList<String>();
-		//talbes.add("td_sys_func");
+		talbes.add("gys");
 		config.setTables(talbes);
 		DataSource ds=new DataSource(jdbc);
 		ds.start(config);

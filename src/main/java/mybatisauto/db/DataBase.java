@@ -277,7 +277,7 @@ public abstract class DataBase {
 			w.write("\n");
 			/*w.write("	private Boolean " +f.getSqlInName() +"=false;\n");
 			w.write("\n");*/
-			w.write("	private List<Object> " +f.getSqlInListName() +";\n");
+			w.write("	private List<"+f.getJavaType()+"> " +f.getSqlInListName() +";\n");
 			w.write("\n");
 			
 			// get
@@ -329,9 +329,9 @@ public abstract class DataBase {
 			w.write("\n");*/
 			
 			// get
-			w.write("	public List<Object> get"+ firstUpperCase(f.getSqlInListName())+ "(){return " +f.getSqlInListName()+";}\n");
+			w.write("	public List<"+f.getJavaType()+"> get"+ firstUpperCase(f.getSqlInListName())+ "(){return " +f.getSqlInListName()+";}\n");
 			// set
-			w.write("	public void set" + firstUpperCase(f.getSqlInListName())+ "(List<Object> " + f.getSqlInListName() + "){this."+f.getSqlInListName() + "=" + f.getSqlInListName()+ ";}\n");
+			w.write("	public void set" + firstUpperCase(f.getSqlInListName())+ "(List<"+f.getJavaType()+"> " + f.getSqlInListName() + "){this."+f.getSqlInListName() + "=" + f.getSqlInListName()+ ";}\n");
 			w.write("\n");
 			
 		}
@@ -454,22 +454,23 @@ public abstract class DataBase {
 				Element chooseTag=whereTag.addElement("choose");
 				Element whenTagLike=chooseTag.addElement("when");
 				
+				//Like
 				whenTagLike.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and "+f.getSqlLikeName()+"==true");
-				whenTagLike.addText("and "+f.getSqlName()+"=like concat('%',#{"+f.getBeanName()+"},'%')");
+				whenTagLike.addText("and "+f.getSqlName()+" like concat('%',#{"+f.getBeanName()+"},'%')");
 				
 				//LeftLike
 				Element whenTagLeftLike=chooseTag.addElement("when");
 				whenTagLeftLike.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and "+f.getSqlLeftLikeName()+"==true");
-				whenTagLeftLike.addText("and "+f.getSqlName()+"=like concat(#{"+f.getBeanName()+"},'%')");
+				whenTagLeftLike.addText("and "+f.getSqlName()+" like concat(#{"+f.getBeanName()+"},'%')");
 				
 				//RightLike
 				Element whenTagRightLike=chooseTag.addElement("when");
 				whenTagRightLike.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and "+f.getSqlRightLikeName()+"==true");
-				whenTagRightLike.addText("and "+f.getSqlName()+"=like concat('%',#{"+f.getBeanName()+"})");
+				whenTagRightLike.addText("and "+f.getSqlName()+" like concat('%',#{"+f.getBeanName()+"})");
 				
 				//D
 				Element whenTagD=chooseTag.addElement("when");
-				whenTagD.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and "+f.getSqlDdName()+"==true");
+				whenTagD.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and "+f.getSqlDName()+"==true");
 				whenTagD.addText("and "+f.getSqlName()+">#{"+f.getBeanName()+"}");
 				
 				//X
@@ -488,7 +489,7 @@ public abstract class DataBase {
 				
 				//in
 				Element whenTagIn=chooseTag.addElement("when");
-				whenTagIn.addAttribute("test", f.getBeanName()+"!=null and "+f.getSqlInListName()+".size()!='0'.toString()");
+				whenTagIn.addAttribute("test", f.getBeanName()+"!=null and "+f.getSqlInListName()+"!=null and "+f.getSqlInListName()+".size()!='0'.toString()");
 				Element foreachTag=whenTagIn.addElement("foreach");
 				foreachTag.addAttribute("collection", f.getSqlInListName());
 				foreachTag.addAttribute("item", "a");
@@ -567,51 +568,7 @@ public abstract class DataBase {
 			select.addText("\n\t\t");
 			
 			select.addText("select count(*) from "+table.getSqlName());
-			Element whereTag=select.addElement("where");
-			for(FieldBean f:fs){
-				Element chooseTag=whereTag.addElement("choose");
-				Element whenTagLike=chooseTag.addElement("when");
-				
-				whenTagLike.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and "+f.getSqlLikeName()+"==true");
-				whenTagLike.addText("and "+f.getSqlName()+"=like concat('%',#{"+f.getBeanName()+"},'%')");
-				
-				//LeftLike
-				Element whenTagLeftLike=chooseTag.addElement("when");
-				whenTagLeftLike.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and sql"+f.getSqlLeftLikeName()+"==true");
-				whenTagLeftLike.addText("and "+f.getSqlName()+"=like concat(#{"+f.getBeanName()+"},'%')");
-				
-				//RightLike
-				Element whenTagRightLike=chooseTag.addElement("when");
-				whenTagRightLike.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and "+f.getSqlRightLikeName()+"==true");
-				whenTagRightLike.addText("and "+f.getSqlName()+"=like concat('%',#{"+f.getBeanName()+"})");
-				
-				//D
-				Element whenTagD=chooseTag.addElement("when");
-				whenTagD.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and "+f.getSqlDdName()+"==true");
-				whenTagD.addText("and "+f.getSqlName()+">#{"+f.getBeanName()+"}");
-				
-				//X
-				Element whenTagX=chooseTag.addElement("when");
-				whenTagX.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and sql"+f.getSqlXName()+"==true");
-				whenTagX.addText("and "+f.getSqlName()+"<#{"+f.getBeanName()+"}");
-				//Dd
-				Element whenTagDd=chooseTag.addElement("when");
-				whenTagDd.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and "+f.getSqlDdName()+"==true");
-				whenTagDd.addText("and "+f.getSqlName()+">= #{"+f.getBeanName()+"}");
-				
-				//Xd
-				Element whenTagXd=chooseTag.addElement("when");
-				whenTagXd.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and "+f.getSqlXdName()+"==true");
-				whenTagXd.addText("and "+f.getSqlName()+">= #{"+f.getBeanName()+"}");
-				
-				Element whenTag=chooseTag.addElement("when");
-				whenTag.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!=''");
-				whenTag.addText("and "+f.getSqlName()+"=#{"+f.getBeanName()+"}");
-			}
-			
-			Element whereIf=whereTag.addElement("if");
-			whereIf.addAttribute("test", "sqlWhere!=null");
-			whereIf.addText("${sqlWhere}");
+			getSelectWhere(select, fs);
 		}
 		
 		protected void updateDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs)throws Exception{
@@ -643,17 +600,17 @@ public abstract class DataBase {
 			update.addText("\n\t\t");
 			update.addText("update "+table.getSqlName());
 			Element setTag=update.addElement("set");
-			String key=null;
+			FieldBean keyF=null;
 			for(FieldBean f:fs){
 				if(f.getIsKey()){
-					key=f.getSqlName();
+					keyF=f;
 					continue;
 				}
 				Element ifTag1=setTag.addElement("if");
 				ifTag1.addAttribute("test", f.getSqlName()+"!=null");
 				ifTag1.addText(f.getSqlName()+"=#{"+f.getBeanName()+"},");
 			}
-			update.addText("\n			where "+key+"=#{_parameter}");
+			update.addText("\n			where "+keyF.getSqlName()+"=#{"+keyF.getBeanName()+"}");
 		}
 		//返回主键字段名
 		protected  String insertSql(Element insert,TableBean table,List<FieldBean> fs) throws Exception{
