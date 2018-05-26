@@ -9,8 +9,8 @@ import mybatisauto.db.DataSource;
 
 public class Application {
 	public static void main(String[] args) throws Exception{
-		JdbcBean jdbc=new JdbcBean("jdbc:mysql://127.0.0.1:3306/test", "root", "gys");
-		//JdbcBean jdbc=new JdbcBean("jdbc:oracle:thin:@127.0.0.1:1521/orcl", "boards", "boards");
+		//JdbcBean jdbc=new JdbcBean("jdbc:mysql://127.0.0.1:3306/test", "root", "gys");
+		JdbcBean jdbc=new JdbcBean("jdbc:oracle:thin:@127.0.0.1:1521/orcl", "boards", "boards");
 		AutoConfig config=new AutoConfig();
 		//bean 源文件
 		config.setSourceBean("src/main/java");
@@ -29,7 +29,7 @@ public class Application {
 		//是否驼峰命名字段
 		config.setIsCamelField(true);
 		List<String> talbes=new ArrayList<String>();
-		talbes.add("gys");
+		talbes.add("td_sys_user");
 		config.setTables(talbes);
 		DataSource ds=new DataSource(jdbc);
 		ds.start(config);

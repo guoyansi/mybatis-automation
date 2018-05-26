@@ -49,8 +49,26 @@ public class MySqlDataBase extends DataBase{
 	protected List<FieldBean> getFieldList(Statement stmt,TableBean table,Boolean isCamel) throws Exception {
 		ResultSet rs=stmt.executeQuery("desc "+table.getSqlName());
 		List<FieldBean> fs=new ArrayList<FieldBean>();
+		FieldBean f=null;
 		while(rs.next()){
-			fs.add(this.initFieldBean(rs,table,isCamel));
+			f=new FieldBean();
+			String type=rs.getString("Type");
+			String name=rs.getString("Field");
+			f.setSqlName(name);
+			f.setBeanName(this.setFieldBeanName(isCamel, name));
+			f.setSqlType(type);
+			f.setJavaType(this.getJavaType(type));
+			boolean iskey=this.checkKey(rs.getString("Key"));
+			f.setIsKey(iskey);
+			//表示table 是否有主键
+			if(iskey){
+				table.setHaveKey(true);
+			}
+			f.setIsAutoAdd(this.checkAutoAdd(rs.getString("Extra")));
+			f.setDefaults(rs.getString("default"));
+			this.setFieldSqlName(f.getBeanName(), f);
+			
+			fs.add(f);
 		}
 		return fs;
 	}
@@ -162,6 +180,8 @@ public class MySqlDataBase extends DataBase{
 		insertDocument(root, config, table, fs);
 		//delete
 		deleteDocument(root, config, table, fs);
+		//batchInsert
+		batchInsert(root, config, table, fs);
 		
 		if(table.getHaveKey()){
 			//selectOneById
@@ -172,6 +192,8 @@ public class MySqlDataBase extends DataBase{
 			insertGetIdDocument(root, config, table, fs);
 			//deleteById
 			deleteByIdDocument(root, config, table, fs);
+			//batchInsertGetId
+			batchInsertGetId(root, config, table, fs);
 		}
 		return document;
 	}
@@ -262,4 +284,70 @@ public class MySqlDataBase extends DataBase{
 	public void deleteByIdDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception{
 		super.deleteByIdDocument(root, config, table, fs);
 	}
+	@Override
+	public FieldBean batchInsertSql(Element insert,AutoConfig config,TableBean table,List<FieldBean> fs){
+		
+		insert.addText("\n\t\t");
+		insert.addText("insert into "+table.getSqlName());
+		
+		Element trim1=insert.addElement("trim");
+		trim1.addAttribute("prefix", "(");
+		trim1.addAttribute("suffix", ")");
+		trim1.addAttribute("suffixOverrides", ",");
+		
+		insert.addText("\n 			values");
+		
+		Element foreachTag=insert.addElement("foreach");
+		foreachTag.addAttribute("collection", "list");
+		foreachTag.addAttribute("item", "item");
+		//foreachTag.addAttribute("open", "(");
+		//foreachTag.addAttribute("close", ")");
+		foreachTag.addAttribute("separator", ",");
+		Element trim2=foreachTag.addElement("trim");
+		trim2.addAttribute("prefix", "(");
+		trim2.addAttribute("suffix", ")");
+		trim2.addAttribute("suffixOverrides", ",");
+		for(FieldBean f:fs){
+			if(f.getIsKey()&&f.getIsAutoAdd()){
+				continue;
+			}else if(f.getIsKey()){
+				trim1.addText("\n			"+f.getSqlName()+",");
+				trim2.addText("#{item."+f.getBeanName()+"}");
+			}else{
+				trim1.addText(f.getSqlName()+",");
+
+				Element ifTag2=trim2.addElement("if");
+				ifTag2.addAttribute("test", "item."+f.getBeanName()+"!=null");
+				ifTag2.addText("#{item."+f.getBeanName()+"},");
+				
+				Element ifTag3=trim2.addElement("if");
+				ifTag3.addAttribute("test", "item."+f.getBeanName()+"==null");
+				ifTag3.addText("null,");
+			}
+		}
+		return null;
+	}
+	@Override
+	protected void batchInsert(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception {
+		Element insert=root.addElement("insert");
+		insert.addAttribute("id", "batchInsert");
+		batchInsertSql(insert, config, table, fs);
+	}
+	@Override
+	protected void batchInsertGetId(Element root, AutoConfig config,
+			TableBean table, List<FieldBean> fs) throws Exception {
+		Element insert=root.addElement("insert");
+		insert.addAttribute("id", "batchInsertGetId");
+		String key=null;
+		for(FieldBean f:fs){
+			if(f.getIsKey()){
+				key=f.getBeanName();
+				break;
+			}
+		}
+		insert.addAttribute("keyProperty",key);
+		insert.addAttribute("useGeneratedKeys", "true");
+		batchInsertSql(insert, config, table, fs);
+	}
+	
 }

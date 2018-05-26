@@ -613,8 +613,8 @@ public abstract class DataBase {
 			update.addText("\n			where "+keyF.getSqlName()+"=#{"+keyF.getBeanName()+"}");
 		}
 		//返回主键字段名
-		protected  String insertSql(Element insert,TableBean table,List<FieldBean> fs) throws Exception{
-			insert.addText("\n\t\t");
+		protected  FieldBean insertSql(Element insert,TableBean table,List<FieldBean> fs) throws Exception{
+			//insert.addText("\n\t\t");
 			insert.addText("insert into "+table.getSqlName());
 			
 			Element trim1=insert.addElement("trim");
@@ -628,12 +628,12 @@ public abstract class DataBase {
 			trim2.addAttribute("prefix", "(");
 			trim2.addAttribute("suffix", ")");
 			trim2.addAttribute("suffixOverrides", ",");
-			String key=null;
+			FieldBean key=null;
 			for(FieldBean f:fs){
 				if(f.getIsKey()&&f.getIsAutoAdd()){
 					continue;
 				}else if(f.getIsKey()){
-					key=f.getBeanName();
+					key=f;
 					
 					trim1.addText("\n			"+f.getSqlName()+",");
 					
@@ -647,7 +647,7 @@ public abstract class DataBase {
 				}else{
 					Element ifTag1=trim1.addElement("if");
 					ifTag1.addAttribute("test", f.getBeanName()+"!=null");
-					ifTag1.addText(f.getBeanName()+",");
+					ifTag1.addText(f.getSqlName()+",");
 					
 					Element ifTag2=trim2.addElement("if");
 					ifTag2.addAttribute("test", f.getBeanName()+"!=null");
@@ -690,4 +690,15 @@ public abstract class DataBase {
 			}
 				where.addText(key+"=#{_parameter}");
 		}
+		
+		
+		/**
+		 * 批量插入
+		 * @throws Exception
+		 */
+		protected abstract void batchInsert(Element root,AutoConfig config,TableBean table,List<FieldBean> fs)throws Exception;
+		
+		protected abstract FieldBean batchInsertSql(Element root,AutoConfig config,TableBean table,List<FieldBean> fs)throws Exception;
+	
+		protected abstract void batchInsertGetId(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception;
 }

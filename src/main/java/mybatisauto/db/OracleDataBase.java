@@ -80,7 +80,21 @@ public class OracleDataBase extends DataBase{
 		List<FieldBean> fs=new ArrayList<FieldBean>();
 		FieldBean f=null;
 		while(rs.next()){
-			f=this.initFieldBean(rs,table,isCamel);
+			f=new FieldBean();
+			String type=rs.getString("type");
+			String name=rs.getString("name");
+			f.setSqlName(name);
+			f.setBeanName(this.setFieldBeanName(isCamel, name));
+			f.setSqlType(type);
+			f.setJavaType(this.getJavaType(type,rs.getInt("precision"),rs.getInt("dataScale")));
+			boolean iskey=this.checkKey(rs.getString("key"));
+			f.setIsKey(iskey);
+			//表示table 是否有主键
+			if(iskey){
+				table.setHaveKey(true);
+			}
+			this.setFieldSqlName(f.getBeanName(), f);
+			//f=this.initFieldBean(rs,table,isCamel);
 			/**
 			 * TODO oracle默认属性读取异常，plsql显示<long> 郭延思
 			 */
@@ -192,7 +206,8 @@ public class OracleDataBase extends DataBase{
 		insertDocument(root, config, table, fs);
 		//delete
 		deleteDocument(root, config, table, fs);
-		
+		//batchInsert
+		batchInsert(root, config, table, fs);
 		if(table.getHaveKey()){
 			//selectOneById
 			selectOneByIdDocument(root, config, table, fs);
@@ -202,6 +217,8 @@ public class OracleDataBase extends DataBase{
 			insertGetIdDocument(root, config, table, fs);
 			//deleteById
 			deleteByIdDocument(root, config, table, fs);
+			//batchInsertGetId
+			batchInsertGetId(root, config, table, fs);
 		}
 		return document;
 	}
@@ -281,14 +298,12 @@ public class OracleDataBase extends DataBase{
 		insert.addAttribute("parameterType", config.getBeanPackage()+"."+table.getBeanName());
 		
 		
-		String key=super.insertSql(insert, table, fs);
+		FieldBean fk=super.insertSql(insert, table, fs);
 		Element sk=insert.addElement("selectKey");
-		sk.addAttribute("keyProperty",key);
+		sk.addAttribute("keyProperty",fk.getBeanName());
 		sk.addAttribute("order", "AFTER");
-		sk.addAttribute("resultType", "long");
+		sk.addAttribute("resultType", fk.getJavaType());
 		sk.addText("select ${sqlSeq}.Currval from dual");
-		
-		
 	}
 	@Override
 	public void deleteDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception{
@@ -299,5 +314,80 @@ public class OracleDataBase extends DataBase{
 	public void deleteByIdDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception{
 		super.deleteByIdDocument(root, config, table, fs);
 	}
+
+	@Override
+	public FieldBean batchInsertSql(Element insert,AutoConfig config,TableBean table,List<FieldBean> fs){
+		
+		insert.addText("\n\t\t");
+		insert.addText("insert into "+table.getSqlName());
+		
+		Element trim1=insert.addElement("trim");
+		trim1.addAttribute("prefix", "(");
+		trim1.addAttribute("suffix", ")");
+		trim1.addAttribute("suffixOverrides", ",");
+		
+		Element ifTag=insert.addElement("if");
+		ifTag.addAttribute("test","seqName==null");
+		ifTag.addText("select a.* from(");
+		
+		Element ifTag2=insert.addElement("if");
+		ifTag2.addAttribute("test","seqName!=null");
+		ifTag2.addText("select ${seqName}.Nextval,a.* from(");
+		
+		Element foreachTag=insert.addElement("foreach");
+		foreachTag.addAttribute("collection", "list");
+		foreachTag.addAttribute("item", "item");
+		/*foreachTag.addAttribute("open", "(");
+		foreachTag.addAttribute("close", ")");*/
+		foreachTag.addAttribute("separator", "union all");
+		Element trim2=foreachTag.addElement("trim");
+		trim2.addAttribute("prefix", "select");
+		trim2.addAttribute("suffix", "from dual");
+		trim2.addAttribute("suffixOverrides", ",");
+		FieldBean fieldK=null;
+		for(FieldBean f:fs){
+			if(f.getIsKey()){
+				fieldK=f;
+				trim1.addText("\n			"+f.getSqlName()+",");
+				
+				Element ifseq=trim2.addElement("if");
+				ifseq.addAttribute("test","seqName==null");
+				ifseq.addText("#{item."+f.getBeanName()+"} as "+f.getSqlName()+",");
+				
+			}else{
+				trim1.addText(f.getSqlName()+",");
+
+				Element ifTag3=trim2.addElement("if");
+				ifTag3.addAttribute("test", "item."+f.getBeanName()+"!=null");
+				ifTag3.addText("#{item."+f.getBeanName()+"} as "+f.getSqlName()+",");
+				
+				Element ifTag4=trim2.addElement("if");
+				ifTag4.addAttribute("test", "item."+f.getBeanName()+"==null");
+				ifTag4.addText("null as "+f.getSqlName()+",");
+			}
+		}
+		insert.addText(") a");
+		return fieldK;
+	}
+	@Override
+	protected void batchInsert(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception {
+		Element insert=root.addElement("insert");
+		insert.addAttribute("id", "batchInsert");
+		
+		batchInsertSql(insert, config, table, fs);
+	}
+	@Override
+	protected void batchInsertGetId(Element root, AutoConfig config,
+			TableBean table, List<FieldBean> fs) throws Exception {
+		Element insert=root.addElement("insert");
+		insert.addAttribute("id", "batchInsertGetId");
+		FieldBean fk=batchInsertSql(insert, config, table, fs);
+		Element sk=insert.addElement("selectKey");
+		sk.addAttribute("keyProperty",fk.getBeanName());
+		sk.addAttribute("order", "AFTER");
+		sk.addAttribute("resultType", fk.getJavaType());
+		sk.addText("select ${sqlSeq}.Currval from dual");
+	}
+	
 	
 }

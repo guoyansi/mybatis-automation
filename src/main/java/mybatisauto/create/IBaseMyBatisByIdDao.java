@@ -1,5 +1,9 @@
 package mybatisauto.create;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 
 public interface IBaseMyBatisByIdDao<T> {
 	/**
@@ -33,4 +37,12 @@ public interface IBaseMyBatisByIdDao<T> {
 	 * @throws Exception
 	 */
 	int deleteById(Object id) throws Exception;
+	
+	/**
+	 * 批量插入获取id
+	 * @param list
+	 * @return
+	 * @throws Exception
+	 */
+	int batchInsertGetId(@Param("list") List<T> list,@Param("seqName") String seqName) throws Exception;
 }

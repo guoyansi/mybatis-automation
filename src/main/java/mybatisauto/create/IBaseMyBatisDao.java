@@ -2,6 +2,8 @@ package mybatisauto.create;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import mybatisauto.bean.BaseInBean;
 import mybatisauto.bean.BaseOutBean;
 
@@ -43,6 +45,13 @@ public interface IBaseMyBatisDao<T,I extends BaseInBean,O extends BaseOutBean> {
 	 * @throws Exception
 	 */
 	int insert(T t) throws Exception;
+	/**
+	 * 批量插入
+	 * @param list
+	 * @return
+	 * @throws Exception
+	 */
+	int batchInsert(@Param("list") List<T> list,@Param("seqName") String seqName) throws Exception;
 	
 	/**
 	 * 删除

@@ -16,7 +16,7 @@ public class FieldBean {
 	//是否主键
 	private Boolean isKey;
 	//是否自增
-	private Boolean isAutoAdd;
+	private Boolean isAutoAdd=false;
 	//模糊查询名
 	private String sqlLikeName;
 	//左模糊
