@@ -456,7 +456,8 @@ public abstract class DataBase {
 				
 				//Like
 				whenTagLike.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and "+f.getSqlLikeName()+"==true");
-				whenTagLike.addText("and "+f.getSqlName()+" like concat('%',#{"+f.getBeanName()+"},'%')");
+				//whenTagLike.addText("and "+f.getSqlName()+" like concat('%',#{"+f.getBeanName()+"},'%')");
+				whenTagLike.addText("and "+f.getSqlName()+ " like concat(concat('%',#{"+f.getBeanName()+"}),'%')");
 				
 				//LeftLike
 				Element whenTagLeftLike=chooseTag.addElement("when");
@@ -506,6 +507,72 @@ public abstract class DataBase {
 			whereIf.addAttribute("test", "sqlWhere!=null");
 			whereIf.addText("${sqlWhere}");
 		}
+		/**
+		 * 获取selectList  where的公共部分
+		 * @param select
+		 * @return
+		 */
+		protected void getSelectUpdateWhere(Element update,List<FieldBean> fs){
+			Element whereTag=update.addElement("where");
+			String prev="sqlWhereBean.";
+			for(FieldBean f:fs){
+				Element chooseTag=whereTag.addElement("choose");
+				Element whenTagLike=chooseTag.addElement("when");
+				
+				//Like
+				whenTagLike.addAttribute("test", prev+f.getBeanName()+"!=null and "+prev+f.getBeanName()+"!='' and "+prev+f.getSqlLikeName()+"==true");
+				//whenTagLike.addText("and "+f.getSqlName()+" like concat('%',#{"+f.getBeanName()+"},'%')");
+				whenTagLike.addText("and "+f.getSqlName()+ " like concat(concat('%',#{"+prev+f.getBeanName()+"}),'%')");
+				
+				//LeftLike
+				Element whenTagLeftLike=chooseTag.addElement("when");
+				whenTagLeftLike.addAttribute("test", prev+f.getBeanName()+"!=null and "+prev+f.getBeanName()+"!='' and "+prev+f.getSqlLeftLikeName()+"==true");
+				whenTagLeftLike.addText("and "+f.getSqlName()+" like concat(#{"+prev+f.getBeanName()+"},'%')");
+				
+				//RightLike
+				Element whenTagRightLike=chooseTag.addElement("when");
+				whenTagRightLike.addAttribute("test", prev+f.getBeanName()+"!=null and "+prev+f.getBeanName()+"!='' and "+prev+f.getSqlRightLikeName()+"==true");
+				whenTagRightLike.addText("and "+f.getSqlName()+" like concat('%',#{"+prev+f.getBeanName()+"})");
+				
+				//D
+				Element whenTagD=chooseTag.addElement("when");
+				whenTagD.addAttribute("test", prev+f.getBeanName()+"!=null and "+prev+f.getBeanName()+"!='' and "+prev+f.getSqlDName()+"==true");
+				whenTagD.addText("and "+f.getSqlName()+">#{"+prev+f.getBeanName()+"}");
+				
+				//X
+				Element whenTagX=chooseTag.addElement("when");
+				whenTagX.addAttribute("test",prev+f.getBeanName()+"!=null and "+prev+f.getBeanName()+"!='' and "+prev+f.getSqlXName()+"==true");
+				whenTagX.addText("and "+f.getSqlName()+"<#{"+prev+f.getBeanName()+"}");
+				//Dd
+				Element whenTagDd=chooseTag.addElement("when");
+				whenTagDd.addAttribute("test", prev+f.getBeanName()+"!=null and "+prev+f.getBeanName()+"!='' and "+prev+f.getSqlDdName()+"==true");
+				whenTagDd.addText("and "+f.getSqlName()+">= #{"+prev+f.getBeanName()+"}");
+				
+				//Xd
+				Element whenTagXd=chooseTag.addElement("when");
+				whenTagXd.addAttribute("test", prev+f.getBeanName()+"!=null and "+prev+f.getBeanName()+"!='' and "+prev+f.getSqlXdName()+"==true");
+				whenTagXd.addText("and "+f.getSqlName()+">= #{"+prev+f.getBeanName()+"}");
+				
+				//in
+				Element whenTagIn=chooseTag.addElement("when");
+				whenTagIn.addAttribute("test", prev+f.getBeanName()+"!=null and "+prev+f.getSqlInListName()+"!=null and "+prev+f.getSqlInListName()+".size()!='0'.toString()");
+				Element foreachTag=whenTagIn.addElement("foreach");
+				foreachTag.addAttribute("collection", prev+f.getSqlInListName());
+				foreachTag.addAttribute("item", "a");
+				foreachTag.addAttribute("open", f.getSqlName()+" in (");
+				foreachTag.addAttribute("close", ")");
+				foreachTag.addAttribute("separator", ",");
+				foreachTag.addText("#{a}");
+				
+				Element whenTag=chooseTag.addElement("when");
+				whenTag.addAttribute("test", prev+f.getBeanName()+"!=null and "+prev+f.getBeanName()+"!=''");
+				whenTag.addText("and "+f.getSqlName()+"=#{"+prev+f.getBeanName()+"}");
+			}
+			Element whereIf=whereTag.addElement("if");
+			whereIf.addAttribute("test", prev+"sqlWhere!=null");
+			whereIf.addText("${"+prev+"sqlWhere}");
+		}
+		
 		protected void getSelectListOrderBy(Element select) throws Exception{
 			Element orderByIf=select.addElement("if");
 			orderByIf.addAttribute("test","sqlOrderBy!=null");
@@ -566,7 +633,7 @@ public abstract class DataBase {
 		protected void updateDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs)throws Exception{
 			Element update=root.addElement("update");
 			update.addAttribute("id", "update");
-			update.addAttribute("parameterType",config.getBeanPackage()+"."+table.getBeanName());
+			//update.addAttribute("parameterType",config.getBeanPackage()+"."+table.getBeanName());
 			update.addText("\n\t\t");
 			update.addText("update "+table.getSqlName());
 			Element setTag=update.addElement("set");
@@ -575,13 +642,14 @@ public abstract class DataBase {
 					continue;
 				}
 				Element ifTag1=setTag.addElement("if");
-				ifTag1.addAttribute("test", f.getBeanName()+"!=null");
-				ifTag1.addText(f.getSqlName()+"=#{"+f.getBeanName()+"},");
+				ifTag1.addAttribute("test", "sqlValueBean."+f.getBeanName()+"!=null");
+				ifTag1.addText(f.getSqlName()+"=#{sqlValueBean."+f.getBeanName()+"},");
 			}
-			Element whereIf=update.addElement("if");
-			whereIf.addAttribute("test", "sqlWhere!=null");
-			Element whereTag=whereIf.addElement("where");
-			whereTag.addText("${sqlWhere}");
+			//getSelectWhere(whereTag, fs);
+			getSelectUpdateWhere(update,fs);
+			/*Element whereIf=whereTag.addElement("if");
+			whereIf.addAttribute("test", "sqlWhereBean.sqlWhere!=null");
+			whereTag.addText("${sqlWhereBean.sqlWhere}");*/
 		}
 		
 		
@@ -661,7 +729,7 @@ public abstract class DataBase {
 		protected void deleteDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception{
 			Element insert=root.addElement("delete");
 			insert.addAttribute("id", "delete");
-			insert.addAttribute("parameterType",config.getBeanPackage()+"."+table.getBeanName());
+			insert.addAttribute("parameterType",config.getBeanPackage()+".in."+table.getBeanInName());
 			insert.addText("\n\t\t");
 			insert.addText("DELETE FROM "+table.getSqlName());
 			getSelectWhere(insert, fs);

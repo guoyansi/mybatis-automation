@@ -37,7 +37,7 @@ public interface IBaseMyBatisDao<T,I extends BaseInBean,O extends BaseOutBean> {
 	 * @return
 	 * @throws Exception
 	 */
-	int update(T t) throws Exception;
+	int update(@Param("sqlValueBean") T t,@Param("sqlWhereBean") I i) throws Exception;
 	/**
 	 * 插入时不获取主键id
 	 * @param t
@@ -47,8 +47,8 @@ public interface IBaseMyBatisDao<T,I extends BaseInBean,O extends BaseOutBean> {
 	int insert(T t) throws Exception;
 	/**
 	 * 批量插入
-	 * @param list
-	 * @return
+	 * @param list 插入数据库的参数
+	 * @return seq name  oracle可能是用sequence
 	 * @throws Exception
 	 */
 	int batchInsert(@Param("list") List<T> list,@Param("seqName") String seqName) throws Exception;
@@ -59,5 +59,5 @@ public interface IBaseMyBatisDao<T,I extends BaseInBean,O extends BaseOutBean> {
 	 * @return
 	 * @throws Exception
 	 */
-	int delete(T t) throws Exception;
+	int delete(I i) throws Exception;
 }
