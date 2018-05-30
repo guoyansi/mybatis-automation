@@ -538,26 +538,18 @@ public abstract class DataBase {
 			select.addAttribute("parameterType","object");
 			select.addAttribute("resultType", config.getBeanPackage() +"."+table.getBeanName());
 			select.addText("\n\t\t");
-			StringBuffer sb=new StringBuffer();
-			int i=0;
-			String key="";
-			for(FieldBean f:fs){
-				if(i!=0){
-					sb.append(",");
-					i++;
-				}
-				sb.append(f.getSqlName());
-				sb.append(" as ");
-				sb.append(f.getBeanName());
-				if(f.getIsKey()){
-					key=f.getSqlName();
-				}
-				
-			}
+			StringBuffer sb=getFieldsSB(fs);
 			
 			select.addText("select "+sb.toString()+" from "+table.getSqlName());
 			
 			Element whereTag=select.addElement("where");
+			String key="";
+			for(FieldBean f:fs) {
+				 if(f.getIsKey()) {
+					 key=f.getSqlName();
+					 break;
+				 }
+			}
 			whereTag.addText(key+"=#{_parameter}");
 		}
 		public void getCountDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception{
