@@ -2,6 +2,7 @@
 ### Maven template
 .settings/
 target/
+target/*
 .classpath
 pom.xml.tag
 pom.xml.releaseBackup

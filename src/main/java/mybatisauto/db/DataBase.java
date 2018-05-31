@@ -629,8 +629,6 @@ public abstract class DataBase {
 			select.addText("select count(*) from "+table.getSqlName());
 			getSelectWhere(select, fs);
 		}
-		
-		
 		protected void updateDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs)throws Exception{
 			Element update=root.addElement("update");
 			update.addAttribute("id", "update");
@@ -646,11 +644,7 @@ public abstract class DataBase {
 				ifTag1.addAttribute("test", "sqlValueBean."+f.getBeanName()+"!=null");
 				ifTag1.addText(f.getSqlName()+"=#{sqlValueBean."+f.getBeanName()+"},");
 			}
-			//getSelectWhere(whereTag, fs);
 			getSelectUpdateWhere(update,fs);
-			/*Element whereIf=whereTag.addElement("if");
-			whereIf.addAttribute("test", "sqlWhereBean.sqlWhere!=null");
-			whereTag.addText("${sqlWhereBean.sqlWhere}");*/
 		}
 		
 		
@@ -675,7 +669,6 @@ public abstract class DataBase {
 		}
 		//返回主键字段名
 		protected  FieldBean insertSql(Element insert,TableBean table,List<FieldBean> fs) throws Exception{
-			//insert.addText("\n\t\t");
 			insert.addText("insert into "+table.getSqlName());
 			
 			Element trim1=insert.addElement("trim");
