@@ -630,6 +630,7 @@ public abstract class DataBase {
 			getSelectWhere(select, fs);
 		}
 		
+		
 		protected void updateDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs)throws Exception{
 			Element update=root.addElement("update");
 			update.addAttribute("id", "update");
