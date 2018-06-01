@@ -1,0 +1,5 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Thu May 31 14:09:47 CST 2018
+mybatisauto-0.0.1-SNAPSHOT.jar>=
+mybatisauto-0.0.1-SNAPSHOT-jar-with-dependencies.jar>=
+mybatisauto-0.0.1-SNAPSHOT.pom>=
