@@ -3,7 +3,6 @@ package mybatisauto.db;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -99,6 +98,8 @@ public abstract class DataBase {
 		}
 		return null;
 	}
+	
+	
 	/**
 	 * 检查是否是主键
 	 * @return
@@ -413,12 +414,30 @@ public abstract class DataBase {
 		
 		public abstract void selectListDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception;
 		
+		public void resultMapDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs)throws Exception{
+			Element tag=root.addElement("resultMap");
+			tag.addAttribute("id",table.getBeanOutName()+"Map");
+			tag.addAttribute("type", config.getBeanPackage()+".out."+table.getBeanOutName());
+			for(FieldBean f:fs) {
+				Element tag1=null;
+				if(f.getIsKey()) {//是主键
+					tag1=tag.addElement("id");
+				}else {
+					tag1=tag.addElement("result");
+				}
+				tag1.addAttribute("column", f.getSqlName());
+				tag1.addAttribute("property", f.getBeanName());
+			}
+			Element rnTag=tag.addElement("result");
+			rnTag.addAttribute("column","rn");
+			rnTag.addAttribute("property","rn");
+		}
 		//selectList标签
 		protected Element getSelectListTag(Element root,AutoConfig config,TableBean table) throws Exception{
 			Element select=root.addElement("select");
 			select.addAttribute("id", "selectList");
 			select.addAttribute("parameterType",config.getBeanPackage()+".in."+table.getBeanInName());
-			select.addAttribute("resultType", config.getBeanPackage()+".out."+table.getBeanOutName());
+			select.addAttribute("resultMap", table.getBeanOutName()+"Map");
 			select.addText("\n\t\t");
 			return select;
 		}
@@ -434,8 +453,8 @@ public abstract class DataBase {
 			for(FieldBean f:fs){
 				i++;
 				sb.append("\n\t\t\t"+f.getSqlName());
-				sb.append(" as ");
-				sb.append(f.getBeanName());
+				//sb.append(" as ");
+				//sb.append(f.getBeanName());
 				if(i<fs.size()){
 					sb.append(",");
 				}
@@ -455,42 +474,41 @@ public abstract class DataBase {
 				Element whenTagLike=chooseTag.addElement("when");
 				
 				//Like
-				whenTagLike.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and "+f.getSqlLikeName()+"==true");
-				//whenTagLike.addText("and "+f.getSqlName()+" like concat('%',#{"+f.getBeanName()+"},'%')");
+				whenTagLike.addAttribute("test", f.getSqlLikeName()+"==true");
 				whenTagLike.addText("and "+f.getSqlName()+ " like concat(concat('%',#{"+f.getBeanName()+"}),'%')");
 				
 				//LeftLike
 				Element whenTagLeftLike=chooseTag.addElement("when");
-				whenTagLeftLike.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and "+f.getSqlLeftLikeName()+"==true");
+				whenTagLeftLike.addAttribute("test",f.getSqlLeftLikeName()+"==true");
 				whenTagLeftLike.addText("and "+f.getSqlName()+" like concat(#{"+f.getBeanName()+"},'%')");
 				
 				//RightLike
 				Element whenTagRightLike=chooseTag.addElement("when");
-				whenTagRightLike.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and "+f.getSqlRightLikeName()+"==true");
+				whenTagRightLike.addAttribute("test", f.getSqlRightLikeName()+"==true");
 				whenTagRightLike.addText("and "+f.getSqlName()+" like concat('%',#{"+f.getBeanName()+"})");
 				
 				//D
 				Element whenTagD=chooseTag.addElement("when");
-				whenTagD.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and "+f.getSqlDName()+"==true");
+				whenTagD.addAttribute("test", f.getSqlDName()+"==true");
 				whenTagD.addText("and "+f.getSqlName()+">#{"+f.getBeanName()+"}");
 				
 				//X
 				Element whenTagX=chooseTag.addElement("when");
-				whenTagX.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and "+f.getSqlXName()+"==true");
+				whenTagX.addAttribute("test", f.getSqlXName()+"==true");
 				whenTagX.addText("and "+f.getSqlName()+"<#{"+f.getBeanName()+"}");
 				//Dd
 				Element whenTagDd=chooseTag.addElement("when");
-				whenTagDd.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and "+f.getSqlDdName()+"==true");
+				whenTagDd.addAttribute("test", f.getSqlDdName()+"==true");
 				whenTagDd.addText("and "+f.getSqlName()+">= #{"+f.getBeanName()+"}");
 				
 				//Xd
 				Element whenTagXd=chooseTag.addElement("when");
-				whenTagXd.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!='' and "+f.getSqlXdName()+"==true");
+				whenTagXd.addAttribute("test", f.getSqlXdName()+"==true");
 				whenTagXd.addText("and "+f.getSqlName()+">= #{"+f.getBeanName()+"}");
 				
 				//in
 				Element whenTagIn=chooseTag.addElement("when");
-				whenTagIn.addAttribute("test", f.getBeanName()+"!=null and "+f.getSqlInListName()+"!=null and "+f.getSqlInListName()+".size()!='0'.toString()");
+				whenTagIn.addAttribute("test",f.getSqlInListName()+"!=null");
 				Element foreachTag=whenTagIn.addElement("foreach");
 				foreachTag.addAttribute("collection", f.getSqlInListName());
 				foreachTag.addAttribute("item", "a");
@@ -520,42 +538,42 @@ public abstract class DataBase {
 				Element whenTagLike=chooseTag.addElement("when");
 				
 				//Like
-				whenTagLike.addAttribute("test", prev+f.getBeanName()+"!=null and "+prev+f.getBeanName()+"!='' and "+prev+f.getSqlLikeName()+"==true");
+				whenTagLike.addAttribute("test", prev+f.getSqlLikeName()+"==true");
 				//whenTagLike.addText("and "+f.getSqlName()+" like concat('%',#{"+f.getBeanName()+"},'%')");
 				whenTagLike.addText("and "+f.getSqlName()+ " like concat(concat('%',#{"+prev+f.getBeanName()+"}),'%')");
 				
 				//LeftLike
 				Element whenTagLeftLike=chooseTag.addElement("when");
-				whenTagLeftLike.addAttribute("test", prev+f.getBeanName()+"!=null and "+prev+f.getBeanName()+"!='' and "+prev+f.getSqlLeftLikeName()+"==true");
+				whenTagLeftLike.addAttribute("test", prev+f.getSqlLeftLikeName()+"==true");
 				whenTagLeftLike.addText("and "+f.getSqlName()+" like concat(#{"+prev+f.getBeanName()+"},'%')");
 				
 				//RightLike
 				Element whenTagRightLike=chooseTag.addElement("when");
-				whenTagRightLike.addAttribute("test", prev+f.getBeanName()+"!=null and "+prev+f.getBeanName()+"!='' and "+prev+f.getSqlRightLikeName()+"==true");
+				whenTagRightLike.addAttribute("test", prev+f.getSqlRightLikeName()+"==true");
 				whenTagRightLike.addText("and "+f.getSqlName()+" like concat('%',#{"+prev+f.getBeanName()+"})");
 				
 				//D
 				Element whenTagD=chooseTag.addElement("when");
-				whenTagD.addAttribute("test", prev+f.getBeanName()+"!=null and "+prev+f.getBeanName()+"!='' and "+prev+f.getSqlDName()+"==true");
+				whenTagD.addAttribute("test", prev+f.getSqlDName()+"==true");
 				whenTagD.addText("and "+f.getSqlName()+">#{"+prev+f.getBeanName()+"}");
 				
 				//X
 				Element whenTagX=chooseTag.addElement("when");
-				whenTagX.addAttribute("test",prev+f.getBeanName()+"!=null and "+prev+f.getBeanName()+"!='' and "+prev+f.getSqlXName()+"==true");
+				whenTagX.addAttribute("test",prev+f.getSqlXName()+"==true");
 				whenTagX.addText("and "+f.getSqlName()+"<#{"+prev+f.getBeanName()+"}");
 				//Dd
 				Element whenTagDd=chooseTag.addElement("when");
-				whenTagDd.addAttribute("test", prev+f.getBeanName()+"!=null and "+prev+f.getBeanName()+"!='' and "+prev+f.getSqlDdName()+"==true");
+				whenTagDd.addAttribute("test",prev+f.getSqlDdName()+"==true");
 				whenTagDd.addText("and "+f.getSqlName()+">= #{"+prev+f.getBeanName()+"}");
 				
 				//Xd
 				Element whenTagXd=chooseTag.addElement("when");
-				whenTagXd.addAttribute("test", prev+f.getBeanName()+"!=null and "+prev+f.getBeanName()+"!='' and "+prev+f.getSqlXdName()+"==true");
+				whenTagXd.addAttribute("test",prev+f.getSqlXdName()+"==true");
 				whenTagXd.addText("and "+f.getSqlName()+">= #{"+prev+f.getBeanName()+"}");
 				
 				//in
 				Element whenTagIn=chooseTag.addElement("when");
-				whenTagIn.addAttribute("test", prev+f.getBeanName()+"!=null and "+prev+f.getSqlInListName()+"!=null and "+prev+f.getSqlInListName()+".size()!='0'.toString()");
+				whenTagIn.addAttribute("test", prev+f.getSqlInListName()+"!=null");
 				Element foreachTag=whenTagIn.addElement("foreach");
 				foreachTag.addAttribute("collection", prev+f.getSqlInListName());
 				foreachTag.addAttribute("item", "a");
@@ -583,19 +601,18 @@ public abstract class DataBase {
 			Element select=root.addElement("select");
 			select.addAttribute("id", "selectOne");
 			select.addAttribute("parameterType",config.getBeanPackage()+".in."+table.getBeanInName());
-			select.addAttribute("resultType", config.getBeanPackage()+".out."+table.getBeanOutName());
+			select.addAttribute("resultMap", table.getBeanOutName()+"Map");
 			StringBuffer sb=new StringBuffer();
 			int i=0;
 			for(FieldBean f:fs){
 				i++;
 				sb.append("\n\t\t\t"+f.getSqlName());
-				sb.append(" as ");
-				sb.append(f.getBeanName());
+				//sb.append(" as ");
+				//sb.append(f.getBeanName());
 				if(i<fs.size()){
 					sb.append(",");
 				}
 			}
-			
 			select.addText("\n\t\t select "+sb.toString()+"\n\t\t from "+table.getSqlName());
 			this.getSelectWhere(select, fs);
 		}
@@ -603,7 +620,7 @@ public abstract class DataBase {
 			Element select=root.addElement("select");
 			select.addAttribute("id", "selectOneById");
 			select.addAttribute("parameterType","object");
-			select.addAttribute("resultType", config.getBeanPackage() +"."+table.getBeanName());
+			select.addAttribute("resultMap",table.getBeanOutName()+"Map");
 			select.addText("\n\t\t");
 			StringBuffer sb=getFieldsSB(fs);
 			

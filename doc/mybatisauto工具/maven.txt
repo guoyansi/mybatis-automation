@@ -1,0 +1,5 @@
+mvn install:install-file -Dfile=D:\springtoolWorkSpace\mybatisauto\target\mybatisauto-0.0.1-SNAPSHOT.jar -DgroupId=hstc.javalazy -DartifactId=mybatisauto -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar
+
+使用上面的命令生成maven包，
+然后再maven的默认仓库
+（c:\user\guoyansi\.m2\repository）中找到我们导出的拷贝到我们的本地仓库

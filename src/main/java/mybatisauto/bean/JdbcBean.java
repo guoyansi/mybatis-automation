@@ -17,7 +17,9 @@ public class JdbcBean {
 	//数据库名称(表的上级)
 	//private String dbName;
 	
-	public JdbcBean() {}
+	public JdbcBean() {
+		
+	}
 	public JdbcBean(String url, String user, String password) {
 		this.url = url;
 		this.user = user;

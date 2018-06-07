@@ -23,7 +23,8 @@ public class DataSource {
 
 	public void start(AutoConfig config) throws Exception{
 		checkConfig(config);
-		DataBase db=chooseDb(jdbc);
+		DbMapper dbMapper=new DbMapper();
+		DataBase db=dbMapper.get(jdbc);
 		Connection conn=DriverManager.getConnection(jdbc.getUrl(),jdbc.getUser(),jdbc.getPassword());
 		Statement stmt=conn.createStatement();
 		
@@ -64,17 +65,5 @@ public class DataSource {
 		if(isEmpty(c.getMapperPackage())){
 			throw new Exception("请配置mapper的包路径：mapperPackage");
 		}
-	}
-	
-	
-	private DataBase chooseDb(JdbcBean jdbc) throws Exception{
-		DbMapper mapper=new DbMapper();
-		Map<String, DataBase> map=mapper.get(jdbc);
-		for(Map.Entry<String,DataBase> d:map.entrySet()){
-			if(jdbc.getUrl().indexOf(d.getKey())!=-1){
-				return d.getValue();
-			}
-		}
-		throw new Exception("无法根据url匹配到数据源");
 	}
 }
