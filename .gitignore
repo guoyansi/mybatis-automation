@@ -2,7 +2,6 @@
 ### Maven template
 .settings/
 target/
-/target/
 *.class
 .classpath
 pom.xml.tag

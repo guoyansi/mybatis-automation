@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>hstc.javalazy</groupId>
+  <artifactId>mybatisauto</artifactId>
+  <versioning>
+    <versions>
+      <version>0.0.1-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20180611081204</lastUpdated>
+  </versioning>
+</metadata>
