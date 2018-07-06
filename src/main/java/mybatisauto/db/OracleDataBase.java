@@ -239,7 +239,7 @@ public class OracleDataBase extends DataBase{
 		limitIf.addText("\n			select * from (\n		");
 		select.addText("\n\t\t");
 		select.addText(" select A.*,  rowNum rn from (");
-		select.addText("\n		 	select "+sb.toString()+" from "+table.getSqlName());
+		select.addText("\n		 	select "+sb.toString()+" \n\t\t from "+table.getSqlName());
 		this.getSelectWhere(select, fs);
 		this.getSelectListOrderBy(select);
 		select.addText("\n			) A");
@@ -390,6 +390,189 @@ public class OracleDataBase extends DataBase{
 		sk.addAttribute("resultType", fk.getJavaType());
 		sk.addText("select ${sqlSeq}.Currval from dual");
 	}
+	@Override
+	protected void getSelectWhere(Element select, List<FieldBean> fs) {
+		Element whereTag=select.addElement("where");
+		for(FieldBean f:fs){
+			Element chooseTag=whereTag.addElement("choose");
+			Element whenTagLike=chooseTag.addElement("when");
+			
+			//Like
+			whenTagLike.addAttribute("test", f.getSqlLikeName()+"==true");
+			whenTagLike.addText("and "+f.getSqlName()+ " like concat(concat('%',#{"+f.getBeanName()+"}),'%')");
+			
+			//LeftLike
+			Element whenTagLeftLike=chooseTag.addElement("when");
+			whenTagLeftLike.addAttribute("test",f.getSqlLeftLikeName()+"==true");
+			whenTagLeftLike.addText("and "+f.getSqlName()+" like concat(#{"+f.getBeanName()+"},'%')");
+			
+			//RightLike
+			Element whenTagRightLike=chooseTag.addElement("when");
+			whenTagRightLike.addAttribute("test", f.getSqlRightLikeName()+"==true");
+			whenTagRightLike.addText("and "+f.getSqlName()+" like concat('%',#{"+f.getBeanName()+"})");
+			
+			//D
+			Element whenTagD=chooseTag.addElement("when");
+			whenTagD.addAttribute("test", f.getSqlDName()+"==true");
+			if(f.getSqlType().equals("date")){
+				whenTagD.addText("and "+f.getSqlName()+"> to_date(#{"+f.getBeanName()+"},'yyyy-MM-dd')");
+			}else{
+				whenTagD.addText("and "+f.getSqlName()+">#{"+f.getBeanName()+"}");
+			}
+			
+			
+			
+			//X
+			Element whenTagX=chooseTag.addElement("when");
+			whenTagX.addAttribute("test", f.getSqlXName()+"==true");
+			if(f.getSqlType().equals("date")){
+				whenTagX.addText("and "+f.getSqlName()+"< to_date(#{"+f.getBeanName()+"},'yyyy-MM-dd')");
+			}else{
+				whenTagX.addText("and "+f.getSqlName()+"<#{"+f.getBeanName()+"}");
+			}
+			
+			
+			
+			//Dd
+			Element whenTagDd=chooseTag.addElement("when");
+			whenTagDd.addAttribute("test", f.getSqlDdName()+"==true");
+			if(f.getSqlType().equals("date")){
+				whenTagDd.addText("and "+f.getSqlName()+">= to_date(#{"+f.getBeanName()+"},'yyyy-MM-dd')");
+			}else{
+				whenTagDd.addText("and "+f.getSqlName()+">= #{"+f.getBeanName()+"}");
+			}
+			
+			
+			//Xd
+			Element whenTagXd=chooseTag.addElement("when");
+			whenTagXd.addAttribute("test", f.getSqlXdName()+"==true");
+			if(f.getSqlType().equals("date")){
+				whenTagXd.addText("and "+f.getSqlName()+"<= to_date(#{"+f.getBeanName()+"},'yyyy-MM-dd')");
+			}else{
+				whenTagXd.addText("and "+f.getSqlName()+"<= #{"+f.getBeanName()+"}");
+			}
+			
+			
+			//in
+			Element whenTagIn=chooseTag.addElement("when");
+			whenTagIn.addAttribute("test",f.getSqlInListName()+"!=null");
+			Element foreachTag=whenTagIn.addElement("foreach");
+			foreachTag.addAttribute("collection", f.getSqlInListName());
+			foreachTag.addAttribute("item", "a");
+			foreachTag.addAttribute("open", f.getSqlName()+" in (");
+			foreachTag.addAttribute("close", ")");
+			foreachTag.addAttribute("separator", ",");
+			if(f.getSqlType().equals("date")){
+				whenTagD.addText("and "+f.getSqlName()+"<= to_date(#{"+f.getBeanName()+"},'yyyy-MM-dd')");
+				foreachTag.addText("to_date(#{a},'yyyy-MM-dd')");
+			}else{
+				foreachTag.addText("#{a}");
+			}
+			Element whenTag=chooseTag.addElement("when");
+			whenTag.addAttribute("test", f.getBeanName()+"!=null and "+f.getBeanName()+"!=''");
+			if(f.getSqlType().equals("date")){
+				whenTag.addText("and "+f.getSqlName()+"= to_date(#{"+f.getBeanName()+"},'yyyy-MM-dd')");
+			}else{
+				whenTag.addText("and "+f.getSqlName()+"=#{"+f.getBeanName()+"}");
+			}
+			
+		}
+		Element whereIf=whereTag.addElement("if");
+		whereIf.addAttribute("test", "sqlWhere!=null");
+		whereIf.addText("${sqlWhere}");
+	}
 	
+	/**
+	 * 获取selectList  where的公共部分
+	 * @param select
+	 * @return
+	 */
+	@Override
+	protected void getSelectUpdateWhere(Element update,List<FieldBean> fs){
+		Element whereTag=update.addElement("where");
+		String prev="sqlWhereBean.";
+		for(FieldBean f:fs){
+			Element chooseTag=whereTag.addElement("choose");
+			Element whenTagLike=chooseTag.addElement("when");
+			
+			//Like
+			whenTagLike.addAttribute("test", prev+f.getSqlLikeName()+"==true");
+			whenTagLike.addText("and "+f.getSqlName()+ " like concat(concat('%',#{"+prev+f.getBeanName()+"}),'%')");
+			
+			//LeftLike
+			Element whenTagLeftLike=chooseTag.addElement("when");
+			whenTagLeftLike.addAttribute("test", prev+f.getSqlLeftLikeName()+"==true");
+			whenTagLeftLike.addText("and "+f.getSqlName()+" like concat(#{"+prev+f.getBeanName()+"},'%')");
+			
+			//RightLike
+			Element whenTagRightLike=chooseTag.addElement("when");
+			whenTagRightLike.addAttribute("test", prev+f.getSqlRightLikeName()+"==true");
+			whenTagRightLike.addText("and "+f.getSqlName()+" like concat('%',#{"+prev+f.getBeanName()+"})");
+			
+			//D
+			Element whenTagD=chooseTag.addElement("when");
+			whenTagD.addAttribute("test", prev+f.getSqlDName()+"==true");
+			if(f.getSqlType().equals("date")){
+				whenTagD.addText("and "+f.getSqlName()+">to_date(#{"+prev+f.getBeanName()+"},'yyyy-MM-dd')");
+			}else{
+				whenTagD.addText("and "+f.getSqlName()+">#{"+prev+f.getBeanName()+"}");
+			}
+			
+			
+			//X
+			Element whenTagX=chooseTag.addElement("when");
+			whenTagX.addAttribute("test",prev+f.getSqlXName()+"==true");
+			if(f.getSqlType().equals("date")){
+				whenTagX.addText("and "+f.getSqlName()+"<to_date(#{"+prev+f.getBeanName()+"},'yyyy-MM-dd')");
+			}else{
+				whenTagX.addText("and "+f.getSqlName()+"<#{"+prev+f.getBeanName()+"}");
+			}
+			
+			
+			//Dd
+			Element whenTagDd=chooseTag.addElement("when");
+			whenTagDd.addAttribute("test",prev+f.getSqlDdName()+"==true");
+			if(f.getSqlType().equals("date")){
+				whenTagDd.addText("and "+f.getSqlName()+">=to_date(#{"+prev+f.getBeanName()+"},'yyyy-MM-dd')");
+			}else{
+				whenTagDd.addText("and "+f.getSqlName()+">= #{"+prev+f.getBeanName()+"}");
+			}
+			
+			
+			//Xd
+			Element whenTagXd=chooseTag.addElement("when");
+			whenTagXd.addAttribute("test",prev+f.getSqlXdName()+"==true");
+			if(f.getSqlType().equals("date")){
+				whenTagXd.addText("and "+f.getSqlName()+"<=to_date(#{"+prev+f.getBeanName()+"},'yyyy-MM-dd')");
+			}else{
+				whenTagXd.addText("and "+f.getSqlName()+">= #{"+prev+f.getBeanName()+"}");
+			}
+			//in
+			Element whenTagIn=chooseTag.addElement("when");
+			whenTagIn.addAttribute("test", prev+f.getSqlInListName()+"!=null");
+			Element foreachTag=whenTagIn.addElement("foreach");
+			foreachTag.addAttribute("collection", prev+f.getSqlInListName());
+			foreachTag.addAttribute("item", "a");
+			foreachTag.addAttribute("open", f.getSqlName()+" in (");
+			foreachTag.addAttribute("close", ")");
+			foreachTag.addAttribute("separator", ",");
+			if(f.getSqlType().equals("date")){
+				//whenTagXd.addText("and "+f.getSqlName()+"<=to_date(#{"+prev+f.getBeanName()+"},'yyyy-MM-dd')");
+				foreachTag.addText("to_date(#{a},'yyyy-MM-dd')");
+			}else{
+				foreachTag.addText("#{a}");
+			}
+			Element whenTag=chooseTag.addElement("when");
+			whenTag.addAttribute("test", prev+f.getBeanName()+"!=null and "+prev+f.getBeanName()+"!=''");
+			if(f.getSqlType().equals("date")){
+				whenTag.addText("and "+f.getSqlName()+"=to_date(#{"+prev+f.getBeanName()+"},'yyyy-MM-dd')");
+			}else{
+				whenTag.addText("and "+f.getSqlName()+"=#{"+prev+f.getBeanName()+"}");
+			}
+		}
+		Element whereIf=whereTag.addElement("if");
+		whereIf.addAttribute("test", prev+"sqlWhere!=null");
+		whereIf.addText("${"+prev+"sqlWhere}");
+	}
 	
 }

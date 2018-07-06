@@ -13,6 +13,10 @@ public class BaseInBean implements Serializable{
 	private String sqlWhere;
 	//order排序
 	private String sqlOrderBy;
+	//order by 倒叙
+	private String sqlOrderByDesc;
+	//order by 顺序
+	private String sqlOrderByAsc;
 	//limit限制
 	private Boolean sqlLimit=false;
 	//开始数据
@@ -103,6 +107,22 @@ public class BaseInBean implements Serializable{
 
 	public void setSqlEndIndex(Integer sqlEndIndex) {
 		this.sqlEndIndex = sqlEndIndex;
+	}
+
+	public String getSqlOrderByDesc() {
+		return sqlOrderByDesc;
+	}
+
+	public void setSqlOrderByDesc(String sqlOrderByDesc) {
+		this.sqlOrderByDesc = sqlOrderByDesc;
+	}
+
+	public String getSqlOrderByAsc() {
+		return sqlOrderByAsc;
+	}
+
+	public void setSqlOrderByAsc(String sqlOrderByAsc) {
+		this.sqlOrderByAsc = sqlOrderByAsc;
 	}
 	
 	

@@ -1,0 +1,1022 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.ITbBalShSelfScheduleDao">
+    <resultMap id="TbBalShSelfScheduleOutBeanMap" type="bean.out.TbBalShSelfScheduleOutBean">
+        <result column="bal_sts" property="balSts"/>
+        <result column="plan_setting_org_code" property="planSettingOrgCode"/>
+        <result column="mail_type" property="mailType"/>
+        <result column="plan_setting_staff_name" property="planSettingStaffName"/>
+        <result column="flight_num" property="flightNum"/>
+        <result column="bal_type" property="balType"/>
+        <result column="remark" property="remark"/>
+        <result column="bal_batch_seq" property="balBatchSeq"/>
+        <result column="start_date" property="startDate"/>
+        <result column="plan_setting_staff_code" property="planSettingStaffCode"/>
+        <result column="agent_name" property="agentName"/>
+        <result column="plan_setting_date" property="planSettingDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="rn" property="rn"/>
+    </resultMap>
+    <select id="selectList" parameterType="bean.in.TbBalShSelfScheduleInBean" resultMap="TbBalShSelfScheduleOutBeanMap">
+		
+        <if test="sqlLimit==true">
+			select * from (
+		</if>
+		 select A.*,  rowNum rn from (
+		 	select 
+			bal_sts,
+			plan_setting_org_code,
+			mail_type,
+			plan_setting_staff_name,
+			flight_num,
+			bal_type,
+			remark,
+			bal_batch_seq,
+			start_date,
+			plan_setting_staff_code,
+			agent_name,
+			plan_setting_date,
+			end_date 
+		 from tb_bal_sh_self_schedule
+        <where>
+            <choose>
+                <when test="sqlBalStsLike==true">and bal_sts like concat(concat('%',#{balSts}),'%')</when>
+                <when test="sqlBalStsLeftLike==true">and bal_sts like concat(#{balSts},'%')</when>
+                <when test="sqlBalStsRightLike==true">and bal_sts like concat('%',#{balSts})</when>
+                <when test="sqlBalStsD==true">and bal_sts&gt;#{balSts}</when>
+                <when test="sqlBalStsX==true">and bal_sts&lt;#{balSts}</when>
+                <when test="sqlBalStsDd==true">and bal_sts&gt;= #{balSts}</when>
+                <when test="sqlBalStsXd==true">and bal_sts&lt;= #{balSts}</when>
+                <when test="sqlBalStsInList!=null">
+                    <foreach collection="sqlBalStsInList" item="a" open="bal_sts in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="balSts!=null and balSts!=''">and bal_sts=#{balSts}</when>
+            </choose>
+            <choose>
+                <when test="sqlPlanSettingOrgCodeLike==true">and plan_setting_org_code like concat(concat('%',#{planSettingOrgCode}),'%')</when>
+                <when test="sqlPlanSettingOrgCodeLeftLike==true">and plan_setting_org_code like concat(#{planSettingOrgCode},'%')</when>
+                <when test="sqlPlanSettingOrgCodeRightLike==true">and plan_setting_org_code like concat('%',#{planSettingOrgCode})</when>
+                <when test="sqlPlanSettingOrgCodeD==true">and plan_setting_org_code&gt;#{planSettingOrgCode}</when>
+                <when test="sqlPlanSettingOrgCodeX==true">and plan_setting_org_code&lt;#{planSettingOrgCode}</when>
+                <when test="sqlPlanSettingOrgCodeDd==true">and plan_setting_org_code&gt;= #{planSettingOrgCode}</when>
+                <when test="sqlPlanSettingOrgCodeXd==true">and plan_setting_org_code&lt;= #{planSettingOrgCode}</when>
+                <when test="sqlPlanSettingOrgCodeInList!=null">
+                    <foreach collection="sqlPlanSettingOrgCodeInList" item="a" open="plan_setting_org_code in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="planSettingOrgCode!=null and planSettingOrgCode!=''">and plan_setting_org_code=#{planSettingOrgCode}</when>
+            </choose>
+            <choose>
+                <when test="sqlMailTypeLike==true">and mail_type like concat(concat('%',#{mailType}),'%')</when>
+                <when test="sqlMailTypeLeftLike==true">and mail_type like concat(#{mailType},'%')</when>
+                <when test="sqlMailTypeRightLike==true">and mail_type like concat('%',#{mailType})</when>
+                <when test="sqlMailTypeD==true">and mail_type&gt;#{mailType}</when>
+                <when test="sqlMailTypeX==true">and mail_type&lt;#{mailType}</when>
+                <when test="sqlMailTypeDd==true">and mail_type&gt;= #{mailType}</when>
+                <when test="sqlMailTypeXd==true">and mail_type&lt;= #{mailType}</when>
+                <when test="sqlMailTypeInList!=null">
+                    <foreach collection="sqlMailTypeInList" item="a" open="mail_type in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="mailType!=null and mailType!=''">and mail_type=#{mailType}</when>
+            </choose>
+            <choose>
+                <when test="sqlPlanSettingStaffNameLike==true">and plan_setting_staff_name like concat(concat('%',#{planSettingStaffName}),'%')</when>
+                <when test="sqlPlanSettingStaffNameLeftLike==true">and plan_setting_staff_name like concat(#{planSettingStaffName},'%')</when>
+                <when test="sqlPlanSettingStaffNameRightLike==true">and plan_setting_staff_name like concat('%',#{planSettingStaffName})</when>
+                <when test="sqlPlanSettingStaffNameD==true">and plan_setting_staff_name&gt;#{planSettingStaffName}</when>
+                <when test="sqlPlanSettingStaffNameX==true">and plan_setting_staff_name&lt;#{planSettingStaffName}</when>
+                <when test="sqlPlanSettingStaffNameDd==true">and plan_setting_staff_name&gt;= #{planSettingStaffName}</when>
+                <when test="sqlPlanSettingStaffNameXd==true">and plan_setting_staff_name&lt;= #{planSettingStaffName}</when>
+                <when test="sqlPlanSettingStaffNameInList!=null">
+                    <foreach collection="sqlPlanSettingStaffNameInList" item="a" open="plan_setting_staff_name in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="planSettingStaffName!=null and planSettingStaffName!=''">and plan_setting_staff_name=#{planSettingStaffName}</when>
+            </choose>
+            <choose>
+                <when test="sqlFlightNumLike==true">and flight_num like concat(concat('%',#{flightNum}),'%')</when>
+                <when test="sqlFlightNumLeftLike==true">and flight_num like concat(#{flightNum},'%')</when>
+                <when test="sqlFlightNumRightLike==true">and flight_num like concat('%',#{flightNum})</when>
+                <when test="sqlFlightNumD==true">and flight_num&gt;#{flightNum}</when>
+                <when test="sqlFlightNumX==true">and flight_num&lt;#{flightNum}</when>
+                <when test="sqlFlightNumDd==true">and flight_num&gt;= #{flightNum}</when>
+                <when test="sqlFlightNumXd==true">and flight_num&lt;= #{flightNum}</when>
+                <when test="sqlFlightNumInList!=null">
+                    <foreach collection="sqlFlightNumInList" item="a" open="flight_num in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="flightNum!=null and flightNum!=''">and flight_num=#{flightNum}</when>
+            </choose>
+            <choose>
+                <when test="sqlBalTypeLike==true">and bal_type like concat(concat('%',#{balType}),'%')</when>
+                <when test="sqlBalTypeLeftLike==true">and bal_type like concat(#{balType},'%')</when>
+                <when test="sqlBalTypeRightLike==true">and bal_type like concat('%',#{balType})</when>
+                <when test="sqlBalTypeD==true">and bal_type&gt;#{balType}</when>
+                <when test="sqlBalTypeX==true">and bal_type&lt;#{balType}</when>
+                <when test="sqlBalTypeDd==true">and bal_type&gt;= #{balType}</when>
+                <when test="sqlBalTypeXd==true">and bal_type&lt;= #{balType}</when>
+                <when test="sqlBalTypeInList!=null">
+                    <foreach collection="sqlBalTypeInList" item="a" open="bal_type in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="balType!=null and balType!=''">and bal_type=#{balType}</when>
+            </choose>
+            <choose>
+                <when test="sqlRemarkLike==true">and remark like concat(concat('%',#{remark}),'%')</when>
+                <when test="sqlRemarkLeftLike==true">and remark like concat(#{remark},'%')</when>
+                <when test="sqlRemarkRightLike==true">and remark like concat('%',#{remark})</when>
+                <when test="sqlRemarkD==true">and remark&gt;#{remark}</when>
+                <when test="sqlRemarkX==true">and remark&lt;#{remark}</when>
+                <when test="sqlRemarkDd==true">and remark&gt;= #{remark}</when>
+                <when test="sqlRemarkXd==true">and remark&lt;= #{remark}</when>
+                <when test="sqlRemarkInList!=null">
+                    <foreach collection="sqlRemarkInList" item="a" open="remark in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="remark!=null and remark!=''">and remark=#{remark}</when>
+            </choose>
+            <choose>
+                <when test="sqlBalBatchSeqLike==true">and bal_batch_seq like concat(concat('%',#{balBatchSeq}),'%')</when>
+                <when test="sqlBalBatchSeqLeftLike==true">and bal_batch_seq like concat(#{balBatchSeq},'%')</when>
+                <when test="sqlBalBatchSeqRightLike==true">and bal_batch_seq like concat('%',#{balBatchSeq})</when>
+                <when test="sqlBalBatchSeqD==true">and bal_batch_seq&gt;#{balBatchSeq}</when>
+                <when test="sqlBalBatchSeqX==true">and bal_batch_seq&lt;#{balBatchSeq}</when>
+                <when test="sqlBalBatchSeqDd==true">and bal_batch_seq&gt;= #{balBatchSeq}</when>
+                <when test="sqlBalBatchSeqXd==true">and bal_batch_seq&lt;= #{balBatchSeq}</when>
+                <when test="sqlBalBatchSeqInList!=null">
+                    <foreach collection="sqlBalBatchSeqInList" item="a" open="bal_batch_seq in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="balBatchSeq!=null and balBatchSeq!=''">and bal_batch_seq=#{balBatchSeq}</when>
+            </choose>
+            <choose>
+                <when test="sqlStartDateLike==true">and start_date like concat(concat('%',#{startDate}),'%')</when>
+                <when test="sqlStartDateLeftLike==true">and start_date like concat(#{startDate},'%')</when>
+                <when test="sqlStartDateRightLike==true">and start_date like concat('%',#{startDate})</when>
+                <when test="sqlStartDateD==true">and start_date&gt; to_date(#{startDate},'yyyy-MM-dd')and start_date&lt;= to_date(#{startDate},'yyyy-MM-dd')</when>
+                <when test="sqlStartDateX==true">and start_date&lt; to_date(#{startDate},'yyyy-MM-dd')</when>
+                <when test="sqlStartDateDd==true">and start_date&gt;= to_date(#{startDate},'yyyy-MM-dd')</when>
+                <when test="sqlStartDateXd==true">and start_date&lt;= to_date(#{startDate},'yyyy-MM-dd')</when>
+                <when test="sqlStartDateInList!=null">
+                    <foreach collection="sqlStartDateInList" item="a" open="start_date in (" close=")" separator=",">to_date(#{a},'yyyy-MM-dd')</foreach>
+                </when>
+                <when test="startDate!=null and startDate!=''">and start_date= to_date(#{startDate},'yyyy-MM-dd')</when>
+            </choose>
+            <choose>
+                <when test="sqlPlanSettingStaffCodeLike==true">and plan_setting_staff_code like concat(concat('%',#{planSettingStaffCode}),'%')</when>
+                <when test="sqlPlanSettingStaffCodeLeftLike==true">and plan_setting_staff_code like concat(#{planSettingStaffCode},'%')</when>
+                <when test="sqlPlanSettingStaffCodeRightLike==true">and plan_setting_staff_code like concat('%',#{planSettingStaffCode})</when>
+                <when test="sqlPlanSettingStaffCodeD==true">and plan_setting_staff_code&gt;#{planSettingStaffCode}</when>
+                <when test="sqlPlanSettingStaffCodeX==true">and plan_setting_staff_code&lt;#{planSettingStaffCode}</when>
+                <when test="sqlPlanSettingStaffCodeDd==true">and plan_setting_staff_code&gt;= #{planSettingStaffCode}</when>
+                <when test="sqlPlanSettingStaffCodeXd==true">and plan_setting_staff_code&lt;= #{planSettingStaffCode}</when>
+                <when test="sqlPlanSettingStaffCodeInList!=null">
+                    <foreach collection="sqlPlanSettingStaffCodeInList" item="a" open="plan_setting_staff_code in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="planSettingStaffCode!=null and planSettingStaffCode!=''">and plan_setting_staff_code=#{planSettingStaffCode}</when>
+            </choose>
+            <choose>
+                <when test="sqlAgentNameLike==true">and agent_name like concat(concat('%',#{agentName}),'%')</when>
+                <when test="sqlAgentNameLeftLike==true">and agent_name like concat(#{agentName},'%')</when>
+                <when test="sqlAgentNameRightLike==true">and agent_name like concat('%',#{agentName})</when>
+                <when test="sqlAgentNameD==true">and agent_name&gt;#{agentName}</when>
+                <when test="sqlAgentNameX==true">and agent_name&lt;#{agentName}</when>
+                <when test="sqlAgentNameDd==true">and agent_name&gt;= #{agentName}</when>
+                <when test="sqlAgentNameXd==true">and agent_name&lt;= #{agentName}</when>
+                <when test="sqlAgentNameInList!=null">
+                    <foreach collection="sqlAgentNameInList" item="a" open="agent_name in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="agentName!=null and agentName!=''">and agent_name=#{agentName}</when>
+            </choose>
+            <choose>
+                <when test="sqlPlanSettingDateLike==true">and plan_setting_date like concat(concat('%',#{planSettingDate}),'%')</when>
+                <when test="sqlPlanSettingDateLeftLike==true">and plan_setting_date like concat(#{planSettingDate},'%')</when>
+                <when test="sqlPlanSettingDateRightLike==true">and plan_setting_date like concat('%',#{planSettingDate})</when>
+                <when test="sqlPlanSettingDateD==true">and plan_setting_date&gt; to_date(#{planSettingDate},'yyyy-MM-dd')and plan_setting_date&lt;= to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlPlanSettingDateX==true">and plan_setting_date&lt; to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlPlanSettingDateDd==true">and plan_setting_date&gt;= to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlPlanSettingDateXd==true">and plan_setting_date&lt;= to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlPlanSettingDateInList!=null">
+                    <foreach collection="sqlPlanSettingDateInList" item="a" open="plan_setting_date in (" close=")" separator=",">to_date(#{a},'yyyy-MM-dd')</foreach>
+                </when>
+                <when test="planSettingDate!=null and planSettingDate!=''">and plan_setting_date= to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+            </choose>
+            <choose>
+                <when test="sqlEndDateLike==true">and end_date like concat(concat('%',#{endDate}),'%')</when>
+                <when test="sqlEndDateLeftLike==true">and end_date like concat(#{endDate},'%')</when>
+                <when test="sqlEndDateRightLike==true">and end_date like concat('%',#{endDate})</when>
+                <when test="sqlEndDateD==true">and end_date&gt; to_date(#{endDate},'yyyy-MM-dd')and end_date&lt;= to_date(#{endDate},'yyyy-MM-dd')</when>
+                <when test="sqlEndDateX==true">and end_date&lt; to_date(#{endDate},'yyyy-MM-dd')</when>
+                <when test="sqlEndDateDd==true">and end_date&gt;= to_date(#{endDate},'yyyy-MM-dd')</when>
+                <when test="sqlEndDateXd==true">and end_date&lt;= to_date(#{endDate},'yyyy-MM-dd')</when>
+                <when test="sqlEndDateInList!=null">
+                    <foreach collection="sqlEndDateInList" item="a" open="end_date in (" close=")" separator=",">to_date(#{a},'yyyy-MM-dd')</foreach>
+                </when>
+                <when test="endDate!=null and endDate!=''">and end_date= to_date(#{endDate},'yyyy-MM-dd')</when>
+            </choose>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+        <if test="sqlOrderBy!=null">order by ${sqlOrderBy}</if>
+        <if test="sqlOrderByDesc!=null">order by ${sqlOrderByDesc} desc</if>
+        <if test="sqlOrderByAsc!=null">order by ${sqlOrderByAsc}</if>
+			) A
+        <if test="sqlLimit==true">
+		where rowNum &lt;= #{sqlEndIndex}+1 
+		) where rn &gt;=#{sqlStartIndex}+1 
+		</if>
+    </select>
+    <select id="selectOne" parameterType="bean.in.TbBalShSelfScheduleInBean" resultMap="TbBalShSelfScheduleOutBeanMap">
+		 select 
+			bal_sts,
+			plan_setting_org_code,
+			mail_type,
+			plan_setting_staff_name,
+			flight_num,
+			bal_type,
+			remark,
+			bal_batch_seq,
+			start_date,
+			plan_setting_staff_code,
+			agent_name,
+			plan_setting_date,
+			end_date
+		 from tb_bal_sh_self_schedule
+        <where>
+            <choose>
+                <when test="sqlBalStsLike==true">and bal_sts like concat(concat('%',#{balSts}),'%')</when>
+                <when test="sqlBalStsLeftLike==true">and bal_sts like concat(#{balSts},'%')</when>
+                <when test="sqlBalStsRightLike==true">and bal_sts like concat('%',#{balSts})</when>
+                <when test="sqlBalStsD==true">and bal_sts&gt;#{balSts}</when>
+                <when test="sqlBalStsX==true">and bal_sts&lt;#{balSts}</when>
+                <when test="sqlBalStsDd==true">and bal_sts&gt;= #{balSts}</when>
+                <when test="sqlBalStsXd==true">and bal_sts&lt;= #{balSts}</when>
+                <when test="sqlBalStsInList!=null">
+                    <foreach collection="sqlBalStsInList" item="a" open="bal_sts in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="balSts!=null and balSts!=''">and bal_sts=#{balSts}</when>
+            </choose>
+            <choose>
+                <when test="sqlPlanSettingOrgCodeLike==true">and plan_setting_org_code like concat(concat('%',#{planSettingOrgCode}),'%')</when>
+                <when test="sqlPlanSettingOrgCodeLeftLike==true">and plan_setting_org_code like concat(#{planSettingOrgCode},'%')</when>
+                <when test="sqlPlanSettingOrgCodeRightLike==true">and plan_setting_org_code like concat('%',#{planSettingOrgCode})</when>
+                <when test="sqlPlanSettingOrgCodeD==true">and plan_setting_org_code&gt;#{planSettingOrgCode}</when>
+                <when test="sqlPlanSettingOrgCodeX==true">and plan_setting_org_code&lt;#{planSettingOrgCode}</when>
+                <when test="sqlPlanSettingOrgCodeDd==true">and plan_setting_org_code&gt;= #{planSettingOrgCode}</when>
+                <when test="sqlPlanSettingOrgCodeXd==true">and plan_setting_org_code&lt;= #{planSettingOrgCode}</when>
+                <when test="sqlPlanSettingOrgCodeInList!=null">
+                    <foreach collection="sqlPlanSettingOrgCodeInList" item="a" open="plan_setting_org_code in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="planSettingOrgCode!=null and planSettingOrgCode!=''">and plan_setting_org_code=#{planSettingOrgCode}</when>
+            </choose>
+            <choose>
+                <when test="sqlMailTypeLike==true">and mail_type like concat(concat('%',#{mailType}),'%')</when>
+                <when test="sqlMailTypeLeftLike==true">and mail_type like concat(#{mailType},'%')</when>
+                <when test="sqlMailTypeRightLike==true">and mail_type like concat('%',#{mailType})</when>
+                <when test="sqlMailTypeD==true">and mail_type&gt;#{mailType}</when>
+                <when test="sqlMailTypeX==true">and mail_type&lt;#{mailType}</when>
+                <when test="sqlMailTypeDd==true">and mail_type&gt;= #{mailType}</when>
+                <when test="sqlMailTypeXd==true">and mail_type&lt;= #{mailType}</when>
+                <when test="sqlMailTypeInList!=null">
+                    <foreach collection="sqlMailTypeInList" item="a" open="mail_type in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="mailType!=null and mailType!=''">and mail_type=#{mailType}</when>
+            </choose>
+            <choose>
+                <when test="sqlPlanSettingStaffNameLike==true">and plan_setting_staff_name like concat(concat('%',#{planSettingStaffName}),'%')</when>
+                <when test="sqlPlanSettingStaffNameLeftLike==true">and plan_setting_staff_name like concat(#{planSettingStaffName},'%')</when>
+                <when test="sqlPlanSettingStaffNameRightLike==true">and plan_setting_staff_name like concat('%',#{planSettingStaffName})</when>
+                <when test="sqlPlanSettingStaffNameD==true">and plan_setting_staff_name&gt;#{planSettingStaffName}</when>
+                <when test="sqlPlanSettingStaffNameX==true">and plan_setting_staff_name&lt;#{planSettingStaffName}</when>
+                <when test="sqlPlanSettingStaffNameDd==true">and plan_setting_staff_name&gt;= #{planSettingStaffName}</when>
+                <when test="sqlPlanSettingStaffNameXd==true">and plan_setting_staff_name&lt;= #{planSettingStaffName}</when>
+                <when test="sqlPlanSettingStaffNameInList!=null">
+                    <foreach collection="sqlPlanSettingStaffNameInList" item="a" open="plan_setting_staff_name in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="planSettingStaffName!=null and planSettingStaffName!=''">and plan_setting_staff_name=#{planSettingStaffName}</when>
+            </choose>
+            <choose>
+                <when test="sqlFlightNumLike==true">and flight_num like concat(concat('%',#{flightNum}),'%')</when>
+                <when test="sqlFlightNumLeftLike==true">and flight_num like concat(#{flightNum},'%')</when>
+                <when test="sqlFlightNumRightLike==true">and flight_num like concat('%',#{flightNum})</when>
+                <when test="sqlFlightNumD==true">and flight_num&gt;#{flightNum}</when>
+                <when test="sqlFlightNumX==true">and flight_num&lt;#{flightNum}</when>
+                <when test="sqlFlightNumDd==true">and flight_num&gt;= #{flightNum}</when>
+                <when test="sqlFlightNumXd==true">and flight_num&lt;= #{flightNum}</when>
+                <when test="sqlFlightNumInList!=null">
+                    <foreach collection="sqlFlightNumInList" item="a" open="flight_num in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="flightNum!=null and flightNum!=''">and flight_num=#{flightNum}</when>
+            </choose>
+            <choose>
+                <when test="sqlBalTypeLike==true">and bal_type like concat(concat('%',#{balType}),'%')</when>
+                <when test="sqlBalTypeLeftLike==true">and bal_type like concat(#{balType},'%')</when>
+                <when test="sqlBalTypeRightLike==true">and bal_type like concat('%',#{balType})</when>
+                <when test="sqlBalTypeD==true">and bal_type&gt;#{balType}</when>
+                <when test="sqlBalTypeX==true">and bal_type&lt;#{balType}</when>
+                <when test="sqlBalTypeDd==true">and bal_type&gt;= #{balType}</when>
+                <when test="sqlBalTypeXd==true">and bal_type&lt;= #{balType}</when>
+                <when test="sqlBalTypeInList!=null">
+                    <foreach collection="sqlBalTypeInList" item="a" open="bal_type in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="balType!=null and balType!=''">and bal_type=#{balType}</when>
+            </choose>
+            <choose>
+                <when test="sqlRemarkLike==true">and remark like concat(concat('%',#{remark}),'%')</when>
+                <when test="sqlRemarkLeftLike==true">and remark like concat(#{remark},'%')</when>
+                <when test="sqlRemarkRightLike==true">and remark like concat('%',#{remark})</when>
+                <when test="sqlRemarkD==true">and remark&gt;#{remark}</when>
+                <when test="sqlRemarkX==true">and remark&lt;#{remark}</when>
+                <when test="sqlRemarkDd==true">and remark&gt;= #{remark}</when>
+                <when test="sqlRemarkXd==true">and remark&lt;= #{remark}</when>
+                <when test="sqlRemarkInList!=null">
+                    <foreach collection="sqlRemarkInList" item="a" open="remark in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="remark!=null and remark!=''">and remark=#{remark}</when>
+            </choose>
+            <choose>
+                <when test="sqlBalBatchSeqLike==true">and bal_batch_seq like concat(concat('%',#{balBatchSeq}),'%')</when>
+                <when test="sqlBalBatchSeqLeftLike==true">and bal_batch_seq like concat(#{balBatchSeq},'%')</when>
+                <when test="sqlBalBatchSeqRightLike==true">and bal_batch_seq like concat('%',#{balBatchSeq})</when>
+                <when test="sqlBalBatchSeqD==true">and bal_batch_seq&gt;#{balBatchSeq}</when>
+                <when test="sqlBalBatchSeqX==true">and bal_batch_seq&lt;#{balBatchSeq}</when>
+                <when test="sqlBalBatchSeqDd==true">and bal_batch_seq&gt;= #{balBatchSeq}</when>
+                <when test="sqlBalBatchSeqXd==true">and bal_batch_seq&lt;= #{balBatchSeq}</when>
+                <when test="sqlBalBatchSeqInList!=null">
+                    <foreach collection="sqlBalBatchSeqInList" item="a" open="bal_batch_seq in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="balBatchSeq!=null and balBatchSeq!=''">and bal_batch_seq=#{balBatchSeq}</when>
+            </choose>
+            <choose>
+                <when test="sqlStartDateLike==true">and start_date like concat(concat('%',#{startDate}),'%')</when>
+                <when test="sqlStartDateLeftLike==true">and start_date like concat(#{startDate},'%')</when>
+                <when test="sqlStartDateRightLike==true">and start_date like concat('%',#{startDate})</when>
+                <when test="sqlStartDateD==true">and start_date&gt; to_date(#{startDate},'yyyy-MM-dd')and start_date&lt;= to_date(#{startDate},'yyyy-MM-dd')</when>
+                <when test="sqlStartDateX==true">and start_date&lt; to_date(#{startDate},'yyyy-MM-dd')</when>
+                <when test="sqlStartDateDd==true">and start_date&gt;= to_date(#{startDate},'yyyy-MM-dd')</when>
+                <when test="sqlStartDateXd==true">and start_date&lt;= to_date(#{startDate},'yyyy-MM-dd')</when>
+                <when test="sqlStartDateInList!=null">
+                    <foreach collection="sqlStartDateInList" item="a" open="start_date in (" close=")" separator=",">to_date(#{a},'yyyy-MM-dd')</foreach>
+                </when>
+                <when test="startDate!=null and startDate!=''">and start_date= to_date(#{startDate},'yyyy-MM-dd')</when>
+            </choose>
+            <choose>
+                <when test="sqlPlanSettingStaffCodeLike==true">and plan_setting_staff_code like concat(concat('%',#{planSettingStaffCode}),'%')</when>
+                <when test="sqlPlanSettingStaffCodeLeftLike==true">and plan_setting_staff_code like concat(#{planSettingStaffCode},'%')</when>
+                <when test="sqlPlanSettingStaffCodeRightLike==true">and plan_setting_staff_code like concat('%',#{planSettingStaffCode})</when>
+                <when test="sqlPlanSettingStaffCodeD==true">and plan_setting_staff_code&gt;#{planSettingStaffCode}</when>
+                <when test="sqlPlanSettingStaffCodeX==true">and plan_setting_staff_code&lt;#{planSettingStaffCode}</when>
+                <when test="sqlPlanSettingStaffCodeDd==true">and plan_setting_staff_code&gt;= #{planSettingStaffCode}</when>
+                <when test="sqlPlanSettingStaffCodeXd==true">and plan_setting_staff_code&lt;= #{planSettingStaffCode}</when>
+                <when test="sqlPlanSettingStaffCodeInList!=null">
+                    <foreach collection="sqlPlanSettingStaffCodeInList" item="a" open="plan_setting_staff_code in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="planSettingStaffCode!=null and planSettingStaffCode!=''">and plan_setting_staff_code=#{planSettingStaffCode}</when>
+            </choose>
+            <choose>
+                <when test="sqlAgentNameLike==true">and agent_name like concat(concat('%',#{agentName}),'%')</when>
+                <when test="sqlAgentNameLeftLike==true">and agent_name like concat(#{agentName},'%')</when>
+                <when test="sqlAgentNameRightLike==true">and agent_name like concat('%',#{agentName})</when>
+                <when test="sqlAgentNameD==true">and agent_name&gt;#{agentName}</when>
+                <when test="sqlAgentNameX==true">and agent_name&lt;#{agentName}</when>
+                <when test="sqlAgentNameDd==true">and agent_name&gt;= #{agentName}</when>
+                <when test="sqlAgentNameXd==true">and agent_name&lt;= #{agentName}</when>
+                <when test="sqlAgentNameInList!=null">
+                    <foreach collection="sqlAgentNameInList" item="a" open="agent_name in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="agentName!=null and agentName!=''">and agent_name=#{agentName}</when>
+            </choose>
+            <choose>
+                <when test="sqlPlanSettingDateLike==true">and plan_setting_date like concat(concat('%',#{planSettingDate}),'%')</when>
+                <when test="sqlPlanSettingDateLeftLike==true">and plan_setting_date like concat(#{planSettingDate},'%')</when>
+                <when test="sqlPlanSettingDateRightLike==true">and plan_setting_date like concat('%',#{planSettingDate})</when>
+                <when test="sqlPlanSettingDateD==true">and plan_setting_date&gt; to_date(#{planSettingDate},'yyyy-MM-dd')and plan_setting_date&lt;= to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlPlanSettingDateX==true">and plan_setting_date&lt; to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlPlanSettingDateDd==true">and plan_setting_date&gt;= to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlPlanSettingDateXd==true">and plan_setting_date&lt;= to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlPlanSettingDateInList!=null">
+                    <foreach collection="sqlPlanSettingDateInList" item="a" open="plan_setting_date in (" close=")" separator=",">to_date(#{a},'yyyy-MM-dd')</foreach>
+                </when>
+                <when test="planSettingDate!=null and planSettingDate!=''">and plan_setting_date= to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+            </choose>
+            <choose>
+                <when test="sqlEndDateLike==true">and end_date like concat(concat('%',#{endDate}),'%')</when>
+                <when test="sqlEndDateLeftLike==true">and end_date like concat(#{endDate},'%')</when>
+                <when test="sqlEndDateRightLike==true">and end_date like concat('%',#{endDate})</when>
+                <when test="sqlEndDateD==true">and end_date&gt; to_date(#{endDate},'yyyy-MM-dd')and end_date&lt;= to_date(#{endDate},'yyyy-MM-dd')</when>
+                <when test="sqlEndDateX==true">and end_date&lt; to_date(#{endDate},'yyyy-MM-dd')</when>
+                <when test="sqlEndDateDd==true">and end_date&gt;= to_date(#{endDate},'yyyy-MM-dd')</when>
+                <when test="sqlEndDateXd==true">and end_date&lt;= to_date(#{endDate},'yyyy-MM-dd')</when>
+                <when test="sqlEndDateInList!=null">
+                    <foreach collection="sqlEndDateInList" item="a" open="end_date in (" close=")" separator=",">to_date(#{a},'yyyy-MM-dd')</foreach>
+                </when>
+                <when test="endDate!=null and endDate!=''">and end_date= to_date(#{endDate},'yyyy-MM-dd')</when>
+            </choose>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+    </select>
+    <select id="getCount" parameterType="bean.in.TbBalShSelfScheduleInBean" resultType="int">
+		select count(*) from tb_bal_sh_self_schedule
+        <where>
+            <choose>
+                <when test="sqlBalStsLike==true">and bal_sts like concat(concat('%',#{balSts}),'%')</when>
+                <when test="sqlBalStsLeftLike==true">and bal_sts like concat(#{balSts},'%')</when>
+                <when test="sqlBalStsRightLike==true">and bal_sts like concat('%',#{balSts})</when>
+                <when test="sqlBalStsD==true">and bal_sts&gt;#{balSts}</when>
+                <when test="sqlBalStsX==true">and bal_sts&lt;#{balSts}</when>
+                <when test="sqlBalStsDd==true">and bal_sts&gt;= #{balSts}</when>
+                <when test="sqlBalStsXd==true">and bal_sts&lt;= #{balSts}</when>
+                <when test="sqlBalStsInList!=null">
+                    <foreach collection="sqlBalStsInList" item="a" open="bal_sts in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="balSts!=null and balSts!=''">and bal_sts=#{balSts}</when>
+            </choose>
+            <choose>
+                <when test="sqlPlanSettingOrgCodeLike==true">and plan_setting_org_code like concat(concat('%',#{planSettingOrgCode}),'%')</when>
+                <when test="sqlPlanSettingOrgCodeLeftLike==true">and plan_setting_org_code like concat(#{planSettingOrgCode},'%')</when>
+                <when test="sqlPlanSettingOrgCodeRightLike==true">and plan_setting_org_code like concat('%',#{planSettingOrgCode})</when>
+                <when test="sqlPlanSettingOrgCodeD==true">and plan_setting_org_code&gt;#{planSettingOrgCode}</when>
+                <when test="sqlPlanSettingOrgCodeX==true">and plan_setting_org_code&lt;#{planSettingOrgCode}</when>
+                <when test="sqlPlanSettingOrgCodeDd==true">and plan_setting_org_code&gt;= #{planSettingOrgCode}</when>
+                <when test="sqlPlanSettingOrgCodeXd==true">and plan_setting_org_code&lt;= #{planSettingOrgCode}</when>
+                <when test="sqlPlanSettingOrgCodeInList!=null">
+                    <foreach collection="sqlPlanSettingOrgCodeInList" item="a" open="plan_setting_org_code in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="planSettingOrgCode!=null and planSettingOrgCode!=''">and plan_setting_org_code=#{planSettingOrgCode}</when>
+            </choose>
+            <choose>
+                <when test="sqlMailTypeLike==true">and mail_type like concat(concat('%',#{mailType}),'%')</when>
+                <when test="sqlMailTypeLeftLike==true">and mail_type like concat(#{mailType},'%')</when>
+                <when test="sqlMailTypeRightLike==true">and mail_type like concat('%',#{mailType})</when>
+                <when test="sqlMailTypeD==true">and mail_type&gt;#{mailType}</when>
+                <when test="sqlMailTypeX==true">and mail_type&lt;#{mailType}</when>
+                <when test="sqlMailTypeDd==true">and mail_type&gt;= #{mailType}</when>
+                <when test="sqlMailTypeXd==true">and mail_type&lt;= #{mailType}</when>
+                <when test="sqlMailTypeInList!=null">
+                    <foreach collection="sqlMailTypeInList" item="a" open="mail_type in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="mailType!=null and mailType!=''">and mail_type=#{mailType}</when>
+            </choose>
+            <choose>
+                <when test="sqlPlanSettingStaffNameLike==true">and plan_setting_staff_name like concat(concat('%',#{planSettingStaffName}),'%')</when>
+                <when test="sqlPlanSettingStaffNameLeftLike==true">and plan_setting_staff_name like concat(#{planSettingStaffName},'%')</when>
+                <when test="sqlPlanSettingStaffNameRightLike==true">and plan_setting_staff_name like concat('%',#{planSettingStaffName})</when>
+                <when test="sqlPlanSettingStaffNameD==true">and plan_setting_staff_name&gt;#{planSettingStaffName}</when>
+                <when test="sqlPlanSettingStaffNameX==true">and plan_setting_staff_name&lt;#{planSettingStaffName}</when>
+                <when test="sqlPlanSettingStaffNameDd==true">and plan_setting_staff_name&gt;= #{planSettingStaffName}</when>
+                <when test="sqlPlanSettingStaffNameXd==true">and plan_setting_staff_name&lt;= #{planSettingStaffName}</when>
+                <when test="sqlPlanSettingStaffNameInList!=null">
+                    <foreach collection="sqlPlanSettingStaffNameInList" item="a" open="plan_setting_staff_name in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="planSettingStaffName!=null and planSettingStaffName!=''">and plan_setting_staff_name=#{planSettingStaffName}</when>
+            </choose>
+            <choose>
+                <when test="sqlFlightNumLike==true">and flight_num like concat(concat('%',#{flightNum}),'%')</when>
+                <when test="sqlFlightNumLeftLike==true">and flight_num like concat(#{flightNum},'%')</when>
+                <when test="sqlFlightNumRightLike==true">and flight_num like concat('%',#{flightNum})</when>
+                <when test="sqlFlightNumD==true">and flight_num&gt;#{flightNum}</when>
+                <when test="sqlFlightNumX==true">and flight_num&lt;#{flightNum}</when>
+                <when test="sqlFlightNumDd==true">and flight_num&gt;= #{flightNum}</when>
+                <when test="sqlFlightNumXd==true">and flight_num&lt;= #{flightNum}</when>
+                <when test="sqlFlightNumInList!=null">
+                    <foreach collection="sqlFlightNumInList" item="a" open="flight_num in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="flightNum!=null and flightNum!=''">and flight_num=#{flightNum}</when>
+            </choose>
+            <choose>
+                <when test="sqlBalTypeLike==true">and bal_type like concat(concat('%',#{balType}),'%')</when>
+                <when test="sqlBalTypeLeftLike==true">and bal_type like concat(#{balType},'%')</when>
+                <when test="sqlBalTypeRightLike==true">and bal_type like concat('%',#{balType})</when>
+                <when test="sqlBalTypeD==true">and bal_type&gt;#{balType}</when>
+                <when test="sqlBalTypeX==true">and bal_type&lt;#{balType}</when>
+                <when test="sqlBalTypeDd==true">and bal_type&gt;= #{balType}</when>
+                <when test="sqlBalTypeXd==true">and bal_type&lt;= #{balType}</when>
+                <when test="sqlBalTypeInList!=null">
+                    <foreach collection="sqlBalTypeInList" item="a" open="bal_type in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="balType!=null and balType!=''">and bal_type=#{balType}</when>
+            </choose>
+            <choose>
+                <when test="sqlRemarkLike==true">and remark like concat(concat('%',#{remark}),'%')</when>
+                <when test="sqlRemarkLeftLike==true">and remark like concat(#{remark},'%')</when>
+                <when test="sqlRemarkRightLike==true">and remark like concat('%',#{remark})</when>
+                <when test="sqlRemarkD==true">and remark&gt;#{remark}</when>
+                <when test="sqlRemarkX==true">and remark&lt;#{remark}</when>
+                <when test="sqlRemarkDd==true">and remark&gt;= #{remark}</when>
+                <when test="sqlRemarkXd==true">and remark&lt;= #{remark}</when>
+                <when test="sqlRemarkInList!=null">
+                    <foreach collection="sqlRemarkInList" item="a" open="remark in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="remark!=null and remark!=''">and remark=#{remark}</when>
+            </choose>
+            <choose>
+                <when test="sqlBalBatchSeqLike==true">and bal_batch_seq like concat(concat('%',#{balBatchSeq}),'%')</when>
+                <when test="sqlBalBatchSeqLeftLike==true">and bal_batch_seq like concat(#{balBatchSeq},'%')</when>
+                <when test="sqlBalBatchSeqRightLike==true">and bal_batch_seq like concat('%',#{balBatchSeq})</when>
+                <when test="sqlBalBatchSeqD==true">and bal_batch_seq&gt;#{balBatchSeq}</when>
+                <when test="sqlBalBatchSeqX==true">and bal_batch_seq&lt;#{balBatchSeq}</when>
+                <when test="sqlBalBatchSeqDd==true">and bal_batch_seq&gt;= #{balBatchSeq}</when>
+                <when test="sqlBalBatchSeqXd==true">and bal_batch_seq&lt;= #{balBatchSeq}</when>
+                <when test="sqlBalBatchSeqInList!=null">
+                    <foreach collection="sqlBalBatchSeqInList" item="a" open="bal_batch_seq in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="balBatchSeq!=null and balBatchSeq!=''">and bal_batch_seq=#{balBatchSeq}</when>
+            </choose>
+            <choose>
+                <when test="sqlStartDateLike==true">and start_date like concat(concat('%',#{startDate}),'%')</when>
+                <when test="sqlStartDateLeftLike==true">and start_date like concat(#{startDate},'%')</when>
+                <when test="sqlStartDateRightLike==true">and start_date like concat('%',#{startDate})</when>
+                <when test="sqlStartDateD==true">and start_date&gt; to_date(#{startDate},'yyyy-MM-dd')and start_date&lt;= to_date(#{startDate},'yyyy-MM-dd')</when>
+                <when test="sqlStartDateX==true">and start_date&lt; to_date(#{startDate},'yyyy-MM-dd')</when>
+                <when test="sqlStartDateDd==true">and start_date&gt;= to_date(#{startDate},'yyyy-MM-dd')</when>
+                <when test="sqlStartDateXd==true">and start_date&lt;= to_date(#{startDate},'yyyy-MM-dd')</when>
+                <when test="sqlStartDateInList!=null">
+                    <foreach collection="sqlStartDateInList" item="a" open="start_date in (" close=")" separator=",">to_date(#{a},'yyyy-MM-dd')</foreach>
+                </when>
+                <when test="startDate!=null and startDate!=''">and start_date= to_date(#{startDate},'yyyy-MM-dd')</when>
+            </choose>
+            <choose>
+                <when test="sqlPlanSettingStaffCodeLike==true">and plan_setting_staff_code like concat(concat('%',#{planSettingStaffCode}),'%')</when>
+                <when test="sqlPlanSettingStaffCodeLeftLike==true">and plan_setting_staff_code like concat(#{planSettingStaffCode},'%')</when>
+                <when test="sqlPlanSettingStaffCodeRightLike==true">and plan_setting_staff_code like concat('%',#{planSettingStaffCode})</when>
+                <when test="sqlPlanSettingStaffCodeD==true">and plan_setting_staff_code&gt;#{planSettingStaffCode}</when>
+                <when test="sqlPlanSettingStaffCodeX==true">and plan_setting_staff_code&lt;#{planSettingStaffCode}</when>
+                <when test="sqlPlanSettingStaffCodeDd==true">and plan_setting_staff_code&gt;= #{planSettingStaffCode}</when>
+                <when test="sqlPlanSettingStaffCodeXd==true">and plan_setting_staff_code&lt;= #{planSettingStaffCode}</when>
+                <when test="sqlPlanSettingStaffCodeInList!=null">
+                    <foreach collection="sqlPlanSettingStaffCodeInList" item="a" open="plan_setting_staff_code in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="planSettingStaffCode!=null and planSettingStaffCode!=''">and plan_setting_staff_code=#{planSettingStaffCode}</when>
+            </choose>
+            <choose>
+                <when test="sqlAgentNameLike==true">and agent_name like concat(concat('%',#{agentName}),'%')</when>
+                <when test="sqlAgentNameLeftLike==true">and agent_name like concat(#{agentName},'%')</when>
+                <when test="sqlAgentNameRightLike==true">and agent_name like concat('%',#{agentName})</when>
+                <when test="sqlAgentNameD==true">and agent_name&gt;#{agentName}</when>
+                <when test="sqlAgentNameX==true">and agent_name&lt;#{agentName}</when>
+                <when test="sqlAgentNameDd==true">and agent_name&gt;= #{agentName}</when>
+                <when test="sqlAgentNameXd==true">and agent_name&lt;= #{agentName}</when>
+                <when test="sqlAgentNameInList!=null">
+                    <foreach collection="sqlAgentNameInList" item="a" open="agent_name in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="agentName!=null and agentName!=''">and agent_name=#{agentName}</when>
+            </choose>
+            <choose>
+                <when test="sqlPlanSettingDateLike==true">and plan_setting_date like concat(concat('%',#{planSettingDate}),'%')</when>
+                <when test="sqlPlanSettingDateLeftLike==true">and plan_setting_date like concat(#{planSettingDate},'%')</when>
+                <when test="sqlPlanSettingDateRightLike==true">and plan_setting_date like concat('%',#{planSettingDate})</when>
+                <when test="sqlPlanSettingDateD==true">and plan_setting_date&gt; to_date(#{planSettingDate},'yyyy-MM-dd')and plan_setting_date&lt;= to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlPlanSettingDateX==true">and plan_setting_date&lt; to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlPlanSettingDateDd==true">and plan_setting_date&gt;= to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlPlanSettingDateXd==true">and plan_setting_date&lt;= to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlPlanSettingDateInList!=null">
+                    <foreach collection="sqlPlanSettingDateInList" item="a" open="plan_setting_date in (" close=")" separator=",">to_date(#{a},'yyyy-MM-dd')</foreach>
+                </when>
+                <when test="planSettingDate!=null and planSettingDate!=''">and plan_setting_date= to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+            </choose>
+            <choose>
+                <when test="sqlEndDateLike==true">and end_date like concat(concat('%',#{endDate}),'%')</when>
+                <when test="sqlEndDateLeftLike==true">and end_date like concat(#{endDate},'%')</when>
+                <when test="sqlEndDateRightLike==true">and end_date like concat('%',#{endDate})</when>
+                <when test="sqlEndDateD==true">and end_date&gt; to_date(#{endDate},'yyyy-MM-dd')and end_date&lt;= to_date(#{endDate},'yyyy-MM-dd')</when>
+                <when test="sqlEndDateX==true">and end_date&lt; to_date(#{endDate},'yyyy-MM-dd')</when>
+                <when test="sqlEndDateDd==true">and end_date&gt;= to_date(#{endDate},'yyyy-MM-dd')</when>
+                <when test="sqlEndDateXd==true">and end_date&lt;= to_date(#{endDate},'yyyy-MM-dd')</when>
+                <when test="sqlEndDateInList!=null">
+                    <foreach collection="sqlEndDateInList" item="a" open="end_date in (" close=")" separator=",">to_date(#{a},'yyyy-MM-dd')</foreach>
+                </when>
+                <when test="endDate!=null and endDate!=''">and end_date= to_date(#{endDate},'yyyy-MM-dd')</when>
+            </choose>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+    </select>
+    <update id="update">
+		update tb_bal_sh_self_schedule
+        <set>
+            <if test="sqlValueBean.balSts!=null">bal_sts=#{sqlValueBean.balSts},</if>
+            <if test="sqlValueBean.planSettingOrgCode!=null">plan_setting_org_code=#{sqlValueBean.planSettingOrgCode},</if>
+            <if test="sqlValueBean.mailType!=null">mail_type=#{sqlValueBean.mailType},</if>
+            <if test="sqlValueBean.planSettingStaffName!=null">plan_setting_staff_name=#{sqlValueBean.planSettingStaffName},</if>
+            <if test="sqlValueBean.flightNum!=null">flight_num=#{sqlValueBean.flightNum},</if>
+            <if test="sqlValueBean.balType!=null">bal_type=#{sqlValueBean.balType},</if>
+            <if test="sqlValueBean.remark!=null">remark=#{sqlValueBean.remark},</if>
+            <if test="sqlValueBean.balBatchSeq!=null">bal_batch_seq=#{sqlValueBean.balBatchSeq},</if>
+            <if test="sqlValueBean.startDate!=null">start_date=#{sqlValueBean.startDate},</if>
+            <if test="sqlValueBean.planSettingStaffCode!=null">plan_setting_staff_code=#{sqlValueBean.planSettingStaffCode},</if>
+            <if test="sqlValueBean.agentName!=null">agent_name=#{sqlValueBean.agentName},</if>
+            <if test="sqlValueBean.planSettingDate!=null">plan_setting_date=#{sqlValueBean.planSettingDate},</if>
+            <if test="sqlValueBean.endDate!=null">end_date=#{sqlValueBean.endDate},</if>
+        </set>
+        <where>
+            <choose>
+                <when test="sqlWhereBean.sqlBalStsLike==true">and bal_sts like concat(concat('%',#{sqlWhereBean.balSts}),'%')</when>
+                <when test="sqlWhereBean.sqlBalStsLeftLike==true">and bal_sts like concat(#{sqlWhereBean.balSts},'%')</when>
+                <when test="sqlWhereBean.sqlBalStsRightLike==true">and bal_sts like concat('%',#{sqlWhereBean.balSts})</when>
+                <when test="sqlWhereBean.sqlBalStsD==true">and bal_sts&gt;#{sqlWhereBean.balSts}</when>
+                <when test="sqlWhereBean.sqlBalStsX==true">and bal_sts&lt;#{sqlWhereBean.balSts}</when>
+                <when test="sqlWhereBean.sqlBalStsDd==true">and bal_sts&gt;= #{sqlWhereBean.balSts}</when>
+                <when test="sqlWhereBean.sqlBalStsXd==true">and bal_sts&gt;= #{sqlWhereBean.balSts}</when>
+                <when test="sqlWhereBean.sqlBalStsInList!=null">
+                    <foreach collection="sqlWhereBean.sqlBalStsInList" item="a" open="bal_sts in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="sqlWhereBean.balSts!=null and sqlWhereBean.balSts!=''">and bal_sts=#{sqlWhereBean.balSts}</when>
+            </choose>
+            <choose>
+                <when test="sqlWhereBean.sqlPlanSettingOrgCodeLike==true">and plan_setting_org_code like concat(concat('%',#{sqlWhereBean.planSettingOrgCode}),'%')</when>
+                <when test="sqlWhereBean.sqlPlanSettingOrgCodeLeftLike==true">and plan_setting_org_code like concat(#{sqlWhereBean.planSettingOrgCode},'%')</when>
+                <when test="sqlWhereBean.sqlPlanSettingOrgCodeRightLike==true">and plan_setting_org_code like concat('%',#{sqlWhereBean.planSettingOrgCode})</when>
+                <when test="sqlWhereBean.sqlPlanSettingOrgCodeD==true">and plan_setting_org_code&gt;#{sqlWhereBean.planSettingOrgCode}</when>
+                <when test="sqlWhereBean.sqlPlanSettingOrgCodeX==true">and plan_setting_org_code&lt;#{sqlWhereBean.planSettingOrgCode}</when>
+                <when test="sqlWhereBean.sqlPlanSettingOrgCodeDd==true">and plan_setting_org_code&gt;= #{sqlWhereBean.planSettingOrgCode}</when>
+                <when test="sqlWhereBean.sqlPlanSettingOrgCodeXd==true">and plan_setting_org_code&gt;= #{sqlWhereBean.planSettingOrgCode}</when>
+                <when test="sqlWhereBean.sqlPlanSettingOrgCodeInList!=null">
+                    <foreach collection="sqlWhereBean.sqlPlanSettingOrgCodeInList" item="a" open="plan_setting_org_code in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="sqlWhereBean.planSettingOrgCode!=null and sqlWhereBean.planSettingOrgCode!=''">and plan_setting_org_code=#{sqlWhereBean.planSettingOrgCode}</when>
+            </choose>
+            <choose>
+                <when test="sqlWhereBean.sqlMailTypeLike==true">and mail_type like concat(concat('%',#{sqlWhereBean.mailType}),'%')</when>
+                <when test="sqlWhereBean.sqlMailTypeLeftLike==true">and mail_type like concat(#{sqlWhereBean.mailType},'%')</when>
+                <when test="sqlWhereBean.sqlMailTypeRightLike==true">and mail_type like concat('%',#{sqlWhereBean.mailType})</when>
+                <when test="sqlWhereBean.sqlMailTypeD==true">and mail_type&gt;#{sqlWhereBean.mailType}</when>
+                <when test="sqlWhereBean.sqlMailTypeX==true">and mail_type&lt;#{sqlWhereBean.mailType}</when>
+                <when test="sqlWhereBean.sqlMailTypeDd==true">and mail_type&gt;= #{sqlWhereBean.mailType}</when>
+                <when test="sqlWhereBean.sqlMailTypeXd==true">and mail_type&gt;= #{sqlWhereBean.mailType}</when>
+                <when test="sqlWhereBean.sqlMailTypeInList!=null">
+                    <foreach collection="sqlWhereBean.sqlMailTypeInList" item="a" open="mail_type in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="sqlWhereBean.mailType!=null and sqlWhereBean.mailType!=''">and mail_type=#{sqlWhereBean.mailType}</when>
+            </choose>
+            <choose>
+                <when test="sqlWhereBean.sqlPlanSettingStaffNameLike==true">and plan_setting_staff_name like concat(concat('%',#{sqlWhereBean.planSettingStaffName}),'%')</when>
+                <when test="sqlWhereBean.sqlPlanSettingStaffNameLeftLike==true">and plan_setting_staff_name like concat(#{sqlWhereBean.planSettingStaffName},'%')</when>
+                <when test="sqlWhereBean.sqlPlanSettingStaffNameRightLike==true">and plan_setting_staff_name like concat('%',#{sqlWhereBean.planSettingStaffName})</when>
+                <when test="sqlWhereBean.sqlPlanSettingStaffNameD==true">and plan_setting_staff_name&gt;#{sqlWhereBean.planSettingStaffName}</when>
+                <when test="sqlWhereBean.sqlPlanSettingStaffNameX==true">and plan_setting_staff_name&lt;#{sqlWhereBean.planSettingStaffName}</when>
+                <when test="sqlWhereBean.sqlPlanSettingStaffNameDd==true">and plan_setting_staff_name&gt;= #{sqlWhereBean.planSettingStaffName}</when>
+                <when test="sqlWhereBean.sqlPlanSettingStaffNameXd==true">and plan_setting_staff_name&gt;= #{sqlWhereBean.planSettingStaffName}</when>
+                <when test="sqlWhereBean.sqlPlanSettingStaffNameInList!=null">
+                    <foreach collection="sqlWhereBean.sqlPlanSettingStaffNameInList" item="a" open="plan_setting_staff_name in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="sqlWhereBean.planSettingStaffName!=null and sqlWhereBean.planSettingStaffName!=''">and plan_setting_staff_name=#{sqlWhereBean.planSettingStaffName}</when>
+            </choose>
+            <choose>
+                <when test="sqlWhereBean.sqlFlightNumLike==true">and flight_num like concat(concat('%',#{sqlWhereBean.flightNum}),'%')</when>
+                <when test="sqlWhereBean.sqlFlightNumLeftLike==true">and flight_num like concat(#{sqlWhereBean.flightNum},'%')</when>
+                <when test="sqlWhereBean.sqlFlightNumRightLike==true">and flight_num like concat('%',#{sqlWhereBean.flightNum})</when>
+                <when test="sqlWhereBean.sqlFlightNumD==true">and flight_num&gt;#{sqlWhereBean.flightNum}</when>
+                <when test="sqlWhereBean.sqlFlightNumX==true">and flight_num&lt;#{sqlWhereBean.flightNum}</when>
+                <when test="sqlWhereBean.sqlFlightNumDd==true">and flight_num&gt;= #{sqlWhereBean.flightNum}</when>
+                <when test="sqlWhereBean.sqlFlightNumXd==true">and flight_num&gt;= #{sqlWhereBean.flightNum}</when>
+                <when test="sqlWhereBean.sqlFlightNumInList!=null">
+                    <foreach collection="sqlWhereBean.sqlFlightNumInList" item="a" open="flight_num in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="sqlWhereBean.flightNum!=null and sqlWhereBean.flightNum!=''">and flight_num=#{sqlWhereBean.flightNum}</when>
+            </choose>
+            <choose>
+                <when test="sqlWhereBean.sqlBalTypeLike==true">and bal_type like concat(concat('%',#{sqlWhereBean.balType}),'%')</when>
+                <when test="sqlWhereBean.sqlBalTypeLeftLike==true">and bal_type like concat(#{sqlWhereBean.balType},'%')</when>
+                <when test="sqlWhereBean.sqlBalTypeRightLike==true">and bal_type like concat('%',#{sqlWhereBean.balType})</when>
+                <when test="sqlWhereBean.sqlBalTypeD==true">and bal_type&gt;#{sqlWhereBean.balType}</when>
+                <when test="sqlWhereBean.sqlBalTypeX==true">and bal_type&lt;#{sqlWhereBean.balType}</when>
+                <when test="sqlWhereBean.sqlBalTypeDd==true">and bal_type&gt;= #{sqlWhereBean.balType}</when>
+                <when test="sqlWhereBean.sqlBalTypeXd==true">and bal_type&gt;= #{sqlWhereBean.balType}</when>
+                <when test="sqlWhereBean.sqlBalTypeInList!=null">
+                    <foreach collection="sqlWhereBean.sqlBalTypeInList" item="a" open="bal_type in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="sqlWhereBean.balType!=null and sqlWhereBean.balType!=''">and bal_type=#{sqlWhereBean.balType}</when>
+            </choose>
+            <choose>
+                <when test="sqlWhereBean.sqlRemarkLike==true">and remark like concat(concat('%',#{sqlWhereBean.remark}),'%')</when>
+                <when test="sqlWhereBean.sqlRemarkLeftLike==true">and remark like concat(#{sqlWhereBean.remark},'%')</when>
+                <when test="sqlWhereBean.sqlRemarkRightLike==true">and remark like concat('%',#{sqlWhereBean.remark})</when>
+                <when test="sqlWhereBean.sqlRemarkD==true">and remark&gt;#{sqlWhereBean.remark}</when>
+                <when test="sqlWhereBean.sqlRemarkX==true">and remark&lt;#{sqlWhereBean.remark}</when>
+                <when test="sqlWhereBean.sqlRemarkDd==true">and remark&gt;= #{sqlWhereBean.remark}</when>
+                <when test="sqlWhereBean.sqlRemarkXd==true">and remark&gt;= #{sqlWhereBean.remark}</when>
+                <when test="sqlWhereBean.sqlRemarkInList!=null">
+                    <foreach collection="sqlWhereBean.sqlRemarkInList" item="a" open="remark in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="sqlWhereBean.remark!=null and sqlWhereBean.remark!=''">and remark=#{sqlWhereBean.remark}</when>
+            </choose>
+            <choose>
+                <when test="sqlWhereBean.sqlBalBatchSeqLike==true">and bal_batch_seq like concat(concat('%',#{sqlWhereBean.balBatchSeq}),'%')</when>
+                <when test="sqlWhereBean.sqlBalBatchSeqLeftLike==true">and bal_batch_seq like concat(#{sqlWhereBean.balBatchSeq},'%')</when>
+                <when test="sqlWhereBean.sqlBalBatchSeqRightLike==true">and bal_batch_seq like concat('%',#{sqlWhereBean.balBatchSeq})</when>
+                <when test="sqlWhereBean.sqlBalBatchSeqD==true">and bal_batch_seq&gt;#{sqlWhereBean.balBatchSeq}</when>
+                <when test="sqlWhereBean.sqlBalBatchSeqX==true">and bal_batch_seq&lt;#{sqlWhereBean.balBatchSeq}</when>
+                <when test="sqlWhereBean.sqlBalBatchSeqDd==true">and bal_batch_seq&gt;= #{sqlWhereBean.balBatchSeq}</when>
+                <when test="sqlWhereBean.sqlBalBatchSeqXd==true">and bal_batch_seq&gt;= #{sqlWhereBean.balBatchSeq}</when>
+                <when test="sqlWhereBean.sqlBalBatchSeqInList!=null">
+                    <foreach collection="sqlWhereBean.sqlBalBatchSeqInList" item="a" open="bal_batch_seq in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="sqlWhereBean.balBatchSeq!=null and sqlWhereBean.balBatchSeq!=''">and bal_batch_seq=#{sqlWhereBean.balBatchSeq}</when>
+            </choose>
+            <choose>
+                <when test="sqlWhereBean.sqlStartDateLike==true">and start_date like concat(concat('%',#{sqlWhereBean.startDate}),'%')</when>
+                <when test="sqlWhereBean.sqlStartDateLeftLike==true">and start_date like concat(#{sqlWhereBean.startDate},'%')</when>
+                <when test="sqlWhereBean.sqlStartDateRightLike==true">and start_date like concat('%',#{sqlWhereBean.startDate})</when>
+                <when test="sqlWhereBean.sqlStartDateD==true">and start_date&gt;to_date(#{sqlWhereBean.startDate},'yyyy-MM-dd')</when>
+                <when test="sqlWhereBean.sqlStartDateX==true">and start_date&lt;to_date(#{sqlWhereBean.startDate},'yyyy-MM-dd')</when>
+                <when test="sqlWhereBean.sqlStartDateDd==true">and start_date&gt;=to_date(#{sqlWhereBean.startDate},'yyyy-MM-dd')</when>
+                <when test="sqlWhereBean.sqlStartDateXd==true">and start_date&lt;=to_date(#{sqlWhereBean.startDate},'yyyy-MM-dd')</when>
+                <when test="sqlWhereBean.sqlStartDateInList!=null">
+                    <foreach collection="sqlWhereBean.sqlStartDateInList" item="a" open="start_date in (" close=")" separator=",">to_date(#{a},'yyyy-MM-dd')</foreach>
+                </when>
+                <when test="sqlWhereBean.startDate!=null and sqlWhereBean.startDate!=''">and start_date=to_date(#{sqlWhereBean.startDate},'yyyy-MM-dd')</when>
+            </choose>
+            <choose>
+                <when test="sqlWhereBean.sqlPlanSettingStaffCodeLike==true">and plan_setting_staff_code like concat(concat('%',#{sqlWhereBean.planSettingStaffCode}),'%')</when>
+                <when test="sqlWhereBean.sqlPlanSettingStaffCodeLeftLike==true">and plan_setting_staff_code like concat(#{sqlWhereBean.planSettingStaffCode},'%')</when>
+                <when test="sqlWhereBean.sqlPlanSettingStaffCodeRightLike==true">and plan_setting_staff_code like concat('%',#{sqlWhereBean.planSettingStaffCode})</when>
+                <when test="sqlWhereBean.sqlPlanSettingStaffCodeD==true">and plan_setting_staff_code&gt;#{sqlWhereBean.planSettingStaffCode}</when>
+                <when test="sqlWhereBean.sqlPlanSettingStaffCodeX==true">and plan_setting_staff_code&lt;#{sqlWhereBean.planSettingStaffCode}</when>
+                <when test="sqlWhereBean.sqlPlanSettingStaffCodeDd==true">and plan_setting_staff_code&gt;= #{sqlWhereBean.planSettingStaffCode}</when>
+                <when test="sqlWhereBean.sqlPlanSettingStaffCodeXd==true">and plan_setting_staff_code&gt;= #{sqlWhereBean.planSettingStaffCode}</when>
+                <when test="sqlWhereBean.sqlPlanSettingStaffCodeInList!=null">
+                    <foreach collection="sqlWhereBean.sqlPlanSettingStaffCodeInList" item="a" open="plan_setting_staff_code in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="sqlWhereBean.planSettingStaffCode!=null and sqlWhereBean.planSettingStaffCode!=''">and plan_setting_staff_code=#{sqlWhereBean.planSettingStaffCode}</when>
+            </choose>
+            <choose>
+                <when test="sqlWhereBean.sqlAgentNameLike==true">and agent_name like concat(concat('%',#{sqlWhereBean.agentName}),'%')</when>
+                <when test="sqlWhereBean.sqlAgentNameLeftLike==true">and agent_name like concat(#{sqlWhereBean.agentName},'%')</when>
+                <when test="sqlWhereBean.sqlAgentNameRightLike==true">and agent_name like concat('%',#{sqlWhereBean.agentName})</when>
+                <when test="sqlWhereBean.sqlAgentNameD==true">and agent_name&gt;#{sqlWhereBean.agentName}</when>
+                <when test="sqlWhereBean.sqlAgentNameX==true">and agent_name&lt;#{sqlWhereBean.agentName}</when>
+                <when test="sqlWhereBean.sqlAgentNameDd==true">and agent_name&gt;= #{sqlWhereBean.agentName}</when>
+                <when test="sqlWhereBean.sqlAgentNameXd==true">and agent_name&gt;= #{sqlWhereBean.agentName}</when>
+                <when test="sqlWhereBean.sqlAgentNameInList!=null">
+                    <foreach collection="sqlWhereBean.sqlAgentNameInList" item="a" open="agent_name in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="sqlWhereBean.agentName!=null and sqlWhereBean.agentName!=''">and agent_name=#{sqlWhereBean.agentName}</when>
+            </choose>
+            <choose>
+                <when test="sqlWhereBean.sqlPlanSettingDateLike==true">and plan_setting_date like concat(concat('%',#{sqlWhereBean.planSettingDate}),'%')</when>
+                <when test="sqlWhereBean.sqlPlanSettingDateLeftLike==true">and plan_setting_date like concat(#{sqlWhereBean.planSettingDate},'%')</when>
+                <when test="sqlWhereBean.sqlPlanSettingDateRightLike==true">and plan_setting_date like concat('%',#{sqlWhereBean.planSettingDate})</when>
+                <when test="sqlWhereBean.sqlPlanSettingDateD==true">and plan_setting_date&gt;to_date(#{sqlWhereBean.planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlWhereBean.sqlPlanSettingDateX==true">and plan_setting_date&lt;to_date(#{sqlWhereBean.planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlWhereBean.sqlPlanSettingDateDd==true">and plan_setting_date&gt;=to_date(#{sqlWhereBean.planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlWhereBean.sqlPlanSettingDateXd==true">and plan_setting_date&lt;=to_date(#{sqlWhereBean.planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlWhereBean.sqlPlanSettingDateInList!=null">
+                    <foreach collection="sqlWhereBean.sqlPlanSettingDateInList" item="a" open="plan_setting_date in (" close=")" separator=",">to_date(#{a},'yyyy-MM-dd')</foreach>
+                </when>
+                <when test="sqlWhereBean.planSettingDate!=null and sqlWhereBean.planSettingDate!=''">and plan_setting_date=to_date(#{sqlWhereBean.planSettingDate},'yyyy-MM-dd')</when>
+            </choose>
+            <choose>
+                <when test="sqlWhereBean.sqlEndDateLike==true">and end_date like concat(concat('%',#{sqlWhereBean.endDate}),'%')</when>
+                <when test="sqlWhereBean.sqlEndDateLeftLike==true">and end_date like concat(#{sqlWhereBean.endDate},'%')</when>
+                <when test="sqlWhereBean.sqlEndDateRightLike==true">and end_date like concat('%',#{sqlWhereBean.endDate})</when>
+                <when test="sqlWhereBean.sqlEndDateD==true">and end_date&gt;to_date(#{sqlWhereBean.endDate},'yyyy-MM-dd')</when>
+                <when test="sqlWhereBean.sqlEndDateX==true">and end_date&lt;to_date(#{sqlWhereBean.endDate},'yyyy-MM-dd')</when>
+                <when test="sqlWhereBean.sqlEndDateDd==true">and end_date&gt;=to_date(#{sqlWhereBean.endDate},'yyyy-MM-dd')</when>
+                <when test="sqlWhereBean.sqlEndDateXd==true">and end_date&lt;=to_date(#{sqlWhereBean.endDate},'yyyy-MM-dd')</when>
+                <when test="sqlWhereBean.sqlEndDateInList!=null">
+                    <foreach collection="sqlWhereBean.sqlEndDateInList" item="a" open="end_date in (" close=")" separator=",">to_date(#{a},'yyyy-MM-dd')</foreach>
+                </when>
+                <when test="sqlWhereBean.endDate!=null and sqlWhereBean.endDate!=''">and end_date=to_date(#{sqlWhereBean.endDate},'yyyy-MM-dd')</when>
+            </choose>
+            <if test="sqlWhereBean.sqlWhere!=null">${sqlWhereBean.sqlWhere}</if>
+        </where>
+    </update>
+    <insert id="insert" parameterType="bean.TbBalShSelfScheduleBean">
+		insert into tb_bal_sh_self_schedule
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="balSts!=null">bal_sts,</if>
+            <if test="planSettingOrgCode!=null">plan_setting_org_code,</if>
+            <if test="mailType!=null">mail_type,</if>
+            <if test="planSettingStaffName!=null">plan_setting_staff_name,</if>
+            <if test="flightNum!=null">flight_num,</if>
+            <if test="balType!=null">bal_type,</if>
+            <if test="remark!=null">remark,</if>
+            <if test="balBatchSeq!=null">bal_batch_seq,</if>
+            <if test="startDate!=null">start_date,</if>
+            <if test="planSettingStaffCode!=null">plan_setting_staff_code,</if>
+            <if test="agentName!=null">agent_name,</if>
+            <if test="planSettingDate!=null">plan_setting_date,</if>
+            <if test="endDate!=null">end_date,</if>
+        </trim>
+ 			values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="balSts!=null">#{balSts},</if>
+            <if test="planSettingOrgCode!=null">#{planSettingOrgCode},</if>
+            <if test="mailType!=null">#{mailType},</if>
+            <if test="planSettingStaffName!=null">#{planSettingStaffName},</if>
+            <if test="flightNum!=null">#{flightNum},</if>
+            <if test="balType!=null">#{balType},</if>
+            <if test="remark!=null">#{remark},</if>
+            <if test="balBatchSeq!=null">#{balBatchSeq},</if>
+            <if test="startDate!=null">#{startDate},</if>
+            <if test="planSettingStaffCode!=null">#{planSettingStaffCode},</if>
+            <if test="agentName!=null">#{agentName},</if>
+            <if test="planSettingDate!=null">#{planSettingDate},</if>
+            <if test="endDate!=null">#{endDate},</if>
+        </trim>
+    </insert>
+    <delete id="delete" parameterType="bean.in.TbBalShSelfScheduleInBean">
+		DELETE FROM tb_bal_sh_self_schedule
+        <where>
+            <choose>
+                <when test="sqlBalStsLike==true">and bal_sts like concat(concat('%',#{balSts}),'%')</when>
+                <when test="sqlBalStsLeftLike==true">and bal_sts like concat(#{balSts},'%')</when>
+                <when test="sqlBalStsRightLike==true">and bal_sts like concat('%',#{balSts})</when>
+                <when test="sqlBalStsD==true">and bal_sts&gt;#{balSts}</when>
+                <when test="sqlBalStsX==true">and bal_sts&lt;#{balSts}</when>
+                <when test="sqlBalStsDd==true">and bal_sts&gt;= #{balSts}</when>
+                <when test="sqlBalStsXd==true">and bal_sts&lt;= #{balSts}</when>
+                <when test="sqlBalStsInList!=null">
+                    <foreach collection="sqlBalStsInList" item="a" open="bal_sts in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="balSts!=null and balSts!=''">and bal_sts=#{balSts}</when>
+            </choose>
+            <choose>
+                <when test="sqlPlanSettingOrgCodeLike==true">and plan_setting_org_code like concat(concat('%',#{planSettingOrgCode}),'%')</when>
+                <when test="sqlPlanSettingOrgCodeLeftLike==true">and plan_setting_org_code like concat(#{planSettingOrgCode},'%')</when>
+                <when test="sqlPlanSettingOrgCodeRightLike==true">and plan_setting_org_code like concat('%',#{planSettingOrgCode})</when>
+                <when test="sqlPlanSettingOrgCodeD==true">and plan_setting_org_code&gt;#{planSettingOrgCode}</when>
+                <when test="sqlPlanSettingOrgCodeX==true">and plan_setting_org_code&lt;#{planSettingOrgCode}</when>
+                <when test="sqlPlanSettingOrgCodeDd==true">and plan_setting_org_code&gt;= #{planSettingOrgCode}</when>
+                <when test="sqlPlanSettingOrgCodeXd==true">and plan_setting_org_code&lt;= #{planSettingOrgCode}</when>
+                <when test="sqlPlanSettingOrgCodeInList!=null">
+                    <foreach collection="sqlPlanSettingOrgCodeInList" item="a" open="plan_setting_org_code in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="planSettingOrgCode!=null and planSettingOrgCode!=''">and plan_setting_org_code=#{planSettingOrgCode}</when>
+            </choose>
+            <choose>
+                <when test="sqlMailTypeLike==true">and mail_type like concat(concat('%',#{mailType}),'%')</when>
+                <when test="sqlMailTypeLeftLike==true">and mail_type like concat(#{mailType},'%')</when>
+                <when test="sqlMailTypeRightLike==true">and mail_type like concat('%',#{mailType})</when>
+                <when test="sqlMailTypeD==true">and mail_type&gt;#{mailType}</when>
+                <when test="sqlMailTypeX==true">and mail_type&lt;#{mailType}</when>
+                <when test="sqlMailTypeDd==true">and mail_type&gt;= #{mailType}</when>
+                <when test="sqlMailTypeXd==true">and mail_type&lt;= #{mailType}</when>
+                <when test="sqlMailTypeInList!=null">
+                    <foreach collection="sqlMailTypeInList" item="a" open="mail_type in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="mailType!=null and mailType!=''">and mail_type=#{mailType}</when>
+            </choose>
+            <choose>
+                <when test="sqlPlanSettingStaffNameLike==true">and plan_setting_staff_name like concat(concat('%',#{planSettingStaffName}),'%')</when>
+                <when test="sqlPlanSettingStaffNameLeftLike==true">and plan_setting_staff_name like concat(#{planSettingStaffName},'%')</when>
+                <when test="sqlPlanSettingStaffNameRightLike==true">and plan_setting_staff_name like concat('%',#{planSettingStaffName})</when>
+                <when test="sqlPlanSettingStaffNameD==true">and plan_setting_staff_name&gt;#{planSettingStaffName}</when>
+                <when test="sqlPlanSettingStaffNameX==true">and plan_setting_staff_name&lt;#{planSettingStaffName}</when>
+                <when test="sqlPlanSettingStaffNameDd==true">and plan_setting_staff_name&gt;= #{planSettingStaffName}</when>
+                <when test="sqlPlanSettingStaffNameXd==true">and plan_setting_staff_name&lt;= #{planSettingStaffName}</when>
+                <when test="sqlPlanSettingStaffNameInList!=null">
+                    <foreach collection="sqlPlanSettingStaffNameInList" item="a" open="plan_setting_staff_name in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="planSettingStaffName!=null and planSettingStaffName!=''">and plan_setting_staff_name=#{planSettingStaffName}</when>
+            </choose>
+            <choose>
+                <when test="sqlFlightNumLike==true">and flight_num like concat(concat('%',#{flightNum}),'%')</when>
+                <when test="sqlFlightNumLeftLike==true">and flight_num like concat(#{flightNum},'%')</when>
+                <when test="sqlFlightNumRightLike==true">and flight_num like concat('%',#{flightNum})</when>
+                <when test="sqlFlightNumD==true">and flight_num&gt;#{flightNum}</when>
+                <when test="sqlFlightNumX==true">and flight_num&lt;#{flightNum}</when>
+                <when test="sqlFlightNumDd==true">and flight_num&gt;= #{flightNum}</when>
+                <when test="sqlFlightNumXd==true">and flight_num&lt;= #{flightNum}</when>
+                <when test="sqlFlightNumInList!=null">
+                    <foreach collection="sqlFlightNumInList" item="a" open="flight_num in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="flightNum!=null and flightNum!=''">and flight_num=#{flightNum}</when>
+            </choose>
+            <choose>
+                <when test="sqlBalTypeLike==true">and bal_type like concat(concat('%',#{balType}),'%')</when>
+                <when test="sqlBalTypeLeftLike==true">and bal_type like concat(#{balType},'%')</when>
+                <when test="sqlBalTypeRightLike==true">and bal_type like concat('%',#{balType})</when>
+                <when test="sqlBalTypeD==true">and bal_type&gt;#{balType}</when>
+                <when test="sqlBalTypeX==true">and bal_type&lt;#{balType}</when>
+                <when test="sqlBalTypeDd==true">and bal_type&gt;= #{balType}</when>
+                <when test="sqlBalTypeXd==true">and bal_type&lt;= #{balType}</when>
+                <when test="sqlBalTypeInList!=null">
+                    <foreach collection="sqlBalTypeInList" item="a" open="bal_type in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="balType!=null and balType!=''">and bal_type=#{balType}</when>
+            </choose>
+            <choose>
+                <when test="sqlRemarkLike==true">and remark like concat(concat('%',#{remark}),'%')</when>
+                <when test="sqlRemarkLeftLike==true">and remark like concat(#{remark},'%')</when>
+                <when test="sqlRemarkRightLike==true">and remark like concat('%',#{remark})</when>
+                <when test="sqlRemarkD==true">and remark&gt;#{remark}</when>
+                <when test="sqlRemarkX==true">and remark&lt;#{remark}</when>
+                <when test="sqlRemarkDd==true">and remark&gt;= #{remark}</when>
+                <when test="sqlRemarkXd==true">and remark&lt;= #{remark}</when>
+                <when test="sqlRemarkInList!=null">
+                    <foreach collection="sqlRemarkInList" item="a" open="remark in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="remark!=null and remark!=''">and remark=#{remark}</when>
+            </choose>
+            <choose>
+                <when test="sqlBalBatchSeqLike==true">and bal_batch_seq like concat(concat('%',#{balBatchSeq}),'%')</when>
+                <when test="sqlBalBatchSeqLeftLike==true">and bal_batch_seq like concat(#{balBatchSeq},'%')</when>
+                <when test="sqlBalBatchSeqRightLike==true">and bal_batch_seq like concat('%',#{balBatchSeq})</when>
+                <when test="sqlBalBatchSeqD==true">and bal_batch_seq&gt;#{balBatchSeq}</when>
+                <when test="sqlBalBatchSeqX==true">and bal_batch_seq&lt;#{balBatchSeq}</when>
+                <when test="sqlBalBatchSeqDd==true">and bal_batch_seq&gt;= #{balBatchSeq}</when>
+                <when test="sqlBalBatchSeqXd==true">and bal_batch_seq&lt;= #{balBatchSeq}</when>
+                <when test="sqlBalBatchSeqInList!=null">
+                    <foreach collection="sqlBalBatchSeqInList" item="a" open="bal_batch_seq in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="balBatchSeq!=null and balBatchSeq!=''">and bal_batch_seq=#{balBatchSeq}</when>
+            </choose>
+            <choose>
+                <when test="sqlStartDateLike==true">and start_date like concat(concat('%',#{startDate}),'%')</when>
+                <when test="sqlStartDateLeftLike==true">and start_date like concat(#{startDate},'%')</when>
+                <when test="sqlStartDateRightLike==true">and start_date like concat('%',#{startDate})</when>
+                <when test="sqlStartDateD==true">and start_date&gt; to_date(#{startDate},'yyyy-MM-dd')and start_date&lt;= to_date(#{startDate},'yyyy-MM-dd')</when>
+                <when test="sqlStartDateX==true">and start_date&lt; to_date(#{startDate},'yyyy-MM-dd')</when>
+                <when test="sqlStartDateDd==true">and start_date&gt;= to_date(#{startDate},'yyyy-MM-dd')</when>
+                <when test="sqlStartDateXd==true">and start_date&lt;= to_date(#{startDate},'yyyy-MM-dd')</when>
+                <when test="sqlStartDateInList!=null">
+                    <foreach collection="sqlStartDateInList" item="a" open="start_date in (" close=")" separator=",">to_date(#{a},'yyyy-MM-dd')</foreach>
+                </when>
+                <when test="startDate!=null and startDate!=''">and start_date= to_date(#{startDate},'yyyy-MM-dd')</when>
+            </choose>
+            <choose>
+                <when test="sqlPlanSettingStaffCodeLike==true">and plan_setting_staff_code like concat(concat('%',#{planSettingStaffCode}),'%')</when>
+                <when test="sqlPlanSettingStaffCodeLeftLike==true">and plan_setting_staff_code like concat(#{planSettingStaffCode},'%')</when>
+                <when test="sqlPlanSettingStaffCodeRightLike==true">and plan_setting_staff_code like concat('%',#{planSettingStaffCode})</when>
+                <when test="sqlPlanSettingStaffCodeD==true">and plan_setting_staff_code&gt;#{planSettingStaffCode}</when>
+                <when test="sqlPlanSettingStaffCodeX==true">and plan_setting_staff_code&lt;#{planSettingStaffCode}</when>
+                <when test="sqlPlanSettingStaffCodeDd==true">and plan_setting_staff_code&gt;= #{planSettingStaffCode}</when>
+                <when test="sqlPlanSettingStaffCodeXd==true">and plan_setting_staff_code&lt;= #{planSettingStaffCode}</when>
+                <when test="sqlPlanSettingStaffCodeInList!=null">
+                    <foreach collection="sqlPlanSettingStaffCodeInList" item="a" open="plan_setting_staff_code in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="planSettingStaffCode!=null and planSettingStaffCode!=''">and plan_setting_staff_code=#{planSettingStaffCode}</when>
+            </choose>
+            <choose>
+                <when test="sqlAgentNameLike==true">and agent_name like concat(concat('%',#{agentName}),'%')</when>
+                <when test="sqlAgentNameLeftLike==true">and agent_name like concat(#{agentName},'%')</when>
+                <when test="sqlAgentNameRightLike==true">and agent_name like concat('%',#{agentName})</when>
+                <when test="sqlAgentNameD==true">and agent_name&gt;#{agentName}</when>
+                <when test="sqlAgentNameX==true">and agent_name&lt;#{agentName}</when>
+                <when test="sqlAgentNameDd==true">and agent_name&gt;= #{agentName}</when>
+                <when test="sqlAgentNameXd==true">and agent_name&lt;= #{agentName}</when>
+                <when test="sqlAgentNameInList!=null">
+                    <foreach collection="sqlAgentNameInList" item="a" open="agent_name in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="agentName!=null and agentName!=''">and agent_name=#{agentName}</when>
+            </choose>
+            <choose>
+                <when test="sqlPlanSettingDateLike==true">and plan_setting_date like concat(concat('%',#{planSettingDate}),'%')</when>
+                <when test="sqlPlanSettingDateLeftLike==true">and plan_setting_date like concat(#{planSettingDate},'%')</when>
+                <when test="sqlPlanSettingDateRightLike==true">and plan_setting_date like concat('%',#{planSettingDate})</when>
+                <when test="sqlPlanSettingDateD==true">and plan_setting_date&gt; to_date(#{planSettingDate},'yyyy-MM-dd')and plan_setting_date&lt;= to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlPlanSettingDateX==true">and plan_setting_date&lt; to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlPlanSettingDateDd==true">and plan_setting_date&gt;= to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlPlanSettingDateXd==true">and plan_setting_date&lt;= to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+                <when test="sqlPlanSettingDateInList!=null">
+                    <foreach collection="sqlPlanSettingDateInList" item="a" open="plan_setting_date in (" close=")" separator=",">to_date(#{a},'yyyy-MM-dd')</foreach>
+                </when>
+                <when test="planSettingDate!=null and planSettingDate!=''">and plan_setting_date= to_date(#{planSettingDate},'yyyy-MM-dd')</when>
+            </choose>
+            <choose>
+                <when test="sqlEndDateLike==true">and end_date like concat(concat('%',#{endDate}),'%')</when>
+                <when test="sqlEndDateLeftLike==true">and end_date like concat(#{endDate},'%')</when>
+                <when test="sqlEndDateRightLike==true">and end_date like concat('%',#{endDate})</when>
+                <when test="sqlEndDateD==true">and end_date&gt; to_date(#{endDate},'yyyy-MM-dd')and end_date&lt;= to_date(#{endDate},'yyyy-MM-dd')</when>
+                <when test="sqlEndDateX==true">and end_date&lt; to_date(#{endDate},'yyyy-MM-dd')</when>
+                <when test="sqlEndDateDd==true">and end_date&gt;= to_date(#{endDate},'yyyy-MM-dd')</when>
+                <when test="sqlEndDateXd==true">and end_date&lt;= to_date(#{endDate},'yyyy-MM-dd')</when>
+                <when test="sqlEndDateInList!=null">
+                    <foreach collection="sqlEndDateInList" item="a" open="end_date in (" close=")" separator=",">to_date(#{a},'yyyy-MM-dd')</foreach>
+                </when>
+                <when test="endDate!=null and endDate!=''">and end_date= to_date(#{endDate},'yyyy-MM-dd')</when>
+            </choose>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+    </delete>
+    <insert id="batchInsert">
+		insert into tb_bal_sh_self_schedule
+        <trim prefix="(" suffix=")" suffixOverrides=",">bal_sts,plan_setting_org_code,mail_type,plan_setting_staff_name,flight_num,bal_type,remark,bal_batch_seq,start_date,plan_setting_staff_code,agent_name,plan_setting_date,end_date,</trim>
+        <if test="seqName==null">select a.* from(</if>
+        <if test="seqName!=null">select ${seqName}.Nextval,a.* from(</if>
+        <foreach collection="list" item="item" separator="union all">
+            <trim prefix="select" suffix="from dual" suffixOverrides=",">
+                <if test="item.balSts!=null">#{item.balSts} as bal_sts,</if>
+                <if test="item.balSts==null">null as bal_sts,</if>
+                <if test="item.planSettingOrgCode!=null">#{item.planSettingOrgCode} as plan_setting_org_code,</if>
+                <if test="item.planSettingOrgCode==null">null as plan_setting_org_code,</if>
+                <if test="item.mailType!=null">#{item.mailType} as mail_type,</if>
+                <if test="item.mailType==null">null as mail_type,</if>
+                <if test="item.planSettingStaffName!=null">#{item.planSettingStaffName} as plan_setting_staff_name,</if>
+                <if test="item.planSettingStaffName==null">null as plan_setting_staff_name,</if>
+                <if test="item.flightNum!=null">#{item.flightNum} as flight_num,</if>
+                <if test="item.flightNum==null">null as flight_num,</if>
+                <if test="item.balType!=null">#{item.balType} as bal_type,</if>
+                <if test="item.balType==null">null as bal_type,</if>
+                <if test="item.remark!=null">#{item.remark} as remark,</if>
+                <if test="item.remark==null">null as remark,</if>
+                <if test="item.balBatchSeq!=null">#{item.balBatchSeq} as bal_batch_seq,</if>
+                <if test="item.balBatchSeq==null">null as bal_batch_seq,</if>
+                <if test="item.startDate!=null">#{item.startDate} as start_date,</if>
+                <if test="item.startDate==null">null as start_date,</if>
+                <if test="item.planSettingStaffCode!=null">#{item.planSettingStaffCode} as plan_setting_staff_code,</if>
+                <if test="item.planSettingStaffCode==null">null as plan_setting_staff_code,</if>
+                <if test="item.agentName!=null">#{item.agentName} as agent_name,</if>
+                <if test="item.agentName==null">null as agent_name,</if>
+                <if test="item.planSettingDate!=null">#{item.planSettingDate} as plan_setting_date,</if>
+                <if test="item.planSettingDate==null">null as plan_setting_date,</if>
+                <if test="item.endDate!=null">#{item.endDate} as end_date,</if>
+                <if test="item.endDate==null">null as end_date,</if>
+            </trim>
+        </foreach>) a
+    </insert>
+</mapper>

@@ -95,6 +95,10 @@ public abstract class DataBase {
 	protected String getJavaType(String sqlType,Integer precision,Integer dataScale) throws Exception{
 		if(sqlType.indexOf("char")!=-1){
 			return "String";
+		}else if (sqlType.indexOf("date")!=-1) {
+			return "String";
+		}else if(sqlType.indexOf("timestamp")!=-1){
+			return "Long";
 		}
 		return null;
 	}
@@ -259,6 +263,8 @@ public abstract class DataBase {
 		
 		w.write("\n");
 		w.write("public class " + table.getBeanInName()	+ " extends BaseInBean{\n");
+		w.write("	private static final long serialVersionUID = 1L;\n");
+		w.write("\n"); 
 		writeField(w,fs);
 		for(FieldBean f:fs){
 			w.write("	//  "+f.getBeanName()+"====================\n");
@@ -349,26 +355,28 @@ public abstract class DataBase {
 		w.write("import " + BaseOutBean.class.getName() + ";\n");
 		w.write("\n");
 		w.write("public class " + table.getBeanOutName()+ " extends BaseOutBean{\n");
+		w.write("	private static final long serialVersionUID = 1L;\n");
+		w.write("\n");
 		writeField(w,fs);
 		w.write("}");
 		w.flush();
 		w.close();
 	}
 	// 写字段
-		private void writeField(BufferedWriter w,List<FieldBean> fs) throws Exception {
-			for (FieldBean f : fs) {
-				w.write("	private " + f.getJavaType() + " " + f.getBeanName()+ ";\n");
-				w.write("\n");
-			}
-			for (FieldBean f : fs) {
-				// get
-				w.write("	public " + f.getJavaType() + " get"+ firstUpperCase(f.getBeanName()) + "(){return "+ f.getBeanName() + ";}\n");
-				// set
-				w.write("	public void set" + firstUpperCase(f.getBeanName()) + "("+ f.getJavaType() + " " + f.getBeanName() + "){this."+ f.getBeanName() + "=" + f.getBeanName() + ";}\n");
-				w.write("\n");
-			}
+	private void writeField(BufferedWriter w,List<FieldBean> fs) throws Exception {
+		for (FieldBean f : fs) {
+			w.write("	private " + f.getJavaType() + " " + f.getBeanName()+ ";\n");
 			w.write("\n");
 		}
+		for (FieldBean f : fs) {
+			// get
+			w.write("	public " + f.getJavaType() + " get"+ firstUpperCase(f.getBeanName()) + "(){return "+ f.getBeanName() + ";}\n");
+			// set
+			w.write("	public void set" + firstUpperCase(f.getBeanName()) + "("+ f.getJavaType() + " " + f.getBeanName() + "){this."+ f.getBeanName() + "=" + f.getBeanName() + ";}\n");
+			w.write("\n");
+		}
+		w.write("\n");
+	}
 		
 		/**
 		 * 创建dao层接口
@@ -462,12 +470,14 @@ public abstract class DataBase {
 			return sb;
 		}
 		
+		protected abstract void getSelectWhere(Element select,List<FieldBean> fs);
+		
 		/**
 		 * 获取selectList  where的公共部分
 		 * @param select
 		 * @return
 		 */
-		protected void getSelectWhere(Element select,List<FieldBean> fs){
+		/*protected void getSelectWhere(Element select,List<FieldBean> fs){
 			Element whereTag=select.addElement("where");
 			for(FieldBean f:fs){
 				Element chooseTag=whereTag.addElement("choose");
@@ -524,13 +534,15 @@ public abstract class DataBase {
 			Element whereIf=whereTag.addElement("if");
 			whereIf.addAttribute("test", "sqlWhere!=null");
 			whereIf.addText("${sqlWhere}");
-		}
+		}*/
+		
+		protected abstract void getSelectUpdateWhere(Element update,List<FieldBean> fs);
 		/**
 		 * 获取selectList  where的公共部分
 		 * @param select
 		 * @return
 		 */
-		protected void getSelectUpdateWhere(Element update,List<FieldBean> fs){
+		/*protected void getSelectUpdateWhere(Element update,List<FieldBean> fs){
 			Element whereTag=update.addElement("where");
 			String prev="sqlWhereBean.";
 			for(FieldBean f:fs){
@@ -539,7 +551,6 @@ public abstract class DataBase {
 				
 				//Like
 				whenTagLike.addAttribute("test", prev+f.getSqlLikeName()+"==true");
-				//whenTagLike.addText("and "+f.getSqlName()+" like concat('%',#{"+f.getBeanName()+"},'%')");
 				whenTagLike.addText("and "+f.getSqlName()+ " like concat(concat('%',#{"+prev+f.getBeanName()+"}),'%')");
 				
 				//LeftLike
@@ -589,12 +600,20 @@ public abstract class DataBase {
 			Element whereIf=whereTag.addElement("if");
 			whereIf.addAttribute("test", prev+"sqlWhere!=null");
 			whereIf.addText("${"+prev+"sqlWhere}");
-		}
+		}*/
 		
 		protected void getSelectListOrderBy(Element select) throws Exception{
 			Element orderByIf=select.addElement("if");
 			orderByIf.addAttribute("test","sqlOrderBy!=null");
 			orderByIf.addText("order by ${sqlOrderBy}");
+			
+			Element orderByDescIf=select.addElement("if");
+			orderByDescIf.addAttribute("test","sqlOrderByDesc!=null");
+			orderByDescIf.addText("order by ${sqlOrderByDesc} desc");
+			
+			Element orderByAscIf=select.addElement("if");
+			orderByAscIf.addAttribute("test","sqlOrderByAsc!=null");
+			orderByAscIf.addText("order by ${sqlOrderByAsc}");
 		}
 		//selectOne
 		public void selectOneDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception{
