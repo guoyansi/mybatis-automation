@@ -33,8 +33,8 @@ public class CreateFile {
 	 * 
 	 * @throws Exception
 	 */
-	public void createBean(AutoConfig config, TableBean table, List<FieldBean> fs) throws Exception {
-		db.createBean(config, table, fs);
+	public void createBean(AutoConfig config, TableBean table, List<FieldBean> fs,DataBase dbs) throws Exception {
+		db.createBean(config, table, fs,dbs);
 	}
 	/**
 	 * 创建javabean

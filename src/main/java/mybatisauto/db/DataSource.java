@@ -33,7 +33,7 @@ public class DataSource {
 			System.out.println("表====："+t.getSqlName());
 			List<FieldBean> fs=db.getFieldList(stmt,t,config.getIsCamelField());
 			CreateFile cf=new CreateFile(db);
-			cf.createBean(config,t,fs);
+			cf.createBean(config,t,fs,db);
 			cf.createDao(config,t);
 			cf.createMapper(config,t,fs);
 		}

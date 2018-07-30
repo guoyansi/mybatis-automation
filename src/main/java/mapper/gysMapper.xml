@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.IGysDao">
+    <resultMap id="GysBeanMap" type="bean.GysBean">
+        <id column="id" property="id"/>
+        <result column="roleName" property="roleName"/>
+        <result column="note" property="note"/>
+        <result column="price3" property="price3"/>
+        <result column="tdate" property="tdate"/>
+    </resultMap>
+    <resultMap id="GysOutBeanMap" type="bean.out.GysOutBean">
+        <id column="id" property="id"/>
+        <result column="roleName" property="roleName"/>
+        <result column="note" property="note"/>
+        <result column="price3" property="price3"/>
+        <result column="tdate" property="tdate"/>
+        <result column="rn" property="rn"/>
+    </resultMap>
+    <select id="selectList" parameterType="bean.in.GysInBean" resultMap="GysOutBeanMap">
+		select (@i:=@i+1) rn,
+			id,
+			roleName,
+			note,
+			price3,
+			tdate 
+		 from gys, (SELECT @i:=0) as i
+        <where>
+            <choose>
+                <when test="sqlIdLike==true">and id like concat(concat('%',#{id}),'%')</when>
+                <when test="sqlIdLeftLike==true">and id like concat(#{id},'%')</when>
+                <when test="sqlIdRightLike==true">and id like concat('%',#{id})</when>
+                <when test="sqlIdD==true">and id&gt;#{id}</when>
+                <when test="sqlIdX==true">and id&lt;#{id}</when>
+                <when test="sqlIdDd==true">and id&gt;= #{id}</when>
+                <when test="sqlIdXd==true">and id&lt;= #{id}</when>
+                <when test="sqlIdInList!=null">
+                    <foreach collection="sqlIdInList" item="a" open="id in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="id!=null and id!=''">and id=#{id}</when>
+            </choose>
+            <choose>
+                <when test="sqlRoleNameLike==true">and roleName like concat(concat('%',#{roleName}),'%')</when>
+                <when test="sqlRoleNameLeftLike==true">and roleName like concat(#{roleName},'%')</when>
+                <when test="sqlRoleNameRightLike==true">and roleName like concat('%',#{roleName})</when>
+                <when test="sqlRoleNameD==true">and roleName&gt;#{roleName}</when>
+                <when test="sqlRoleNameX==true">and roleName&lt;#{roleName}</when>
+                <when test="sqlRoleNameDd==true">and roleName&gt;= #{roleName}</when>
+                <when test="sqlRoleNameXd==true">and roleName&lt;= #{roleName}</when>
+                <when test="sqlRoleNameInList!=null">
+                    <foreach collection="sqlRoleNameInList" item="a" open="roleName in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="roleName!=null and roleName!=''">and roleName=#{roleName}</when>
+            </choose>
+            <choose>
+                <when test="sqlNoteLike==true">and note like concat(concat('%',#{note}),'%')</when>
+                <when test="sqlNoteLeftLike==true">and note like concat(#{note},'%')</when>
+                <when test="sqlNoteRightLike==true">and note like concat('%',#{note})</when>
+                <when test="sqlNoteD==true">and note&gt;#{note}</when>
+                <when test="sqlNoteX==true">and note&lt;#{note}</when>
+                <when test="sqlNoteDd==true">and note&gt;= #{note}</when>
+                <when test="sqlNoteXd==true">and note&lt;= #{note}</when>
+                <when test="sqlNoteInList!=null">
+                    <foreach collection="sqlNoteInList" item="a" open="note in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="note!=null and note!=''">and note=#{note}</when>
+            </choose>
+            <choose>
+                <when test="sqlPrice3Like==true">and price3 like concat(concat('%',#{price3}),'%')</when>
+                <when test="sqlPrice3LeftLike==true">and price3 like concat(#{price3},'%')</when>
+                <when test="sqlPrice3RightLike==true">and price3 like concat('%',#{price3})</when>
+                <when test="sqlPrice3D==true">and price3&gt;#{price3}</when>
+                <when test="sqlPrice3X==true">and price3&lt;#{price3}</when>
+                <when test="sqlPrice3Dd==true">and price3&gt;= #{price3}</when>
+                <when test="sqlPrice3Xd==true">and price3&lt;= #{price3}</when>
+                <when test="sqlPrice3InList!=null">
+                    <foreach collection="sqlPrice3InList" item="a" open="price3 in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="price3!=null and price3!=''">and price3=#{price3}</when>
+            </choose>
+            <choose>
+                <when test="sqlTdateLike==true">and tdate like concat(concat('%',#{tdate}),'%')</when>
+                <when test="sqlTdateLeftLike==true">and tdate like concat(#{tdate},'%')</when>
+                <when test="sqlTdateRightLike==true">and tdate like concat('%',#{tdate})</when>
+                <when test="sqlTdateD==true">and tdate&gt;#{tdate}</when>
+                <when test="sqlTdateX==true">and tdate&lt;#{tdate}</when>
+                <when test="sqlTdateDd==true">and tdate&gt;= #{tdate}</when>
+                <when test="sqlTdateXd==true">and tdate&lt;= #{tdate}</when>
+                <when test="sqlTdateInList!=null">
+                    <foreach collection="sqlTdateInList" item="a" open="tdate in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="tdate!=null and tdate!=''">and tdate=#{tdate}</when>
+            </choose>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+        <if test="sqlOrderBy!=null">order by ${sqlOrderBy}</if>
+        <if test="sqlOrderByDesc!=null">order by ${sqlOrderByDesc} desc</if>
+        <if test="sqlOrderByAsc!=null">order by ${sqlOrderByAsc}</if>
+        <if test="sqlLimit==true">LIMIT #{sqlStartIndex},#{sqlPageSize}</if>
+    </select>
+    <select id="selectOne" parameterType="bean.in.GysInBean" resultMap="GysBeanMap">
+		 select 
+			id,
+			roleName,
+			note,
+			price3,
+			tdate
+		 from gys
+        <where>
+            <choose>
+                <when test="sqlIdLike==true">and id like concat(concat('%',#{id}),'%')</when>
+                <when test="sqlIdLeftLike==true">and id like concat(#{id},'%')</when>
+                <when test="sqlIdRightLike==true">and id like concat('%',#{id})</when>
+                <when test="sqlIdD==true">and id&gt;#{id}</when>
+                <when test="sqlIdX==true">and id&lt;#{id}</when>
+                <when test="sqlIdDd==true">and id&gt;= #{id}</when>
+                <when test="sqlIdXd==true">and id&lt;= #{id}</when>
+                <when test="sqlIdInList!=null">
+                    <foreach collection="sqlIdInList" item="a" open="id in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="id!=null and id!=''">and id=#{id}</when>
+            </choose>
+            <choose>
+                <when test="sqlRoleNameLike==true">and roleName like concat(concat('%',#{roleName}),'%')</when>
+                <when test="sqlRoleNameLeftLike==true">and roleName like concat(#{roleName},'%')</when>
+                <when test="sqlRoleNameRightLike==true">and roleName like concat('%',#{roleName})</when>
+                <when test="sqlRoleNameD==true">and roleName&gt;#{roleName}</when>
+                <when test="sqlRoleNameX==true">and roleName&lt;#{roleName}</when>
+                <when test="sqlRoleNameDd==true">and roleName&gt;= #{roleName}</when>
+                <when test="sqlRoleNameXd==true">and roleName&lt;= #{roleName}</when>
+                <when test="sqlRoleNameInList!=null">
+                    <foreach collection="sqlRoleNameInList" item="a" open="roleName in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="roleName!=null and roleName!=''">and roleName=#{roleName}</when>
+            </choose>
+            <choose>
+                <when test="sqlNoteLike==true">and note like concat(concat('%',#{note}),'%')</when>
+                <when test="sqlNoteLeftLike==true">and note like concat(#{note},'%')</when>
+                <when test="sqlNoteRightLike==true">and note like concat('%',#{note})</when>
+                <when test="sqlNoteD==true">and note&gt;#{note}</when>
+                <when test="sqlNoteX==true">and note&lt;#{note}</when>
+                <when test="sqlNoteDd==true">and note&gt;= #{note}</when>
+                <when test="sqlNoteXd==true">and note&lt;= #{note}</when>
+                <when test="sqlNoteInList!=null">
+                    <foreach collection="sqlNoteInList" item="a" open="note in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="note!=null and note!=''">and note=#{note}</when>
+            </choose>
+            <choose>
+                <when test="sqlPrice3Like==true">and price3 like concat(concat('%',#{price3}),'%')</when>
+                <when test="sqlPrice3LeftLike==true">and price3 like concat(#{price3},'%')</when>
+                <when test="sqlPrice3RightLike==true">and price3 like concat('%',#{price3})</when>
+                <when test="sqlPrice3D==true">and price3&gt;#{price3}</when>
+                <when test="sqlPrice3X==true">and price3&lt;#{price3}</when>
+                <when test="sqlPrice3Dd==true">and price3&gt;= #{price3}</when>
+                <when test="sqlPrice3Xd==true">and price3&lt;= #{price3}</when>
+                <when test="sqlPrice3InList!=null">
+                    <foreach collection="sqlPrice3InList" item="a" open="price3 in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="price3!=null and price3!=''">and price3=#{price3}</when>
+            </choose>
+            <choose>
+                <when test="sqlTdateLike==true">and tdate like concat(concat('%',#{tdate}),'%')</when>
+                <when test="sqlTdateLeftLike==true">and tdate like concat(#{tdate},'%')</when>
+                <when test="sqlTdateRightLike==true">and tdate like concat('%',#{tdate})</when>
+                <when test="sqlTdateD==true">and tdate&gt;#{tdate}</when>
+                <when test="sqlTdateX==true">and tdate&lt;#{tdate}</when>
+                <when test="sqlTdateDd==true">and tdate&gt;= #{tdate}</when>
+                <when test="sqlTdateXd==true">and tdate&lt;= #{tdate}</when>
+                <when test="sqlTdateInList!=null">
+                    <foreach collection="sqlTdateInList" item="a" open="tdate in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="tdate!=null and tdate!=''">and tdate=#{tdate}</when>
+            </choose>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+    </select>
+    <select id="getCount" parameterType="bean.in.GysInBean" resultType="int">
+		select count(*) from gys
+        <where>
+            <choose>
+                <when test="sqlIdLike==true">and id like concat(concat('%',#{id}),'%')</when>
+                <when test="sqlIdLeftLike==true">and id like concat(#{id},'%')</when>
+                <when test="sqlIdRightLike==true">and id like concat('%',#{id})</when>
+                <when test="sqlIdD==true">and id&gt;#{id}</when>
+                <when test="sqlIdX==true">and id&lt;#{id}</when>
+                <when test="sqlIdDd==true">and id&gt;= #{id}</when>
+                <when test="sqlIdXd==true">and id&lt;= #{id}</when>
+                <when test="sqlIdInList!=null">
+                    <foreach collection="sqlIdInList" item="a" open="id in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="id!=null and id!=''">and id=#{id}</when>
+            </choose>
+            <choose>
+                <when test="sqlRoleNameLike==true">and roleName like concat(concat('%',#{roleName}),'%')</when>
+                <when test="sqlRoleNameLeftLike==true">and roleName like concat(#{roleName},'%')</when>
+                <when test="sqlRoleNameRightLike==true">and roleName like concat('%',#{roleName})</when>
+                <when test="sqlRoleNameD==true">and roleName&gt;#{roleName}</when>
+                <when test="sqlRoleNameX==true">and roleName&lt;#{roleName}</when>
+                <when test="sqlRoleNameDd==true">and roleName&gt;= #{roleName}</when>
+                <when test="sqlRoleNameXd==true">and roleName&lt;= #{roleName}</when>
+                <when test="sqlRoleNameInList!=null">
+                    <foreach collection="sqlRoleNameInList" item="a" open="roleName in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="roleName!=null and roleName!=''">and roleName=#{roleName}</when>
+            </choose>
+            <choose>
+                <when test="sqlNoteLike==true">and note like concat(concat('%',#{note}),'%')</when>
+                <when test="sqlNoteLeftLike==true">and note like concat(#{note},'%')</when>
+                <when test="sqlNoteRightLike==true">and note like concat('%',#{note})</when>
+                <when test="sqlNoteD==true">and note&gt;#{note}</when>
+                <when test="sqlNoteX==true">and note&lt;#{note}</when>
+                <when test="sqlNoteDd==true">and note&gt;= #{note}</when>
+                <when test="sqlNoteXd==true">and note&lt;= #{note}</when>
+                <when test="sqlNoteInList!=null">
+                    <foreach collection="sqlNoteInList" item="a" open="note in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="note!=null and note!=''">and note=#{note}</when>
+            </choose>
+            <choose>
+                <when test="sqlPrice3Like==true">and price3 like concat(concat('%',#{price3}),'%')</when>
+                <when test="sqlPrice3LeftLike==true">and price3 like concat(#{price3},'%')</when>
+                <when test="sqlPrice3RightLike==true">and price3 like concat('%',#{price3})</when>
+                <when test="sqlPrice3D==true">and price3&gt;#{price3}</when>
+                <when test="sqlPrice3X==true">and price3&lt;#{price3}</when>
+                <when test="sqlPrice3Dd==true">and price3&gt;= #{price3}</when>
+                <when test="sqlPrice3Xd==true">and price3&lt;= #{price3}</when>
+                <when test="sqlPrice3InList!=null">
+                    <foreach collection="sqlPrice3InList" item="a" open="price3 in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="price3!=null and price3!=''">and price3=#{price3}</when>
+            </choose>
+            <choose>
+                <when test="sqlTdateLike==true">and tdate like concat(concat('%',#{tdate}),'%')</when>
+                <when test="sqlTdateLeftLike==true">and tdate like concat(#{tdate},'%')</when>
+                <when test="sqlTdateRightLike==true">and tdate like concat('%',#{tdate})</when>
+                <when test="sqlTdateD==true">and tdate&gt;#{tdate}</when>
+                <when test="sqlTdateX==true">and tdate&lt;#{tdate}</when>
+                <when test="sqlTdateDd==true">and tdate&gt;= #{tdate}</when>
+                <when test="sqlTdateXd==true">and tdate&lt;= #{tdate}</when>
+                <when test="sqlTdateInList!=null">
+                    <foreach collection="sqlTdateInList" item="a" open="tdate in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="tdate!=null and tdate!=''">and tdate=#{tdate}</when>
+            </choose>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+    </select>
+    <update id="update">
+		update gys
+        <set>
+            <if test="sqlValueBean.roleName!=null">roleName=#{sqlValueBean.roleName},</if>
+            <if test="sqlValueBean.note!=null">note=#{sqlValueBean.note},</if>
+            <if test="sqlValueBean.price3!=null">price3=#{sqlValueBean.price3},</if>
+            <if test="sqlValueBean.tdate!=null">tdate=#{sqlValueBean.tdate},</if>
+        </set>
+        <where>
+            <choose>
+                <when test="sqlWhereBean.sqlIdLike==true">and id like concat(concat('%',#{sqlWhereBean.id}),'%')</when>
+                <when test="sqlWhereBean.sqlIdLeftLike==true">and id like concat(#{sqlWhereBean.id},'%')</when>
+                <when test="sqlWhereBean.sqlIdRightLike==true">and id like concat('%',#{sqlWhereBean.id})</when>
+                <when test="sqlWhereBean.sqlIdD==true">and id&gt;#{sqlWhereBean.id}</when>
+                <when test="sqlWhereBean.sqlIdX==true">and id&lt;#{sqlWhereBean.id}</when>
+                <when test="sqlWhereBean.sqlIdDd==true">and id&gt;= #{sqlWhereBean.id}</when>
+                <when test="sqlWhereBean.sqlIdXd==true">and id&gt;= #{sqlWhereBean.id}</when>
+                <when test="sqlWhereBean.sqlIdInList!=null">
+                    <foreach collection="sqlWhereBean.sqlIdInList" item="a" open="id in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="sqlWhereBean.id!=null and sqlWhereBean.id!=''">and id=#{sqlWhereBean.id}</when>
+            </choose>
+            <choose>
+                <when test="sqlWhereBean.sqlRoleNameLike==true">and roleName like concat(concat('%',#{sqlWhereBean.roleName}),'%')</when>
+                <when test="sqlWhereBean.sqlRoleNameLeftLike==true">and roleName like concat(#{sqlWhereBean.roleName},'%')</when>
+                <when test="sqlWhereBean.sqlRoleNameRightLike==true">and roleName like concat('%',#{sqlWhereBean.roleName})</when>
+                <when test="sqlWhereBean.sqlRoleNameD==true">and roleName&gt;#{sqlWhereBean.roleName}</when>
+                <when test="sqlWhereBean.sqlRoleNameX==true">and roleName&lt;#{sqlWhereBean.roleName}</when>
+                <when test="sqlWhereBean.sqlRoleNameDd==true">and roleName&gt;= #{sqlWhereBean.roleName}</when>
+                <when test="sqlWhereBean.sqlRoleNameXd==true">and roleName&gt;= #{sqlWhereBean.roleName}</when>
+                <when test="sqlWhereBean.sqlRoleNameInList!=null">
+                    <foreach collection="sqlWhereBean.sqlRoleNameInList" item="a" open="roleName in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="sqlWhereBean.roleName!=null and sqlWhereBean.roleName!=''">and roleName=#{sqlWhereBean.roleName}</when>
+            </choose>
+            <choose>
+                <when test="sqlWhereBean.sqlNoteLike==true">and note like concat(concat('%',#{sqlWhereBean.note}),'%')</when>
+                <when test="sqlWhereBean.sqlNoteLeftLike==true">and note like concat(#{sqlWhereBean.note},'%')</when>
+                <when test="sqlWhereBean.sqlNoteRightLike==true">and note like concat('%',#{sqlWhereBean.note})</when>
+                <when test="sqlWhereBean.sqlNoteD==true">and note&gt;#{sqlWhereBean.note}</when>
+                <when test="sqlWhereBean.sqlNoteX==true">and note&lt;#{sqlWhereBean.note}</when>
+                <when test="sqlWhereBean.sqlNoteDd==true">and note&gt;= #{sqlWhereBean.note}</when>
+                <when test="sqlWhereBean.sqlNoteXd==true">and note&gt;= #{sqlWhereBean.note}</when>
+                <when test="sqlWhereBean.sqlNoteInList!=null">
+                    <foreach collection="sqlWhereBean.sqlNoteInList" item="a" open="note in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="sqlWhereBean.note!=null and sqlWhereBean.note!=''">and note=#{sqlWhereBean.note}</when>
+            </choose>
+            <choose>
+                <when test="sqlWhereBean.sqlPrice3Like==true">and price3 like concat(concat('%',#{sqlWhereBean.price3}),'%')</when>
+                <when test="sqlWhereBean.sqlPrice3LeftLike==true">and price3 like concat(#{sqlWhereBean.price3},'%')</when>
+                <when test="sqlWhereBean.sqlPrice3RightLike==true">and price3 like concat('%',#{sqlWhereBean.price3})</when>
+                <when test="sqlWhereBean.sqlPrice3D==true">and price3&gt;#{sqlWhereBean.price3}</when>
+                <when test="sqlWhereBean.sqlPrice3X==true">and price3&lt;#{sqlWhereBean.price3}</when>
+                <when test="sqlWhereBean.sqlPrice3Dd==true">and price3&gt;= #{sqlWhereBean.price3}</when>
+                <when test="sqlWhereBean.sqlPrice3Xd==true">and price3&gt;= #{sqlWhereBean.price3}</when>
+                <when test="sqlWhereBean.sqlPrice3InList!=null">
+                    <foreach collection="sqlWhereBean.sqlPrice3InList" item="a" open="price3 in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="sqlWhereBean.price3!=null and sqlWhereBean.price3!=''">and price3=#{sqlWhereBean.price3}</when>
+            </choose>
+            <choose>
+                <when test="sqlWhereBean.sqlTdateLike==true">and tdate like concat(concat('%',#{sqlWhereBean.tdate}),'%')</when>
+                <when test="sqlWhereBean.sqlTdateLeftLike==true">and tdate like concat(#{sqlWhereBean.tdate},'%')</when>
+                <when test="sqlWhereBean.sqlTdateRightLike==true">and tdate like concat('%',#{sqlWhereBean.tdate})</when>
+                <when test="sqlWhereBean.sqlTdateD==true">and tdate&gt;#{sqlWhereBean.tdate}</when>
+                <when test="sqlWhereBean.sqlTdateX==true">and tdate&lt;#{sqlWhereBean.tdate}</when>
+                <when test="sqlWhereBean.sqlTdateDd==true">and tdate&gt;= #{sqlWhereBean.tdate}</when>
+                <when test="sqlWhereBean.sqlTdateXd==true">and tdate&gt;= #{sqlWhereBean.tdate}</when>
+                <when test="sqlWhereBean.sqlTdateInList!=null">
+                    <foreach collection="sqlWhereBean.sqlTdateInList" item="a" open="tdate in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="sqlWhereBean.tdate!=null and sqlWhereBean.tdate!=''">and tdate=#{sqlWhereBean.tdate}</when>
+            </choose>
+            <if test="sqlWhereBean.sqlWhere!=null">${sqlWhereBean.sqlWhere}</if>
+        </where>
+    </update>
+    <insert id="insert" parameterType="bean.GysBean">
+		insert into gys
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleName!=null">roleName,</if>
+            <if test="note!=null">note,</if>
+            <if test="price3!=null">price3,</if>
+            <if test="tdate!=null">tdate,</if>
+        </trim>
+ 			values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleName!=null">#{roleName},</if>
+            <if test="note!=null">#{note},</if>
+            <if test="price3!=null">#{price3},</if>
+            <if test="tdate!=null">#{tdate},</if>
+        </trim>
+    </insert>
+    <delete id="delete" parameterType="bean.in.GysInBean">
+		DELETE FROM gys
+        <where>
+            <choose>
+                <when test="sqlIdLike==true">and id like concat(concat('%',#{id}),'%')</when>
+                <when test="sqlIdLeftLike==true">and id like concat(#{id},'%')</when>
+                <when test="sqlIdRightLike==true">and id like concat('%',#{id})</when>
+                <when test="sqlIdD==true">and id&gt;#{id}</when>
+                <when test="sqlIdX==true">and id&lt;#{id}</when>
+                <when test="sqlIdDd==true">and id&gt;= #{id}</when>
+                <when test="sqlIdXd==true">and id&lt;= #{id}</when>
+                <when test="sqlIdInList!=null">
+                    <foreach collection="sqlIdInList" item="a" open="id in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="id!=null and id!=''">and id=#{id}</when>
+            </choose>
+            <choose>
+                <when test="sqlRoleNameLike==true">and roleName like concat(concat('%',#{roleName}),'%')</when>
+                <when test="sqlRoleNameLeftLike==true">and roleName like concat(#{roleName},'%')</when>
+                <when test="sqlRoleNameRightLike==true">and roleName like concat('%',#{roleName})</when>
+                <when test="sqlRoleNameD==true">and roleName&gt;#{roleName}</when>
+                <when test="sqlRoleNameX==true">and roleName&lt;#{roleName}</when>
+                <when test="sqlRoleNameDd==true">and roleName&gt;= #{roleName}</when>
+                <when test="sqlRoleNameXd==true">and roleName&lt;= #{roleName}</when>
+                <when test="sqlRoleNameInList!=null">
+                    <foreach collection="sqlRoleNameInList" item="a" open="roleName in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="roleName!=null and roleName!=''">and roleName=#{roleName}</when>
+            </choose>
+            <choose>
+                <when test="sqlNoteLike==true">and note like concat(concat('%',#{note}),'%')</when>
+                <when test="sqlNoteLeftLike==true">and note like concat(#{note},'%')</when>
+                <when test="sqlNoteRightLike==true">and note like concat('%',#{note})</when>
+                <when test="sqlNoteD==true">and note&gt;#{note}</when>
+                <when test="sqlNoteX==true">and note&lt;#{note}</when>
+                <when test="sqlNoteDd==true">and note&gt;= #{note}</when>
+                <when test="sqlNoteXd==true">and note&lt;= #{note}</when>
+                <when test="sqlNoteInList!=null">
+                    <foreach collection="sqlNoteInList" item="a" open="note in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="note!=null and note!=''">and note=#{note}</when>
+            </choose>
+            <choose>
+                <when test="sqlPrice3Like==true">and price3 like concat(concat('%',#{price3}),'%')</when>
+                <when test="sqlPrice3LeftLike==true">and price3 like concat(#{price3},'%')</when>
+                <when test="sqlPrice3RightLike==true">and price3 like concat('%',#{price3})</when>
+                <when test="sqlPrice3D==true">and price3&gt;#{price3}</when>
+                <when test="sqlPrice3X==true">and price3&lt;#{price3}</when>
+                <when test="sqlPrice3Dd==true">and price3&gt;= #{price3}</when>
+                <when test="sqlPrice3Xd==true">and price3&lt;= #{price3}</when>
+                <when test="sqlPrice3InList!=null">
+                    <foreach collection="sqlPrice3InList" item="a" open="price3 in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="price3!=null and price3!=''">and price3=#{price3}</when>
+            </choose>
+            <choose>
+                <when test="sqlTdateLike==true">and tdate like concat(concat('%',#{tdate}),'%')</when>
+                <when test="sqlTdateLeftLike==true">and tdate like concat(#{tdate},'%')</when>
+                <when test="sqlTdateRightLike==true">and tdate like concat('%',#{tdate})</when>
+                <when test="sqlTdateD==true">and tdate&gt;#{tdate}</when>
+                <when test="sqlTdateX==true">and tdate&lt;#{tdate}</when>
+                <when test="sqlTdateDd==true">and tdate&gt;= #{tdate}</when>
+                <when test="sqlTdateXd==true">and tdate&lt;= #{tdate}</when>
+                <when test="sqlTdateInList!=null">
+                    <foreach collection="sqlTdateInList" item="a" open="tdate in (" close=")" separator=",">#{a}</foreach>
+                </when>
+                <when test="tdate!=null and tdate!=''">and tdate=#{tdate}</when>
+            </choose>
+            <if test="sqlWhere!=null">${sqlWhere}</if>
+        </where>
+    </delete>
+    <insert id="batchInsert">
+		insert into gys
+        <trim prefix="(" suffix=")" suffixOverrides=",">roleName,note,price3,tdate,</trim>
+ 			values
+        <foreach collection="list" item="item" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="item.roleName!=null">#{item.roleName},</if>
+                <if test="item.roleName==null">null,</if>
+                <if test="item.note!=null">#{item.note},</if>
+                <if test="item.note==null">null,</if>
+                <if test="item.price3!=null">#{item.price3},</if>
+                <if test="item.price3==null">null,</if>
+                <if test="item.tdate!=null">#{item.tdate},</if>
+                <if test="item.tdate==null">null,</if>
+            </trim>
+        </foreach>
+    </insert>
+    <select id="selectOneById" parameterType="object" resultMap="GysBeanMap">
+		select 
+			id,
+			roleName,
+			note,
+			price3,
+			tdate from gys
+        <where>id=#{_parameter}</where>
+    </select>
+    <update id="updateById" parameterType="bean.GysBean">
+		update gys
+        <set>
+            <if test="roleName!=null">roleName=#{roleName},</if>
+            <if test="note!=null">note=#{note},</if>
+            <if test="price3!=null">price3=#{price3},</if>
+            <if test="tdate!=null">tdate=#{tdate},</if>
+        </set>
+			where id=#{id}
+    </update>
+    <insert id="insertGetId" keyProperty="id" useGeneratedKeys="true" parameterType="bean.GysBean">insert into gys
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleName!=null">roleName,</if>
+            <if test="note!=null">note,</if>
+            <if test="price3!=null">price3,</if>
+            <if test="tdate!=null">tdate,</if>
+        </trim>
+ 			values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleName!=null">#{roleName},</if>
+            <if test="note!=null">#{note},</if>
+            <if test="price3!=null">#{price3},</if>
+            <if test="tdate!=null">#{tdate},</if>
+        </trim>
+    </insert>
+    <delete id="deleteById" parameterType="object">
+		DELETE FROM gys
+        <where>id=#{_parameter}</where>
+    </delete>
+    <insert id="batchInsertGetId" keyProperty="id" useGeneratedKeys="true">
+		insert into gys
+        <trim prefix="(" suffix=")" suffixOverrides=",">roleName,note,price3,tdate,</trim>
+ 			values
+        <foreach collection="list" item="item" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="item.roleName!=null">#{item.roleName},</if>
+                <if test="item.roleName==null">null,</if>
+                <if test="item.note!=null">#{item.note},</if>
+                <if test="item.note==null">null,</if>
+                <if test="item.price3!=null">#{item.price3},</if>
+                <if test="item.price3==null">null,</if>
+                <if test="item.tdate!=null">#{item.tdate},</if>
+                <if test="item.tdate==null">null,</if>
+            </trim>
+        </foreach>
+    </insert>
+</mapper>

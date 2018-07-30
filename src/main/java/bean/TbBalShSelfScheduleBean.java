@@ -72,4 +72,10 @@ public class TbBalShSelfScheduleBean implements Serializable{
 	public void setEndDate(String endDate){this.endDate=endDate;}
 
 
+
+	private String sqlSeq;
+
+	public String getSqlSeq(){return sqlSeq;}
+	public void setSqlSeq(String sqlSeq){this.sqlSeq=sqlSeq;}
+
 }

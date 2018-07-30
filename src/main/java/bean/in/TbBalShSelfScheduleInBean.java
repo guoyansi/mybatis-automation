@@ -5,6 +5,7 @@ import mybatisauto.bean.BaseInBean;
 
 public class TbBalShSelfScheduleInBean extends BaseInBean{
 	private static final long serialVersionUID = 1L;
+
 	private String balSts;
 
 	private String planSettingOrgCode;

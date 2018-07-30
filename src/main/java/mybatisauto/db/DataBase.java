@@ -214,8 +214,8 @@ public abstract class DataBase {
 	 * 
 	 * @throws Exception
 	 */
-	public void createBean(AutoConfig config, TableBean table, List<FieldBean> fs) throws Exception {
-		createOriBean(config, table, fs);
+	public void createBean(AutoConfig config, TableBean table, List<FieldBean> fs,DataBase db) throws Exception {
+		createOriBean(config, table, fs,db);
 		createInBean(config, table, fs);
 		createOutBean(config, table, fs);
 	}
@@ -235,7 +235,7 @@ public abstract class DataBase {
 		}
 		return beanFile;
 	}
-	private void createOriBean(AutoConfig config, TableBean table, List<FieldBean> fs) throws Exception {
+	private void createOriBean(AutoConfig config, TableBean table, List<FieldBean> fs,DataBase db) throws Exception {
 		File file = createBeanBefore(config,"", table.getBeanName());
 		BufferedWriter w = new BufferedWriter(new FileWriter(file, true));
 		w.write("package " + config.getBeanPackage() + ";\n");
@@ -248,6 +248,16 @@ public abstract class DataBase {
 		w.write("\n");
 		w.write("\n");
 		writeField(w,fs);
+		w.write("\n");
+		if(db instanceof OracleDataBase){
+			w.write("	private String sqlSeq;\n");
+			w.write("\n");
+			// get
+			w.write("	public String getSqlSeq(){return sqlSeq;}\n");
+			// set
+			w.write("	public void setSqlSeq(String sqlSeq){this.sqlSeq=sqlSeq;}\n");
+			w.write("\n");
+		}
 		w.write("}");
 		w.flush();
 		w.close();
@@ -421,11 +431,11 @@ public abstract class DataBase {
 		public abstract void createMapper(AutoConfig config, TableBean table, List<FieldBean> fs) throws Exception;
 		
 		public abstract void selectListDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs) throws Exception;
-		
-		public void resultMapDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs)throws Exception{
+
+		private Element _resultMapDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs,String name,String url)throws Exception{
 			Element tag=root.addElement("resultMap");
-			tag.addAttribute("id",table.getBeanOutName()+"Map");
-			tag.addAttribute("type", config.getBeanPackage()+".out."+table.getBeanOutName());
+			tag.addAttribute("id",name+"Map");
+			tag.addAttribute("type", config.getBeanPackage()+url+"."+name);
 			for(FieldBean f:fs) {
 				Element tag1=null;
 				if(f.getIsKey()) {//是主键
@@ -436,10 +446,19 @@ public abstract class DataBase {
 				tag1.addAttribute("column", f.getSqlName());
 				tag1.addAttribute("property", f.getBeanName());
 			}
+			return tag;
+		}
+		public void resultMapDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs)throws Exception{
+			_resultMapDocument(root,config,table,fs,table.getBeanName(),"");
+		}
+		
+		public void resultOutMapDocument(Element root,AutoConfig config,TableBean table,List<FieldBean> fs)throws Exception{
+			Element tag=_resultMapDocument(root,config,table,fs,table.getBeanOutName(),".out");
 			Element rnTag=tag.addElement("result");
 			rnTag.addAttribute("column","rn");
 			rnTag.addAttribute("property","rn");
 		}
+		
 		//selectList标签
 		protected Element getSelectListTag(Element root,AutoConfig config,TableBean table) throws Exception{
 			Element select=root.addElement("select");
@@ -620,7 +639,7 @@ public abstract class DataBase {
 			Element select=root.addElement("select");
 			select.addAttribute("id", "selectOne");
 			select.addAttribute("parameterType",config.getBeanPackage()+".in."+table.getBeanInName());
-			select.addAttribute("resultMap", table.getBeanOutName()+"Map");
+			select.addAttribute("resultMap", table.getBeanName()+"Map");
 			StringBuffer sb=new StringBuffer();
 			int i=0;
 			for(FieldBean f:fs){
@@ -639,7 +658,7 @@ public abstract class DataBase {
 			Element select=root.addElement("select");
 			select.addAttribute("id", "selectOneById");
 			select.addAttribute("parameterType","object");
-			select.addAttribute("resultMap",table.getBeanOutName()+"Map");
+			select.addAttribute("resultMap",table.getBeanName()+"Map");
 			select.addText("\n\t\t");
 			StringBuffer sb=getFieldsSB(fs);
 			

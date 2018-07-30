@@ -193,8 +193,9 @@ public class OracleDataBase extends DataBase{
 		document.addDocType("mapper", "-//mybatis.org//DTD Mapper 3.0//EN", "http://mybatis.org/dtd/mybatis-3-mapper.dtd");
 		Element root=document.addElement("mapper");
 		root.addAttribute("namespace",config.getDaoPackage() +"."+table.getIdaoName());
-		//resultMap
 		resultMapDocument(root, config, table, fs);
+		//resultMap
+		resultOutMapDocument(root, config, table, fs);
 		//selectList
 		selectListDocument(root,config,table,fs);
 		//selectOne
